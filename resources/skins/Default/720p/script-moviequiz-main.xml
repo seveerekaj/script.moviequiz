@@ -91,7 +91,7 @@
             </control>
 
             <!-- Background -->
-            <control type="largeimage" id="4500">
+            <control type="image" id="4500" background="true">
                 <description>Background</description>
                 <posx>0</posx>
                 <posy>0</posy>

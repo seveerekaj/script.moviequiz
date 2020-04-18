@@ -35,9 +35,9 @@ class Imdb(object):
 
     QUOTES_INDEX = 'quotes.index'
     QUOTES_LIST = 'quotes.list'
-    QUOTES_URL = 'http://ftp.sunet.se/pub/tv+movies/imdb/quotes.list.gz'
+    QUOTES_URL = 'ftp://ftp.fu-berlin.de/pub/misc/movies/database/frozendata/quotes.list.gz'
     ACTORS_LIST = 'actors.list'
-    ACTORS_URL = 'http://ftp.sunet.se/pub/tv+movies/imdb/actors.list.gz' 
+    ACTORS_URL = 'ftp://ftp.fu-berlin.de/pub/misc/movies/database/frozendata/actors.list.gz' 
 
     def __init__(self):
         listsPath = xbmc.translatePath(ADDON.getAddonInfo('profile'))
