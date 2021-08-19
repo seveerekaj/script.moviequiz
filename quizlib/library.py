@@ -167,7 +167,7 @@ class Query(object):
 
         command = json.dumps(self.query)
         resp = xbmc.executeJSONRPC(command)
-        print resp
+        print(resp)
         return json.loads(resp)
 
     def asList(self):

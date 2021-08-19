@@ -22,13 +22,13 @@ import os
 import random
 import datetime
 import re
-import imdb
-import game
-import library
+from quizlib import imdb
+from quizlib import game
+from quizlib import library
 
 import xbmcvfs
 
-from strings import *
+from quizlib.strings import *
 
 IMDB = imdb.Imdb()
 
@@ -87,7 +87,7 @@ class Question(object):
         return None
 
     def getUniqueIdentifier(self):
-        return "%s-%s" % (self.__class__.__name__, unicode(self.getCorrectAnswer().id))
+        return "%s-%s" % (self.__class__.__name__, str(self.getCorrectAnswer().id))
 
     def setFanartFile(self, fanartFile):
         self.fanartFile = fanartFile

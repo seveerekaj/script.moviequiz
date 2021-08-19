@@ -21,11 +21,11 @@
 import re
 import random
 import os
-import urllib2
+from urllib.request import urlopen
 import zlib
 import time
 
-from strings import *
+from quizlib.strings import *
 
 import xbmc
 import xbmcgui
@@ -153,13 +153,13 @@ class Imdb(object):
         @param progressCallback: a callback function which is invoked periodically with progress information
         @type progressCallback: method
         """
-        response = urllib2.urlopen(url, timeout=30)
+        response = urlopen(url, timeout=30)
         file = open(destination, 'wb')
         decompressor = zlib.decompressobj(16+zlib.MAX_WBITS)
 
         partialLine = None
         contentReceived = 0
-        contentLength = int(response.info()['Content-Length'])
+        contentLength = int(response.headers.get('Content-Length'))
         while True:
             chunk = response.read(102400)
             if not chunk:
@@ -193,7 +193,7 @@ class Imdb(object):
                     break
 
         file.close()
-        response.close()
+        response.close() # todo: .close() may not be needed/supported anymore. should I be using "with" syntax?
 
     def _loadQuotes(self, name, season, episode):
         """
@@ -261,7 +261,7 @@ if __name__ == '__main__':
 
         if not canceled:
             xbmcgui.Dialog().ok(strings(S_DOWNLOADING_IMDB_DATA), strings(S_DOWNLOAD_COMPLETE))
-    except Exception, ex:
+    except Exception as ex:
         d.close()
         del d
 

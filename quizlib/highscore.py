@@ -19,10 +19,10 @@
 #
 
 import simplejson
-import urllib2
+# import urllib2
 import hashlib
 import os
-import StringIO
+# import StringIO
 import gzip
 
 import xbmc
@@ -38,51 +38,53 @@ class GlobalHighscoreDatabase(object):
         self.addonVersion = addonVersion
 
     def addHighscore(self, nickname, game):
-        if game.getPoints() <= 0:
-            return -1
-
-        req = {
-            'action': 'submit',
-            'entry': {
-                'type': game.getType(),
-                'gameType': game.getGameType(),
-                'gameSubType': game.getGameSubType(),
-                'nickname': nickname,
-                'score': game.getPoints(),
-                'correctAnswers': game.getCorrectAnswers(),
-                'numberOfQuestions': game.getTotalAnswers(),
-                'addonVersion': self.addonVersion,
-                'xbmcVersion': xbmc.getInfoLabel('System.BuildVersion')
-            }
-        }
-
-        resp = self._request(req)
-
-        if resp['status'] == self.STATUS_OK:
-            return int(resp['newHighscoreId'])
-        else:
-            return -1
+        return -1
+        # if game.getPoints() <= 0:
+        #     return -1
+        #
+        # req = {
+        #     'action': 'submit',
+        #     'entry': {
+        #         'type': game.getType(),
+        #         'gameType': game.getGameType(),
+        #         'gameSubType': game.getGameSubType(),
+        #         'nickname': nickname,
+        #         'score': game.getPoints(),
+        #         'correctAnswers': game.getCorrectAnswers(),
+        #         'numberOfQuestions': game.getTotalAnswers(),
+        #         'addonVersion': self.addonVersion,
+        #         'xbmcVersion': xbmc.getInfoLabel('System.BuildVersion')
+        #     }
+        # }
+        #
+        # resp = self._request(req)
+        #
+        # if resp['status'] == self.STATUS_OK:
+        #     return int(resp['newHighscoreId'])
+        # else:
+        #     return -1
 
     def getHighscores(self, game, page=0):
         """
         @type game: quizlib.game.Game
         @param game: game instance
         """
-        req = {
-            'action': 'highscores',
-            'type': game.getType(),
-            'gameType': game.getGameType(),
-            'gameSubType': game.getGameSubType(),
-            'page': page
-        }
-
-        print req
-
-        resp = self._request(req)
-        if resp['status'] == 'OK':
-            return resp['highscores']
-        else:
-            return []
+        return []
+        # req = {
+        #     'action': 'highscores',
+        #     'type': game.getType(),
+        #     'gameType': game.getGameType(),
+        #     'gameSubType': game.getGameSubType(),
+        #     'page': page
+        # }
+        #
+        # print(req)
+        #
+        # resp = self._request(req)
+        # if resp['status'] == 'OK':
+        #     return resp['highscores']
+        # else:
+        #     return []
 
     def getHighscoresNear(self, game, highscoreId, limit=50):
         """
@@ -91,54 +93,56 @@ class GlobalHighscoreDatabase(object):
         @type highscoreId: int
         @param highscoreId: the highscoreId to get highscores near
         """
-        req = {
-            'action': 'highscores-near',
-            'type': game.getType(),
-            'gameType': game.getGameType(),
-            'gameSubType': game.getGameSubType(),
-            'highscoreId': highscoreId,
-            'limit': limit
-        }
-
-        resp = self._request(req)
-        if resp['status'] == 'OK':
-            return resp['highscores']
-        else:
-            return []
+        return []
+        # req = {
+        #     'action': 'highscores-near',
+        #     'type': game.getType(),
+        #     'gameType': game.getGameType(),
+        #     'gameSubType': game.getGameSubType(),
+        #     'highscoreId': highscoreId,
+        #     'limit': limit
+        # }
+        #
+        # resp = self._request(req)
+        # if resp['status'] == 'OK':
+        #     return resp['highscores']
+        # else:
+        #     return []
 
     def getStatistics(self):
-        req = {
-            'action': 'statistics'
-        }
+        return []
+        # req = {
+        #     'action': 'statistics'
+        # }
+        #
+        # resp = self._request(req)
+        # if resp['status'] == 'OK':
+        #     return resp['statistics']
+        # else:
+        #     return []
 
-        resp = self._request(req)
-        if resp['status'] == 'OK':
-            return resp['statistics']
-        else:
-            return []
-
-    def _request(self, data):
-        jsonData = simplejson.dumps(data)
-        checksum = hashlib.md5(jsonData).hexdigest()
-
-        req = urllib2.Request(self.SERVICE_URL, jsonData)
-        req.add_header('X-MovieQuiz-Checksum', checksum)
-        req.add_header('Content-Type', 'text/json')
-        req.add_header('Accept-encoding', 'gzip')
-
-        try:
-            u = urllib2.urlopen(req)
-            if u.info().get('Content-Encoding') == 'gzip':
-                buf = StringIO.StringIO(u.read())
-                f = gzip.GzipFile(fileobj=buf)
-                resp = f.read()
-            else:
-                resp = u.read()
-            u.close()
-
-            return simplejson.loads(resp)
-        except urllib2.URLError:
-            return {'status': 'error'}
+    # def _request(self, data):
+    #     jsonData = simplejson.dumps(data)
+    #     checksum = hashlib.md5(jsonData).hexdigest()
+    #
+    #     req = urllib2.Request(self.SERVICE_URL, jsonData)
+    #     req.add_header('X-MovieQuiz-Checksum', checksum)
+    #     req.add_header('Content-Type', 'text/json')
+    #     req.add_header('Accept-encoding', 'gzip')
+    #
+    #     try:
+    #         u = urllib2.urlopen(req)
+    #         if u.info().get('Content-Encoding') == 'gzip':
+    #             buf = StringIO.StringIO(u.read())
+    #             f = gzip.GzipFile(fileobj=buf)
+    #             resp = f.read()
+    #         else:
+    #             resp = u.read()
+    #         u.close()
+    #
+    #         return simplejson.loads(resp)
+    #     except urllib2.URLError:
+    #         return {'status': 'error'}
 
 
 class LocalHighscoreDatabase(object):
@@ -156,7 +160,7 @@ class LocalHighscoreDatabase(object):
     def close(self):
         if hasattr(self, 'conn') and self.conn is not None:
             self.conn.close()
-            print "LocalHighscoreDatabase closed"
+            print("LocalHighscoreDatabase closed")
 
     def addHighscore(self, game):
         if game.getPoints() <= 0:
@@ -223,7 +227,7 @@ class LocalHighscoreDatabase(object):
     def createUser(self, nickname):
         c = self.conn.cursor()
         c.execute("INSERT INTO user(nickname, last_used) VALUES(?, datetime('now'))",
-                  [nickname.decode('utf-8', 'ignore')])
+                  [nickname])
         self.conn.commit()
         rowid = c.lastrowid
         c.close()
@@ -265,11 +269,11 @@ class LocalHighscoreDatabase(object):
 
         try:
             c.execute('SELECT major, minor, patch FROM version')
-            version = c.fetchone().values()
+            version = list(c.fetchone().values())
         except sqlite3.OperationalError:
             version = [0, 0, 0]
 
-        #xbmc.log("Highscore Database version: " + str(version))
+        xbmc.log("Highscore Database version: " + str(version))
 
         if version < [0, 4, 1]:
             xbmc.log("Migrating Highscore Database to v0.4.1")

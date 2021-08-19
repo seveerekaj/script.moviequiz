@@ -20,7 +20,7 @@
 
 import datetime
 
-from strings import *
+from quizlib.strings import *
 
 GAMETYPE_MOVIE = "movie"
 GAMETYPE_TVSHOW = "tvshow"
@@ -42,7 +42,7 @@ class Game(object):
 
     def wrongAnswer(self):
         self.wrongAnswers += 1
-        
+
     def isGameOver(self):
         raise
 

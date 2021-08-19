@@ -28,15 +28,15 @@ import datetime
 import xbmc
 import xbmcgui
 
-import game
-import question
-import player
-import highscore
-import library
+from quizlib import game
+from quizlib import question
+from quizlib import player
+from quizlib import highscore
+from quizlib import library
 
 import buggalo
 
-from strings import *
+from quizlib.strings import *
 
 # Constants from [xbmc]/xbmc/guilib/Key.h
 ACTION_SELECT_ITEM = 7
@@ -239,26 +239,28 @@ class MenuGui(xbmcgui.WindowXMLDialog):
             self.close()
             self.quizGui.close()
             # Must have at least one movie or tvshow
-            xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_REQUIREMENTS_MISSING_LINE1),
-                                strings(E_REQUIREMENTS_MISSING_LINE2), strings(E_REQUIREMENTS_MISSING_LINE3))
+            # todo: anywhere we are calling dialog().ok with strings concated together, figure out how to separate with space or new line.
+            # todo: why are strings separated into fragments the first place?
+            xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_REQUIREMENTS_MISSING_LINE1) +
+                                strings(E_REQUIREMENTS_MISSING_LINE2) + strings(E_REQUIREMENTS_MISSING_LINE3))
             return
 
         if not library.isAnyVideosWatched() and ADDON.getSetting(SETT_ONLY_WATCHED_MOVIES) == 'true':
             # Only watched movies requires at least one watched video files
-            xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_ONLY_WATCHED_LINE1),
-                                strings(E_ONLY_WATCHED_LINE2), strings(E_ONLY_WATCHED_LINE3))
+            xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_ONLY_WATCHED_LINE1) +
+                                strings(E_ONLY_WATCHED_LINE2) + strings(E_ONLY_WATCHED_LINE3))
             ADDON.setSetting(SETT_ONLY_WATCHED_MOVIES, 'false')
 
         if not library.isAnyMPAARatingsAvailable() and ADDON.getSetting(SETT_MOVIE_RATING_LIMIT_ENABLED) == 'true':
             # MPAA rating requires ratings to be available in database
-            xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_MOVIE_RATING_LIMIT_LINE1),
-                                strings(E_MOVIE_RATING_LIMIT_LINE2), strings(E_MOVIE_RATING_LIMIT_LINE3))
+            xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_MOVIE_RATING_LIMIT_LINE1) +
+                                strings(E_MOVIE_RATING_LIMIT_LINE2) + strings(E_MOVIE_RATING_LIMIT_LINE3))
             ADDON.setSetting(SETT_MOVIE_RATING_LIMIT_ENABLED, 'false')
 
         if not library.isAnyContentRatingsAvailable() and ADDON.getSetting(SETT_TVSHOW_RATING_LIMIT_ENABLED) == 'true':
             # Content rating requires ratings to be available in database
-            xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_TVSHOW_RATING_LIMIT_LINE1),
-                                strings(E_TVSHOW_RATING_LIMIT_LINE2), strings(E_TVSHOW_RATING_LIMIT_LINE3))
+            xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_TVSHOW_RATING_LIMIT_LINE1) +
+                                strings(E_TVSHOW_RATING_LIMIT_LINE2) + strings(E_TVSHOW_RATING_LIMIT_LINE3))
             ADDON.setSetting(SETT_TVSHOW_RATING_LIMIT_ENABLED, 'false')
 
         self.moviesEnabled = bool(hasMovies and question.isAnyMovieQuestionsEnabled())
@@ -266,17 +268,18 @@ class MenuGui(xbmcgui.WindowXMLDialog):
         self.musicEnabled = bool(hasMusic) and question.isAnyMusicQuestionsEnabled()
 
         if not question.isAnyMovieQuestionsEnabled():
-            xbmcgui.Dialog().ok(strings(E_WARNING), strings(E_ALL_MOVIE_QUESTIONS_DISABLED),
+            xbmcgui.Dialog().ok(strings(E_WARNING), strings(E_ALL_MOVIE_QUESTIONS_DISABLED) +
                                 strings(E_QUIZ_TYPE_NOT_AVAILABLE))
 
         if not question.isAnyTVShowQuestionsEnabled():
-            xbmcgui.Dialog().ok(strings(E_WARNING), strings(E_ALL_TVSHOW_QUESTIONS_DISABLED),
+            xbmcgui.Dialog().ok(strings(E_WARNING), strings(E_ALL_TVSHOW_QUESTIONS_DISABLED) +
                                 strings(E_QUIZ_TYPE_NOT_AVAILABLE))
 
         self.updateMenu()
         self.getControl(MenuGui.C_MENU_VISIBILITY).setVisible(False)
 
-        threading.Timer(0.1, self.loadStatistics).start()
+        #todo: Jake commented out below because the strings() func was having trouble, and we don't need scores anyway
+        # threading.Timer(0.1, self.loadStatistics).start()
 
     def loadStatistics(self):
         globalHighscore = highscore.GlobalHighscoreDatabase(ADDON.getAddonInfo('version'))
@@ -314,7 +317,7 @@ class MenuGui(xbmcgui.WindowXMLDialog):
         if self.highscoreGameType == highscoreGameType and self.highscoreGlobal == highscoreGlobal and self.highscoreType == highscoreType:
             return
 
-        print 'reloading highscores...'
+        print('reloading highscores...')
 
         self.highscoreGlobal = highscoreGlobal
         self.highscoreType = highscoreType
@@ -465,7 +468,7 @@ class MenuGui(xbmcgui.WindowXMLDialog):
         @param controlId: id of the control that was clicked
         @type controlId: int
         """
-        print 'onClick'
+        print('onClick')
 
         if controlId == MenuGui.C_MENU_LIST:
             self.getControl(MenuGui.C_MENU_VISIBILITY).setVisible(True)
@@ -1015,9 +1018,9 @@ class QuizGui(xbmcgui.WindowXML):
                 try:
                     q = candidate(self.defaultLibraryFilters)
                     break
-                except question.QuestionException, ex:
-                    print "QuestionException: %s" % str(ex)
-                except Exception, ex:
+                except question.QuestionException as ex:
+                    print("QuestionException: %s" % str(ex))
+                except Exception as ex:
                     xbmc.log("%s in %s" % (ex.__class__.__name__, candidate.__name__))
                     import traceback
                     import sys
@@ -1027,7 +1030,7 @@ class QuizGui(xbmcgui.WindowXML):
             if q is None or len(q.getAnswers()) < 3:
                 continue
 
-            print type(q)
+            print(type(q))
             if not q.getUniqueIdentifier() in self.previousQuestions:
                 self.previousQuestions.append(q.getUniqueIdentifier())
                 break
