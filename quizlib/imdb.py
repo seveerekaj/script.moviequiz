@@ -29,18 +29,19 @@ from quizlib.strings import *
 
 import xbmc
 import xbmcgui
+import xbmcvfs
 
-class Imdb(object):
+class Imdb:
     ACTOR_PATTERN = re.compile('^([^\t\(]+)( \([^\)]+\))?\t.*?$')
 
     QUOTES_INDEX = 'quotes.index'
     QUOTES_LIST = 'quotes.list'
-    QUOTES_URL = 'ftp://ftp.fu-berlin.de/pub/misc/movies/database/frozendata/quotes.list.gz'
     ACTORS_LIST = 'actors.list'
-    ACTORS_URL = 'ftp://ftp.fu-berlin.de/pub/misc/movies/database/frozendata/actors.list.gz' 
+    QUOTES_URL = 'ftp://ftp.fu-berlin.de/pub/misc/movies/database/frozendata/quotes.list.gz'
+    ACTORS_URL = 'ftp://ftp.fu-berlin.de/pub/misc/movies/database/frozendata/actors.list.gz'
 
     def __init__(self):
-        listsPath = xbmc.translatePath(ADDON.getAddonInfo('profile'))
+        listsPath = xbmcvfs.translatePath(ADDON.getAddonInfo('profile'))
         self.actorsPath = os.path.join(listsPath, self.ACTORS_LIST)
         self.quotesIndexPath = os.path.join(listsPath, self.QUOTES_INDEX)
         self.quotesListPath = os.path.join(listsPath, self.QUOTES_LIST)
@@ -234,10 +235,10 @@ if __name__ == '__main__':
     # this script is invoked from addon settings
 
     # Make sure data dir exists
-    if not os.path.exists(xbmc.translatePath(ADDON.getAddonInfo('profile'))):
-        os.makedirs(xbmc.translatePath(ADDON.getAddonInfo('profile')))
+    if not xbmcvfs.exists(ADDON.getAddonInfo('profile')):
+        xbmcvfs.mkdirs(ADDON.getAddonInfo('profile'))
 
-    class DownloadState(object):
+    class DownloadState:
         def __init__(self, count):
             self.idx = 0
             self.count = count

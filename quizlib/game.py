@@ -27,7 +27,7 @@ GAMETYPE_TVSHOW = "tvshow"
 GAMETYPE_MUSIC = "music"
 
 
-class Game(object):
+class Game:
     def __init__(self, type, userId, interactive):
         self.type = type
         self.userId = userId

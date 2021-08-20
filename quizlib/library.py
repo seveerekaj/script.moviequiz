@@ -145,7 +145,7 @@ def buildOnlyWathcedFilter():
             }]
 
 
-class Query(object):
+class Query:
     def __init__(self, method, params, properties=None, resultKey=None, id=1):
         self.properties = properties
         self.params = params

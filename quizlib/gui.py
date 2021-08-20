@@ -27,6 +27,7 @@ import datetime
 
 import xbmc
 import xbmcgui
+import xbmcvfs
 
 from quizlib import game
 from quizlib import question
@@ -170,7 +171,7 @@ class MenuGui(xbmcgui.WindowXMLDialog):
 
         self.userId = -1
         self.statisticsLabel = None
-        self.localHighscore = highscore.LocalHighscoreDatabase(xbmc.translatePath(ADDON.getAddonInfo('profile')))
+        self.localHighscore = highscore.LocalHighscoreDatabase(xbmcvfs.translatePath(ADDON.getAddonInfo('profile')))
         self.globalHighscore = highscore.GlobalHighscoreDatabase(ADDON.getAddonInfo('version'))
         self.globalHighscorePage = 0
 
@@ -452,7 +453,7 @@ class MenuGui(xbmcgui.WindowXMLDialog):
             item.setProperty('id', '-1')
             items.append(item)
 
-            localHighscore = highscore.LocalHighscoreDatabase(xbmc.translatePath(ADDON.getAddonInfo('profile')))
+            localHighscore = highscore.LocalHighscoreDatabase(xbmcvfs.translatePath(ADDON.getAddonInfo('profile')))
             for user in localHighscore.getUsers():
                 item = xbmcgui.ListItem(user['nickname'])
                 item.setProperty('id', str(user['id']))
@@ -617,7 +618,7 @@ class MenuGui(xbmcgui.WindowXMLDialog):
                 elif item.getProperty('id') is not None:
                     self.userId = item.getProperty('id')
 
-                localHighscore = highscore.LocalHighscoreDatabase(xbmc.translatePath(ADDON.getAddonInfo('profile')))
+                localHighscore = highscore.LocalHighscoreDatabase(xbmcvfs.translatePath(ADDON.getAddonInfo('profile')))
                 nickname = localHighscore.getNickname(self.userId)
                 gamesPlayed = localHighscore.getGamesPlayed(self.userId)
                 self.getControl(MenuGui.C_MENU_GAMES_PLAYED_LOCAL).setLabel(str(gamesPlayed))
@@ -726,7 +727,7 @@ class MenuGui(xbmcgui.WindowXMLDialog):
             name = 'Unknown player'
 
         if name is not None:
-            localHighscore = highscore.LocalHighscoreDatabase(xbmc.translatePath(ADDON.getAddonInfo('profile')))
+            localHighscore = highscore.LocalHighscoreDatabase(xbmcvfs.translatePath(ADDON.getAddonInfo('profile')))
             userId = localHighscore.createUser(name)
             localHighscore.close()
 
@@ -1267,7 +1268,7 @@ class GameOverDialog(xbmcgui.WindowXMLDialog):
 
     def loadHighscores(self):
         # Local highscore
-        localHighscore = highscore.LocalHighscoreDatabase(xbmc.translatePath(ADDON.getAddonInfo('profile')))
+        localHighscore = highscore.LocalHighscoreDatabase(xbmcvfs.translatePath(ADDON.getAddonInfo('profile')))
         self.localHighscoreNewId = localHighscore.addHighscore(self.game)
         name = localHighscore.getNickname(self.game.getUserId())
 

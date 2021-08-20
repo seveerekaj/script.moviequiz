@@ -33,7 +33,7 @@ from quizlib.strings import *
 IMDB = imdb.Imdb()
 
 
-class Answer(object):
+class Answer:
     def __init__(self, id, text, image=None, sortWeight=None, correct=False):
         self.correct = correct
         self.id = id
@@ -48,7 +48,7 @@ class Answer(object):
         return "<Answer(id=%s, text=%s, correct=%s)>" % (self.id, self.text, self.correct)
 
 
-class Question(object):
+class Question:
     def __init__(self, displayType=None):
         """
         Base class for Questions
@@ -122,7 +122,7 @@ class Question(object):
 #
 
 
-class DisplayType(object):
+class DisplayType:
     pass
 
 

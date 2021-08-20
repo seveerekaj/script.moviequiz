@@ -1,3 +1,17 @@
+Jake's todo list:
+    maybe be able to switch between randomly choosing next question type vs. iterating over each question type enabled, then repeat.
+        With the random system, it seems like "what movie is this" doesn't come up as often as I would like
+    remove scoring stuff
+    remove named user stuff
+    maybe have new question that finds a random movie and grabs a single frame from that movie, and displays to the user.
+    test on windows, linux, rpi-libreelec, android?
+    restore integration with cinema experience?
+    set buggalo to my email?
+    make it so exiting is faster (get rid of background animation at exit)
+    add logger module for logging with level warning for testing, so I don't have to enable debug logging.
+    remove timed question round and limited number of questions round.
+
+
 TODOs and suggestions in no particular order
 
 - Button "in game" to disable the current question type

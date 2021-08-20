@@ -18,8 +18,7 @@
 #  http://www.gnu.org/copyleft/gpl.html
 #
 
-import os
-import xbmc
+import xbmcvfs
 import xbmcaddon
 import buggalo
 from quizlib.gui import QuizGui
@@ -29,16 +28,15 @@ from quizlib.gui import QuizGui
 #import pydevd
 #pydevd.settrace('localhost', port=5005, stdoutToServer=True, stderrToServer=True, suspend=False)
 
-if True:
-    buggalo.SUBMIT_URL = 'http://tommy.winther.nu/exception/submit.php'
-    try:
-        # Make sure data dir exists
-        ADDON = xbmcaddon.Addon()
-        if not os.path.exists(xbmc.translatePath(ADDON.getAddonInfo('profile'))):
-            os.makedirs(xbmc.translatePath(ADDON.getAddonInfo('profile')))
+buggalo.SUBMIT_URL = 'http://tommy.winther.nu/exception/submit.php'
+try:
+    # Make sure data dir exists
+    PROFILE = xbmcaddon.Addon().getAddonInfo('profile')
+    if not xbmcvfs.exists(PROFILE):
+        xbmcvfs.mkdirs(PROFILE)
 
-        w = QuizGui()
-        w.doModal()
-        del w
-    except Exception:
-        buggalo.onExceptionRaised()
+    w = QuizGui()
+    w.doModal()
+    del w
+except Exception:
+    buggalo.onExceptionRaised()

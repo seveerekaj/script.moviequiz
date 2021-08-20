@@ -30,7 +30,7 @@ import xbmc
 import sqlite3
 
 
-class GlobalHighscoreDatabase(object):
+class GlobalHighscoreDatabase:
     STATUS_OK = 'OK'
     SERVICE_URL = 'http://tommy.winther.nu/moviequiz/service.json.php'
 
@@ -145,7 +145,7 @@ class GlobalHighscoreDatabase(object):
     #         return {'status': 'error'}
 
 
-class LocalHighscoreDatabase(object):
+class LocalHighscoreDatabase:
     HIGHSCORE_DB = 'highscore.db'
 
     def __init__(self, path):

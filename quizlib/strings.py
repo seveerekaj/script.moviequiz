@@ -20,7 +20,7 @@
 
 import xbmcaddon
 
-ADDON = xbmcaddon.Addon(id = 'script.moviequiz')
+ADDON = xbmcaddon.Addon()
 
 CHOOSE_PLAYER = 30014
 CHOOSE_PLAYER_LINE_1 = 30016
