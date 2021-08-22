@@ -5,11 +5,19 @@ Jake's todo list:
     remove named user stuff
     maybe have new question that finds a random movie and grabs a single frame from that movie, and displays to the user.
     test on windows, linux, rpi-libreelec, android?
-    restore integration with cinema experience?
+    restore integration with cinema experience? -yes, cinama experience is dead and its replacement (cinema vision) has no existing integration with moviequiz.
     set buggalo to my email?
     make it so exiting is faster (get rid of background animation at exit)
     add logger module for logging with level warning for testing, so I don't have to enable debug logging.
     remove timed question round and limited number of questions round.
+    where is cinema vision getting their quotes, trivia from?
+    the game.Game class has member: interactive. This is passed True from all places that instantiate it.
+        (cinema experience integration used to possibly pass in False, but that integration is dead)
+    have name the movie be full screen
+    put length to play movie in settings
+    put min, max percent of movie to start from in settings
+    add settings shortcut to main menu screen
+    change hard-coded numbers to string constants
 
 
 TODOs and suggestions in no particular order

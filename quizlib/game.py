@@ -28,9 +28,8 @@ GAMETYPE_MUSIC = "music"
 
 
 class Game:
-    def __init__(self, type, userId, interactive):
+    def __init__(self, type, interactive):
         self.type = type
-        self.userId = userId
         self.interactive = interactive
         self.points = 0
         self.correctAnswers = 0
@@ -73,9 +72,6 @@ class Game:
     def getGameSubType(self):
         return -1
 
-    def getUserId(self):
-        return self.userId
-
     def isInteractive(self):
         return self.interactive
 
@@ -86,8 +82,8 @@ class Game:
 
 
 class UnlimitedGame(Game):
-    def __init__(self, type, userId, interactive):
-        super(UnlimitedGame, self).__init__(type, userId, interactive)
+    def __init__(self, type, interactive):
+        super().__init__(type, interactive)
 
     def isGameOver(self):
         return False
@@ -100,72 +96,3 @@ class UnlimitedGame(Game):
 
     def __eq__(self, other):
         return type(other) == UnlimitedGame and self.type == other.type
-
-
-class QuestionLimitedGame(Game):
-    def __init__(self, type, userId, interactive, questionLimit):
-        super(QuestionLimitedGame, self).__init__(type, userId, interactive)
-        self.questionLimit = questionLimit
-        self.questionCount = 0
-
-    def isGameOver(self):
-        self.questionCount += 1
-        return self.correctAnswers + self.wrongAnswers >= self.questionLimit
-
-    def getStatsString(self):
-        questionsLeft = self.questionLimit - self.questionCount
-        if not questionsLeft:
-            return strings(G_LAST_QUESTION)
-        else:
-            return strings(G_X_QUESTIONS_LEFT, questionsLeft)
-
-    def getGameType(self):
-        return 'question-limited'
-
-    def getGameSubType(self):
-        return str(self.questionLimit)
-
-    def reset(self):
-        super(QuestionLimitedGame, self).reset()
-        self.questionCount = 0
-
-    def __repr__(self):
-        return "<QuestionLimitedGame %s>" % str(self.questionLimit)
-
-    def __eq__(self, other):
-        return type(other) == QuestionLimitedGame and self.type == other.type and self.questionLimit == other.questionLimit
-
-
-class TimeLimitedGame(Game):
-    def __init__(self, type, userId, interactive, timeLimitMinutes):
-        super(TimeLimitedGame, self).__init__(type, userId, interactive)
-        self.startTime = datetime.datetime.now()
-        self.timeLimitMinutes = timeLimitMinutes
-
-    def isGameOver(self):
-        return self._minutesLeft() >= self.timeLimitMinutes
-
-    def getStatsString(self):
-        minutesLeft = self.timeLimitMinutes - self._minutesLeft()
-        return strings(G_X_MINUTES_LEFT, minutesLeft)
-
-    def _minutesLeft(self):
-        delta = datetime.datetime.now() - self.startTime
-        return delta.seconds / 60
-
-    def getGameType(self):
-        return 'time-limited'
-
-    def getGameSubType(self):
-        return str(self.timeLimitMinutes)
-
-    def reset(self):
-        super(TimeLimitedGame, self).reset()
-        self.startTime = datetime.datetime.now()
-
-    def __repr__(self):
-        return "<TimeLimitedGame %s>" % str(self.timeLimitMinutes)
-
-    def __eq__(self, other):
-        return type(other) == TimeLimitedGame and self.type == other.type and self.timeLimitMinutes == other.timeLimitMinutes
-

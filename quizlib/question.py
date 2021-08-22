@@ -185,7 +185,7 @@ class WhatMovieIsThisQuestion(MovieQuestion):
         What movie is this?
         """
         videoDisplayType = VideoDisplayType()
-        super(WhatMovieIsThisQuestion, self).__init__(videoDisplayType)
+        super().__init__(videoDisplayType)
 
         correctAnswer = library.getMovies(['title', 'set', 'genre', 'file', 'art']).withFilters(
             defaultFilters).limitTo(1).asItem()
@@ -231,7 +231,7 @@ class WhatActorIsThisQuestion(MovieQuestion):
         WhatActorIsThisQuestion
         """
         photoDisplayType = PhotoDisplayType()
-        super(WhatActorIsThisQuestion, self).__init__(photoDisplayType)
+        super().__init__(photoDisplayType)
 
         # Find a bunch of actors with thumbnails
         actors = list()
@@ -275,7 +275,7 @@ class ActorNotInMovieQuestion(MovieQuestion):
         Actor not in movie?
         """
         photoDisplayType = PhotoDisplayType()
-        super(ActorNotInMovieQuestion, self).__init__(photoDisplayType)
+        super().__init__(photoDisplayType)
 
         actors = list()
         for movie in library.getMovies(['cast']).withFilters(defaultFilters).limitTo(10).asList():
@@ -324,7 +324,7 @@ class WhatYearWasMovieReleasedQuestion(MovieQuestion):
         """
         WhatYearWasMovieReleasedQuestion
         """
-        super(WhatYearWasMovieReleasedQuestion, self).__init__()
+        super().__init__()
 
         movie = library.getMovies(['title', 'year', 'art']).withFilters(defaultFilters).fromYear(1900).limitTo(
             1).asItem()
@@ -365,7 +365,7 @@ class WhatTagLineBelongsToMovieQuestion(MovieQuestion):
         """
         WhatTagLineBelongsToMovieQuestion
         """
-        super(WhatTagLineBelongsToMovieQuestion, self).__init__()
+        super().__init__()
 
         movie = None
         items = library.getMovies(['title', 'tagline', 'art']).withFilters(defaultFilters).limitTo(10).asList()
@@ -404,7 +404,7 @@ class WhatStudioReleasedMovieQuestion(MovieQuestion):
         """
         WhatStudioReleasedMovieQuestion
         """
-        super(WhatStudioReleasedMovieQuestion, self).__init__()
+        super().__init__()
 
         movie = None
         items = library.getMovies(['title', 'studio', 'art']).withFilters(defaultFilters).limitTo(10).asList()
@@ -454,7 +454,7 @@ class WhoPlayedRoleInMovieQuestion(MovieQuestion):
         """
         WhoPlayedRoleInMovieQuestion
         """
-        super(WhoPlayedRoleInMovieQuestion, self).__init__()
+        super().__init__()
 
         movie = None
         items = library.getMovies(['title', 'cast', 'genre', 'art']).withFilters(defaultFilters).limitTo(10).asList()
@@ -505,7 +505,7 @@ class WhatMovieIsThisQuoteFrom(MovieQuestion):
         WhatQuoteIsThisFrom
         """
         quoteDisplayType = QuoteDisplayType()
-        super(WhatMovieIsThisQuoteFrom, self).__init__(quoteDisplayType)
+        super().__init__(quoteDisplayType)
 
         quoteText = None
         row = None
@@ -540,7 +540,7 @@ class WhatMovieIsNewestQuestion(MovieQuestion):
         """
         WhatMovieIsNewestQuestion
         """
-        super(WhatMovieIsNewestQuestion, self).__init__()
+        super().__init__()
 
         movie = library.getMovies(['title', 'year', 'art']).withFilters(defaultFilters).fromYear(1900).limitTo(
             1).asItem()
@@ -570,7 +570,7 @@ class WhoDirectedThisMovieQuestion(MovieQuestion):
         """
         WhoDirectedThisMovieQuestion
         """
-        super(WhoDirectedThisMovieQuestion, self).__init__()
+        super().__init__()
 
         movie = None
         items = library.getMovies(['title', 'director', 'art']).withFilters(defaultFilters).limitTo(10).asList()
@@ -620,7 +620,7 @@ class WhatMovieIsNotDirectedByQuestion(MovieQuestion):
         """
         WhatMovieIsNotDirectedByQuestion
         """
-        super(WhatMovieIsNotDirectedByQuestion, self).__init__()
+        super().__init__()
 
         # Find a bunch of directors
         directors = list()
@@ -668,7 +668,7 @@ class WhatActorIsInTheseMoviesQuestion(MovieQuestion):
         WhatActorIsInTheseMoviesQuestion
         """
         threePhotoDisplayType = ThreePhotoDisplayType()
-        super(WhatActorIsInTheseMoviesQuestion, self).__init__(threePhotoDisplayType)
+        super().__init__(threePhotoDisplayType)
 
         # Find a bunch of actors
         actors = list()
@@ -730,7 +730,7 @@ class WhatActorIsInMovieBesidesOtherActorQuestion(MovieQuestion):
         """
         WhatActorIsInMovieBesidesOtherActorQuestion
         """
-        super(WhatActorIsInMovieBesidesOtherActorQuestion, self).__init__()
+        super().__init__()
 
         # Find a bunch of movies
         items = library.getMovies(['title', 'cast', 'art']).withFilters(defaultFilters).limitTo(10).asList()
@@ -778,7 +778,7 @@ class WhatMovieHasTheLongestRuntimeQuestion(MovieQuestion):
         """
         WhatMovieHasTheLongestRuntimeQuestion
         """
-        super(WhatMovieHasTheLongestRuntimeQuestion, self).__init__()
+        super().__init__()
 
         # Find a bunch of movies
         items = library.getMovies(['title', 'runtime', 'art']).withFilters(defaultFilters).limitTo(10).asList()
@@ -818,7 +818,7 @@ class TVQuestion(Question):
 
         @type displayType: DisplayType
         """
-        super(TVQuestion, self).__init__(displayType)
+        super().__init__(displayType)
 
     def _get_season_title(self, season):
         if not int(season):
@@ -836,7 +836,7 @@ class WhatTVShowIsThisQuestion(TVQuestion):
         WhatTVShowIsThisQuestion
         """
         videoDisplayType = VideoDisplayType()
-        super(WhatTVShowIsThisQuestion, self).__init__(videoDisplayType)
+        super().__init__(videoDisplayType)
 
         show = library.getTVShows(['title', 'art']).withFilters(defaultFilters).limitTo(1).asItem()
         if not show:
@@ -868,7 +868,7 @@ class WhatSeasonIsThisQuestion(TVQuestion):
         WhatSeasonIsThisQuestion
         """
         videoDisplayType = VideoDisplayType()
-        super(WhatSeasonIsThisQuestion, self).__init__(videoDisplayType)
+        super().__init__(videoDisplayType)
 
         show = library.getTVShows(['title', 'art']).withFilters(defaultFilters).limitTo(1).asItem()
         if not show:
@@ -902,7 +902,7 @@ class WhatEpisodeIsThisQuestion(TVQuestion):
         WhatEpisodeIsThisQuestion
         """
         videoDisplayType = VideoDisplayType()
-        super(WhatEpisodeIsThisQuestion, self).__init__(videoDisplayType)
+        super().__init__(videoDisplayType)
 
         show = library.getTVShows(['title', 'art']).withFilters(defaultFilters).limitTo(1).asItem()
         if not show:
@@ -936,7 +936,7 @@ class WhenWasTVShowFirstAiredQuestion(TVQuestion):
         """
         WhenWasTVShowFirstAiredQuestion
         """
-        super(WhenWasTVShowFirstAiredQuestion, self).__init__()
+        super().__init__()
 
         show = library.getTVShows(['title', 'art']).withFilters(defaultFilters).limitTo(1).asItem()
         if not show:
@@ -988,7 +988,7 @@ class WhoPlayedRoleInTVShowQuestion(TVQuestion):
         """
         WhoPlayedRoleInTVShowQuestion
         """
-        super(WhoPlayedRoleInTVShowQuestion, self).__init__()
+        super().__init__()
 
         show = library.getTVShows(['title', 'genre', 'cast', 'art']).withFilters(defaultFilters).limitTo(1).asItem()
         if not show or len(show['cast']) < 4:
@@ -1030,7 +1030,7 @@ class WhatTVShowIsThisQuoteFrom(TVQuestion):
         WhatTVShowIsThisQuoteFrom
         """
         quoteDisplayType = QuoteDisplayType()
-        super(WhatTVShowIsThisQuoteFrom, self).__init__(quoteDisplayType)
+        super().__init__(quoteDisplayType)
 
         episode = library.getEpisodes(['showtitle', 'season', 'episode', 'art']).withFilters(defaultFilters).limitTo(
             1).asItem()
@@ -1061,7 +1061,7 @@ class WhatTVShowIsThisQuoteFrom(TVQuestion):
 class WhatTVShowIsThisThemeFromQuestion(TVQuestion):
     def __init__(self, defaultFilters):
         audioDisplayType = AudioDisplayType()
-        super(WhatTVShowIsThisThemeFromQuestion, self).__init__(audioDisplayType)
+        super().__init__(audioDisplayType)
 
         items = library.getTVShows(['title', 'file', 'art']).withFilters(defaultFilters).limitTo(4).asList()
         show = None
@@ -1101,7 +1101,7 @@ class MusicQuestion(Question):
 class WhatSongIsThisQuestion(MusicQuestion):
     def __init__(self, defaultFilters):
         audioDisplayType = AudioDisplayType()
-        super(WhatSongIsThisQuestion, self).__init__(audioDisplayType)
+        super().__init__(audioDisplayType)
 
         correctAnswer = library.getSongs(['title', 'artist', 'artistid', 'file', 'thumbnail']).withFilters(defaultFilters).limitTo(1).asItem()
         if not correctAnswer:
@@ -1130,7 +1130,7 @@ class WhatSongIsThisQuestion(MusicQuestion):
 class WhoMadeThisSongQuestion(MusicQuestion):
     def __init__(self, defaultFilters):
         audioDisplayType = AudioDisplayType()
-        super(WhoMadeThisSongQuestion, self).__init__(audioDisplayType)
+        super().__init__(audioDisplayType)
 
         correctAnswer = library.getArtists().withFilters(defaultFilters).limitTo(1).asItem()
         artist = library.getArtistDetails(correctAnswer['artistid'], ['thumbnail']).asItem()
@@ -1158,7 +1158,7 @@ class WhoMadeThisSongQuestion(MusicQuestion):
 class WhoMadeThisAlbumQuestion(MusicQuestion):
     def __init__(self, defaultFilters):
         photoDisplayType = PhotoDisplayType()
-        super(WhoMadeThisAlbumQuestion, self).__init__(photoDisplayType)
+        super().__init__(photoDisplayType)
 
         correctAnswer = library.getArtists().withFilters(defaultFilters).limitTo(1).asItem()
         artist = library.getArtistDetails(correctAnswer['artistid'], ['thumbnail']).asItem()
