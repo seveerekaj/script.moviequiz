@@ -9,54 +9,54 @@
     </coordinates>
     <controls>
         <control type="group" id="1">
-            <control type="image">
-                <posx>0</posx>
-                <posy>0</posy>
-                <width>1280</width>
-                <height>720</height>
-                <texture>quiz-filmstrip-background.jpg</texture>
-            </control>
+<!--            <control type="image">-->
+<!--                <posx>0</posx>-->
+<!--                <posy>0</posy>-->
+<!--                <width>1280</width>-->
+<!--                <height>720</height>-->
+<!--                <texture>quiz-filmstrip-background.jpg</texture>-->
+<!--            </control>-->
 
-            <control type="multiimage">
-                <posx>290</posx>
-                <posy>118</posy>
-                <width>701</width>
-                <height>486</height>
-                <visible>true</visible>
-                <imagepath>countdown</imagepath>
-                <timeperimage>100</timeperimage>
-                <fadetime>66</fadetime>
-                <pauseatend>0</pauseatend>
-                <randomize>false</randomize>
-                <loop>yes</loop>
-                <aspectratio>stretch</aspectratio>
-            </control>
+<!--            <control type="multiimage">-->
+<!--                <posx>290</posx>-->
+<!--                <posy>118</posy>-->
+<!--                <width>701</width>-->
+<!--                <height>486</height>-->
+<!--                <visible>true</visible>-->
+<!--                <imagepath>countdown</imagepath>-->
+<!--                <timeperimage>100</timeperimage>-->
+<!--                <fadetime>66</fadetime>-->
+<!--                <pauseatend>0</pauseatend>-->
+<!--                <randomize>false</randomize>-->
+<!--                <loop>yes</loop>-->
+<!--                <aspectratio>stretch</aspectratio>-->
+<!--            </control>-->
 
-            <control type="multiimage">
-                <posx>520</posx>
-                <posy>170</posy>
-                <width>209</width>
-                <height>335</height>
-                <visible>true</visible>
-                <imagepath>digits</imagepath>
-                <timeperimage>800</timeperimage>
-                <fadetime>200</fadetime>
-                <pauseatend>0</pauseatend>
-                <randomize>false</randomize>
-                <loop>yes</loop>
-                <aspectratio>stretch</aspectratio>
-            </control>
+<!--            <control type="multiimage">-->
+<!--                <posx>520</posx>-->
+<!--                <posy>170</posy>-->
+<!--                <width>209</width>-->
+<!--                <height>335</height>-->
+<!--                <visible>true</visible>-->
+<!--                <imagepath>digits</imagepath>-->
+<!--                <timeperimage>800</timeperimage>-->
+<!--                <fadetime>200</fadetime>-->
+<!--                <pauseatend>0</pauseatend>-->
+<!--                <randomize>false</randomize>-->
+<!--                <loop>yes</loop>-->
+<!--                <aspectratio>stretch</aspectratio>-->
+<!--            </control>-->
 
-            <control type="label">
-                <posx>0</posx>
-                <posy>520</posy>
-                <width>1280</width>
-                <height>40</height>
-                <align>center</align>
-                <label>$ADDON[script.moviequiz 30008]</label>
-                <textcolor>ff000000</textcolor>
-                <font>font30</font>
-            </control>
+<!--            <control type="label">-->
+<!--                <posx>0</posx>-->
+<!--                <posy>520</posy>-->
+<!--                <width>1280</width>-->
+<!--                <height>40</height>-->
+<!--                <align>center</align>-->
+<!--                <label>$ADDON[script.moviequiz 30008]</label>-->
+<!--                <textcolor>ff000000</textcolor>-->
+<!--                <font>font30</font>-->
+<!--            </control>-->
         </control>
 
 
@@ -85,9 +85,6 @@
             </control>
             <control type="label" id="5007">
                 <description>visibility marker for cover image</description>
-            </control>
-            <control type="label" id="5008">
-                <description>visibility marker for theme group</description>
             </control>
 
             <!-- Background -->
@@ -129,32 +126,30 @@
 
             <!-- video group -->
             <control type="group">
-                <posx>246</posx>
-                <posy>24</posy>
-                <width>788</width>
-                <height>452</height>
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1280</width>
+                <height>500</height>
                 <visible>!Control.IsVisible(5000)</visible>
-                <animation effect="slide" end="0,-500" time="1000">Hidden</animation>
-                <animation effect="slide" start="0,-500" time="1000" delay="1000">Visible</animation>
 
                 <control type="image">
                     <posx>0</posx>
                     <posy>0</posy>
-                    <width>788</width>
-                    <height>452</height>
+                    <width>1280</width>
+                    <height>500</height>
                     <texture>quiz-video-background.png</texture>
                 </control>
 
                 <control type="videowindow" id="2">
-                    <posx>15</posx>
-                    <posy>15</posy>
-                    <width>758</width>
-                    <height>422</height>
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>1070</width>
+                    <height>500</height>
                 </control>
 
                 <control type="label" id="4800">
                     <posx>0</posx>
-                    <posy>206</posy>
+                    <posy>0</posy>
                     <width>788</width>
                     <height>40</height>
                     <font>font30</font>
@@ -305,37 +300,6 @@
                 </control>
             </control>
 
-            <!-- theme group -->
-            <!--<control type="group">
-                <description>theme group</description>
-                <posx>0</posx>
-                <posy>0</posy>
-                <width>1280</width>
-                <height>720</height>
-                <visible>!Control.IsVisible(5008)</visible>
-                <animation effect="fade" start="100" end="0" time="1000">Hidden</animation>
-                <animation effect="fade" start="0" end="100" time="1000">Visible</animation>
-
-                <control type="image">
-                    <posx>0</posx>
-                    <posy>0</posy>
-                    <width>1280</width>
-                    <height>720</height>
-                    <texture>quiz-background-theme.jpg</texture>
-                </control>
-            </control>-->
-
-            <!--<control type="image">-->
-                <!--<description>Loading glasspane</description>-->
-                <!--<posx>0</posx>-->
-                <!--<posy>245</posy>-->
-                <!--<width>1280</width>-->
-                <!--<height>64</height>-->
-                <!--<texture>quiz-background-glass.png</texture>-->
-                <!--<visible>Control.IsVisible(5005)</visible>-->
-                <!--<animation effect="fade" start="0" end="100" time="500" delay="500">Visible</animation>-->
-                <!--<animation effect="fade" start="100" end="0" time="500">Hidden</animation>-->
-            <!--</control>-->
             <control type="progress" id="4020">
                 <description>Loading glasspane</description>
                 <posx>0</posx>
@@ -348,7 +312,6 @@
                 <righttexture />
                 <visible>Control.IsVisible(5005)</visible>
                 <animation effect="fade" start="0" end="100" time="500" delay="500">Visible</animation>
-                <animation effect="fade" start="100" end="0" time="500">Hidden</animation>
             </control>
             <control type="label">
                 <description>Loading text</description>
@@ -366,89 +329,28 @@
                     <effect type="fade" start="0" end="100" time="500" delay="500" />
                     <effect type="slide" start="-100,0" end="0,0" time="500" delay="500" />
                 </animation>
-                <animation type="Hidden" reversible="false">
-                    <effect type="fade" start="100" end="0" time="500"/>
-                    <effect type="slide" start="0,0" end="100,0" time="500" />
-                </animation>
             </control>
 
             <control type="group">
-                <description>score, etc.</description>
+                <description>replay/quit</description>
                 <posx>10</posx>
-                <posy>500</posy>
+                <posy>670</posy>
                 <width>230</width>
-                <height>210</height>
-                <animation type="Visible">
-                    <effect type="slide" start="-250,0" time="500" />
-                </animation>
+                <height>40</height>
 
                 <control type="image">
-                    <description>Glasspane for question and answers</description>
+                    <description>Glasspane for replay/quit</description>
                     <posx>0</posx>
                     <posy>0</posy>
                     <width>230</width>
-                    <height>210</height>
+                    <height>40</height>
                     <texture>quiz-background-glass.png</texture>
-                </control>
-
-                <control type="label" id="4100">
-                    <description>Score label</description>
-                    <posx>10</posx>
-                    <posy>10</posy>
-                    <width>150</width>
-                    <height>40</height>
-                    <label>$ADDON[script.moviequiz 30001]</label>
-                    <textcolor>ffffffff</textcolor>
-                    <font>font13</font>
-                </control>
-                <control type="label" id="4101">
-                    <description>Points</description>
-                    <posx>210</posx>
-                    <posy>10</posy>
-                    <width>100</width>
-                    <height>40</height>
-                    <label>0.0</label>
-                    <textcolor>ffffffff</textcolor>
-                    <font>font13</font>
-                    <align>right</align>
-                </control>
-
-                <control type="label" id="4102">
-                    <description>Question value label</description>
-                    <posx>10</posx>
-                    <posy>50</posy>
-                    <width>150</width>
-                    <height>40</height>
-                    <label>$ADDON[script.moviequiz 30002]</label>
-                    <textcolor>ffffffff</textcolor>
-                    <font>font13</font>
-                </control>
-                <control type="label" id="4103">
-                    <description>Question value</description>
-                    <posx>210</posx>
-                    <posy>50</posy>
-                    <width>50</width>
-                    <height>40</height>
-                    <label>10.0</label>
-                    <textcolor>ffffffff</textcolor>
-                    <font>font13</font>
-                    <align>right</align>
-                </control>
-
-                <control type="label" id="4104">
-                    <description>Game type information</description>
-                    <posx>10</posx>
-                    <posy>90</posy>
-                    <width>210</width>
-                    <height>40</height>
-                    <textcolor>ffffffff</textcolor>
-                    <font>font13</font>
                 </control>
 
                 <control type="button" id="4010">
                     <description>Replay video</description>
                     <posx>0</posx>
-                    <posy>170</posy>
+                    <posy>0</posy>
                     <width>115</width>
                     <height>40</height>
                     <textcolor>ffffffff</textcolor>
@@ -458,12 +360,12 @@
                     <label>$ADDON[script.moviequiz 30011]</label>
                     <align>center</align>
                     <onright>4011</onright>
-                    <enable>[!Control.IsVisible(5000) + !Control.IsVisible(4800)] | !Control.IsVisible(5008)</enable>
+                    <enable>!Control.IsVisible(5000) + !Control.IsVisible(4800)</enable>
                 </control>
                 <control type="button" id="4011">
                     <description>Exit quiz</description>
                     <posx>115</posx>
-                    <posy>170</posy>
+                    <posy>0</posy>
                     <width>115</width>
                     <height>40</height>
                     <textcolor>ffffffff</textcolor>
@@ -649,8 +551,6 @@
                 <aspectratio>keep</aspectratio>
                 <fadetime>500</fadetime>
                 <visible>!Control.IsVisible(5007)</visible>
-                <animation effect="slide" start="200,0" time="500">Visible</animation>
-                <animation effect="slide" end="200,0" time="500">Hidden</animation>
             </control>
 
         </control><!-- type="group" id="2" -->

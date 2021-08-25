@@ -26,73 +26,15 @@ GAMETYPE_MOVIE = "movie"
 GAMETYPE_TVSHOW = "tvshow"
 GAMETYPE_MUSIC = "music"
 
-
-class Game:
-    def __init__(self, type, interactive):
+class UnlimitedGame():
+    def __init__(self, type):
         self.type = type
-        self.interactive = interactive
-        self.points = 0
-        self.correctAnswers = 0
-        self.wrongAnswers = 0
-
-    def correctAnswer(self, points):
-        self.correctAnswers += 1
-        self.points += points
-
-    def wrongAnswer(self):
-        self.wrongAnswers += 1
-
-    def isGameOver(self):
-        raise
-
-    def getStatsString(self):
-        return ''
-
-    def getType(self):
-        return self.type
-
-    def setType(self, type):
-        self.type = type
-
-    def getPoints(self):
-        return self.points
-
-    def getTotalAnswers(self):
-        return self.correctAnswers + self.wrongAnswers
-
-    def getCorrectAnswers(self):
-        return self.correctAnswers
-
-    def getWrongAnswers(self):
-        return self.wrongAnswers
-
-    def getGameType(self):
-        raise
-
-    def getGameSubType(self):
-        return -1
-
-    def isInteractive(self):
-        return self.interactive
-
-    def reset(self):
-        self.points = 0
-        self.correctAnswers = 0
-        self.wrongAnswers = 0
-
-
-class UnlimitedGame(Game):
-    def __init__(self, type, interactive):
-        super().__init__(type, interactive)
-
-    def isGameOver(self):
-        return False
-
-    def getGameType(self):
-        return 'unlimited'
 
     def __repr__(self):
         return "<UnlimitedGame>"
 
     def __eq__(self, other):
         return type(other) == UnlimitedGame and self.type == other.type
+
+    def getType(self):
+        return self.type

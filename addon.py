@@ -23,12 +23,7 @@ import xbmcaddon
 import buggalo
 from quizlib.gui import QuizGui
 
-#import sys
-#sys.path.append('/opt/pycharm/pycharm-debug.egg')
-#import pydevd
-#pydevd.settrace('localhost', port=5005, stdoutToServer=True, stderrToServer=True, suspend=False)
-
-buggalo.SUBMIT_URL = 'http://tommy.winther.nu/exception/submit.php'
+buggalo.SUBMIT_URL = ''
 try:
     # Make sure data dir exists
     PROFILE = xbmcaddon.Addon().getAddonInfo('profile')

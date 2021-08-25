@@ -26,6 +26,7 @@ import zlib
 import time
 
 from quizlib.strings import *
+from quizlib import logger
 
 import xbmc
 import xbmcgui
@@ -58,14 +59,14 @@ class Imdb:
             f = open(self.quotesIndexPath)
             self.quotesIndex = f.read()
             f.close()
-            xbmc.log("Loaded %d MB quotes index in %d seconds" % (len(self.quotesIndex) / 1048576, (time.time() - startTime)))
+            logger.log("Loaded %d MB quotes index in %d seconds" % (len(self.quotesIndex) / 1048576, (time.time() - startTime)))
 
         if os.path.exists(self.actorsPath):
             startTime = time.time()
             f = open(self.actorsPath)
-            self.actorNames = f.read().decode('iso-8859-1').splitlines()
+            self.actorNames = bytes(f.read(), 'iso-8859-1').decode('utf-8').splitlines()
             f.close()
-            xbmc.log("Loaded %d actor names in %d seconds" % (len(self.actorNames), (time.time() - startTime)))
+            logger.log("Loaded %d actor names in %d seconds" % (len(self.actorNames), (time.time() - startTime)))
 
     def downloadFiles(self, downloadState):
         downloadState.idx += 1
@@ -93,7 +94,7 @@ class Imdb:
             #m = re.search('^%s$' % name, self.actorNames, re.MULTILINE)
             return name in self.actorNames
         else:
-            xbmc.log("%s does not exists, has it been downloaded yet?" % self.ACTORS_LIST)
+            logger.log("%s does not exists, has it been downloaded yet?" % self.ACTORS_LIST)
             return None
 
 
@@ -155,7 +156,7 @@ class Imdb:
         @type progressCallback: method
         """
         response = urlopen(url, timeout=30)
-        file = open(destination, 'wb')
+        file = open(destination, 'w')
         decompressor = zlib.decompressobj(16+zlib.MAX_WBITS)
 
         partialLine = None
@@ -175,7 +176,7 @@ class Imdb:
 
                 lines = decompressedChunk.splitlines(True)
                 processedChunk = ''
-                
+
                 for line in lines:
                     if line[-1:] == '\n': # We have a complete line
                         processedLine = postprocessLineCallback(line)
@@ -231,13 +232,7 @@ class Imdb:
         # remove first line and split on double new lines
         return quotes[quotes.find('\n')+1:-2].split('\n\n')
 
-if __name__ == '__main__':
-    # this script is invoked from addon settings
-
-    # Make sure data dir exists
-    if not xbmcvfs.exists(ADDON.getAddonInfo('profile')):
-        xbmcvfs.mkdirs(ADDON.getAddonInfo('profile'))
-
+def downloadData():
     class DownloadState:
         def __init__(self, count):
             self.idx = 0
@@ -246,7 +241,7 @@ if __name__ == '__main__':
         def progress(self, received, size, percentage):
             line1 = strings(S_FILE_X_OF_Y) % (self.idx, self.count)
             line2 = strings(S_RETRIEVED_X_OF_Y_MB) % (received / 1048576, size / 1048576)
-            d.update(percentage, line1, line2)
+            d.update(percentage, line1 + "\n" + line2)
             return not d.iscanceled()
 
     i = Imdb()
@@ -265,5 +260,4 @@ if __name__ == '__main__':
     except Exception as ex:
         d.close()
         del d
-
         xbmcgui.Dialog().ok(strings(S_DOWNLOADING_IMDB_DATA), str(ex))

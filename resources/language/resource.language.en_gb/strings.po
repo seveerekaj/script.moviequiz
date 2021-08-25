@@ -715,10 +715,6 @@ msgstr ""
 #empty strings from id 30709 to 30799
 #About strings
 
-msgctxt "#30800"
-msgid "Highscores"
-msgstr ""
-
 msgctxt "#30801"
 msgid "About"
 msgstr ""
@@ -728,58 +724,23 @@ msgid "Changelog"
 msgstr ""
 
 msgctxt "#30803"
-msgid "Statistics"
+msgid "Minimum start %"
 msgstr ""
 
-#empty strings from id 30804 to 30809
-
-msgctxt "#30810"
-msgid "Movie Quiz"
+msgctxt "#30804"
+msgid "Maximum start %"
 msgstr ""
 
-msgctxt "#30811"
-msgid "TV Show Quiz"
+msgctxt "#30805"
+msgid "Duration"
 msgstr ""
 
-msgctxt "#30812"
-msgid "[B]Nickname[/B]"
+msgctxt "#30806"
+msgid "Settings"
 msgstr ""
 
-msgctxt "#30813"
-msgid "[B]Score[/B]"
-msgstr ""
 
-msgctxt "#30814"
-msgid "[B]Date[/B]"
-msgstr ""
-
-msgctxt "#30815"
-msgid "Choose type"
-msgstr ""
-
-msgctxt "#30816"
-msgid "See complete global highscores at http://tommy.winther.nu/moviequiz/"
-msgstr ""
-
-msgctxt "#30817"
-msgid "Music Quiz"
-msgstr ""
-
-#empty strings from id 30817 to 30819
-
-msgctxt "#30820"
-msgid "Statistics based on global highscores data collected since September 2011.[CR][CR][B]%s[/B] unique users in [B]%s[/B] countries has submitted [B]%s[/B] highscores.[CR]A total of [B]%s[/B] questions has been answered with [B]%s[/B] being correct, which is [B]%s[/B] percent."
-msgstr ""
-
-msgctxt "#30821"
-msgid "[B]Top countries[/B]"
-msgstr ""
-
-msgctxt "#30822"
-msgid "[B]Top players[/B]"
-msgstr ""
-
-#empty strings from id 30823 to 39997
+#empty strings from id 30804 to 39997
 
 msgctxt "#39998"
 msgid "Developed by Tommy Winther"

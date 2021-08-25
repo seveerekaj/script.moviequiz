@@ -33,6 +33,8 @@ from quizlib import game
 from quizlib import question
 from quizlib import player
 from quizlib import library
+from quizlib import imdb
+from quizlib import logger
 
 import buggalo
 
@@ -88,6 +90,8 @@ class MenuGui(xbmcgui.WindowXMLDialog):
     STATE_TV_QUIZ = 3
     STATE_MUSIC_QUIZ = 11
     STATE_ABOUT = 5
+    STATE_DOWNLOAD_IMDB = 6
+    STATE_OPEN_SETTINGS = 7
     STATE_EXIT = 99
 
     def __new__(cls, quizGui):
@@ -150,9 +154,9 @@ class MenuGui(xbmcgui.WindowXMLDialog):
             xbmcgui.Dialog().ok(strings(E_WARNING), strings(E_ALL_MOVIE_QUESTIONS_DISABLED) +
                                 strings(E_QUIZ_TYPE_NOT_AVAILABLE))
 
-        if not question.isAnyTVShowQuestionsEnabled():
-            xbmcgui.Dialog().ok(strings(E_WARNING), strings(E_ALL_TVSHOW_QUESTIONS_DISABLED) +
-                                strings(E_QUIZ_TYPE_NOT_AVAILABLE))
+        # if not question.isAnyTVShowQuestionsEnabled():
+        #     xbmcgui.Dialog().ok(strings(E_WARNING), strings(E_ALL_TVSHOW_QUESTIONS_DISABLED) +
+        #                         strings(E_QUIZ_TYPE_NOT_AVAILABLE))
 
         self.updateMenu()
         self.getControl(MenuGui.C_MENU_VISIBILITY).setVisible(False)
@@ -183,37 +187,38 @@ class MenuGui(xbmcgui.WindowXMLDialog):
 
         #elif action.getId() ==
 
+    def _buildMenuItemsList(self, itemsToAdd):
+        items = []
+        for stringID, state in itemsToAdd:
+            item = xbmcgui.ListItem(strings(stringID))
+            item.setProperty('state', str(state))
+            items.append(item)
+        return items
+
     def updateMenu(self):
         listControl = self.getControl(MenuGui.C_MENU_LIST)
         listControl.reset()
-        items = []
         if self.state == MenuGui.STATE_MAIN:
-            if self.moviesEnabled:
-                item = xbmcgui.ListItem(strings(30100))
-                item.setProperty('state', str(MenuGui.STATE_MOVIE_QUIZ))
-                items.append(item)
-            if self.tvShowsEnabled:
-                item = xbmcgui.ListItem(strings(30101))
-                item.setProperty('state', str(MenuGui.STATE_TV_QUIZ))
-                items.append(item)
+            items = [
+                (30801, MenuGui.STATE_ABOUT),
+                (30519, MenuGui.STATE_DOWNLOAD_IMDB),
+                (30806, MenuGui.STATE_OPEN_SETTINGS),
+                (30103, MenuGui.STATE_EXIT)
+            ]
             if self.musicEnabled:
-                item = xbmcgui.ListItem(strings(30106))
-                item.setProperty('state', str(MenuGui.STATE_MUSIC_QUIZ))
-                items.append(item)
-
-            item = xbmcgui.ListItem(strings(30801))
-            item.setProperty('state', str(MenuGui.STATE_ABOUT))
-            items.append(item)
-            item = xbmcgui.ListItem(strings(30103))
-            item.setProperty('state', str(MenuGui.STATE_EXIT))
-            items.append(item)
-
+                items.insert(0, (30106, MenuGui.STATE_MUSIC_QUIZ))
+            if self.tvShowsEnabled:
+                items.insert(0, (30101, MenuGui.STATE_TV_QUIZ))
+            if self.moviesEnabled:
+                items.insert(0, (30100, MenuGui.STATE_MOVIE_QUIZ))
         elif self.state == MenuGui.STATE_ABOUT:
-            items.append(xbmcgui.ListItem(strings(30801)))
-            items.append(xbmcgui.ListItem(strings(30802)))
-            items.append(xbmcgui.ListItem(strings(M_GO_BACK)))
+            items = [
+                (30801, None),
+                (30802, None),
+                (M_GO_BACK, None),
+            ]
 
-        listControl.addItems(items)
+        listControl.addItems(self._buildMenuItemsList(items))
         self.setFocus(listControl)
 
     @buggalo.buggalo_try_except()
@@ -231,7 +236,7 @@ class MenuGui(xbmcgui.WindowXMLDialog):
                 self.state = int(item.getProperty('state'))
 
                 if self.state == MenuGui.STATE_MOVIE_QUIZ:
-                    gameInstance = game.UnlimitedGame(game.GAMETYPE_MOVIE, interactive=True)
+                    gameInstance = game.UnlimitedGame(game.GAMETYPE_MOVIE)
                     self.close()
                     self.quizGui.newGame(gameInstance)
                     return
@@ -240,6 +245,13 @@ class MenuGui(xbmcgui.WindowXMLDialog):
                     self.getControl(MenuGui.C_MENU_ABOUT_TEXT).setText(f.read())
                     f.close()
                     self.getControl(MenuGui.C_MENU_ABOUT_VISIBILITY).setVisible(False)
+                elif self.state == MenuGui.STATE_DOWNLOAD_IMDB:
+                    imdb.downloadData()
+                    self.state = MenuGui.STATE_MAIN
+                elif self.state == MenuGui.STATE_OPEN_SETTINGS:
+                    ADDON.openSettings()
+                    self.quizGui.onSettingsChanged()
+                    self.state = MenuGui.STATE_MAIN
                 elif self.state == MenuGui.STATE_EXIT:
                     self.quizGui.close()
                     self.close()
@@ -278,9 +290,6 @@ class QuizGui(xbmcgui.WindowXML):
     C_MAIN_REPLAY = 4010
     C_MAIN_EXIT = 4011
     C_MAIN_LOADING = 4020
-    C_MAIN_CORRECT_SCORE = 4101
-    C_MAIN_INCORRECT_SCORE = 4103
-    C_MAIN_QUESTION_COUNT = 4104
     C_MAIN_COVER_IMAGE = 4200
     C_MAIN_QUESTION_LABEL = 4300
     C_MAIN_PHOTO = 4400
@@ -298,7 +307,6 @@ class QuizGui(xbmcgui.WindowXML):
     C_MAIN_PHOTO_VISIBILITY = 5001
     C_MAIN_QUOTE_VISIBILITY = 5004
     C_MAIN_THREE_PHOTOS_VISIBILITY = 5006
-    C_MAIN_THEME_VISIBILITY = 5008
     C_MAIN_CORRECT_VISIBILITY = 5002
     C_MAIN_INCORRECT_VISIBILITY = 5003
     C_MAIN_LOADING_VISIBILITY = 5005
@@ -309,41 +317,42 @@ class QuizGui(xbmcgui.WindowXML):
     STATE_PLAYING = 3
     STATE_GAME_OVER = 4
 
-    def __new__(cls, gameInstance = None):
+    def __new__(cls):
         return super().__new__(cls, 'script-moviequiz-main.xml', ADDON.getAddonInfo('path'))
 
-    def __init__(self, gameInstance = None):
+    def __init__(self):
         super().__init__()
-
-        self.gameInstance = gameInstance
-
-        self.player = player.TenSecondPlayer()
+        self.gameInstance = None
+        self.player = None
         self.questionCandidates = []
         self.defaultLibraryFilters = []
-
-        self.questionPointsThread = None
-        self.questionPoints = 0
         self.question = None
         self.previousQuestions = []
         self.lastClickTime = -1
         self.delayedNewQuestionTimer = None
-
         self.uiState = self.STATE_SPLASH
+        self.onSettingsChanged()
+
+    def onSettingsChanged(self):
+        # minPercent = int(ADDON.getSetting('question.whatmovieisthis.min_percent'))
+        minPercent = ADDON.getSettingInt('question.whatmovieisthis.min_percent')
+        maxPercent = ADDON.getSettingInt('question.whatmovieisthis.max_percent')
+        duration = ADDON.getSettingInt('question.whatmovieisthis.duration')
+        logger.log(f"setting new player with min:{minPercent} max:{maxPercent}, duration:{duration}")
+        if self.player is not None:
+            self.player.stopPlayback(True)
+            del self.player
+        self.player = player.TimeLimitedPlayer(min(minPercent, maxPercent), max(minPercent, maxPercent), duration)
 
     @buggalo.buggalo_try_except()
     def onInit(self):
         self.getControl(2).setVisible(False)
-
         startTime = datetime.datetime.now()
         question.IMDB.loadData()
         delta = datetime.datetime.now() - startTime
-        if delta.seconds < 2:
-            xbmc.sleep(1000 * (2 - delta.seconds))
-
-        if self.gameInstance:
-            self.newGame(self.gameInstance)
-        else:
-            self.showMenuDialog()
+        # if delta.seconds < 2:
+        #     xbmc.sleep(1000 * (2 - delta.seconds))
+        self.showMenuDialog()
 
     def showMenuDialog(self):
         menuGui = MenuGui(self)
@@ -355,9 +364,7 @@ class QuizGui(xbmcgui.WindowXML):
         self.getControl(2).setVisible(True)
 
         self.gameInstance = gameInstance
-        self.gameInstance.reset()
-
-        xbmc.log("Starting game: %s" % str(self.gameInstance))
+        logger.log("Starting game: %s" % str(self.gameInstance))
 
         if self.gameInstance.getType() == game.GAMETYPE_TVSHOW:
             self.defaultBackground = BACKGROUND_TV
@@ -380,8 +387,6 @@ class QuizGui(xbmcgui.WindowXML):
 
         self.questionCandidates = question.getEnabledQuestionCandidates(self.gameInstance)
 
-        self.questionPointsThread = None
-        self.questionPoints = 0
         self.question = None
         self.previousQuestions = []
         self.uiState = self.STATE_LOADING
@@ -423,11 +428,9 @@ class QuizGui(xbmcgui.WindowXML):
         difference = time.time() - self.lastClickTime
         self.lastClickTime = time.time()
         if difference < 0.7:
-            xbmc.log("Ignoring key-repeat onClick")
+            logger.log("Ignoring key-repeat onClick")
             return
 
-        if not self.gameInstance.isInteractive():
-            return  # ignore
         elif controlId == self.C_MAIN_EXIT:
             self.onGameOver()
         elif self.uiState == self.STATE_LOADING:
@@ -452,23 +455,11 @@ class QuizGui(xbmcgui.WindowXML):
 
         if self.player.isPlaying():
             self.player.stopPlayback(True)
-
-        if self.questionPointsThread is not None:
-            self.questionPointsThread.cancel()
-
-        if self.gameInstance.isInteractive():
-            self.showMenuDialog()
-        else:
-            self.close()
+        self.showMenuDialog()
 
     @buggalo.buggalo_try_except()
     def onNewQuestion(self):
-        if self.gameInstance.isGameOver():
-            self.onGameOver()
-            return
-
         self.delayedNewQuestionTimer = None
-        self.onStatsChanged()
         self.uiState = self.STATE_LOADING
         self.getControl(self.C_MAIN_LOADING_VISIBILITY).setVisible(True)
         self.question = self._getNewQuestion()
@@ -486,10 +477,6 @@ class QuizGui(xbmcgui.WindowXML):
             else:
                 button.setLabel(answers[idx].text, textColor='0xFFFFFFFF')
                 button.setVisible(True)
-
-            if not self.gameInstance.isInteractive() and answers[idx].correct:
-                # highlight correct answer
-                self.setFocusId(self.C_MAIN_FIRST_ANSWER + idx)
 
         self.onThumbChanged()
 
@@ -529,15 +516,8 @@ class QuizGui(xbmcgui.WindowXML):
 
         self.onVisibilityChanged(displayType)
 
-        if not self.gameInstance.isInteractive():
-            # answers correctly in ten seconds
-            threading.Timer(10.0, self._answer_correctly).start()
-
         self.uiState = self.STATE_PLAYING
         self.getControl(self.C_MAIN_LOADING_VISIBILITY).setVisible(False)
-
-        self.questionPoints = None
-        self.onQuestionPointTimer()
 
     def _getNewQuestion(self):
         retries = 0
@@ -554,9 +534,10 @@ class QuizGui(xbmcgui.WindowXML):
                     q = candidate(self.defaultLibraryFilters)
                     break
                 except question.QuestionException as ex:
-                    print("QuestionException: %s" % str(ex))
+                    pass
+                    # print("QuestionException: %s" % str(ex))
                 except Exception as ex:
-                    xbmc.log("%s in %s" % (ex.__class__.__name__, candidate.__name__))
+                    logger.log("%s in %s" % (ex.__class__.__name__, candidate.__name__))
                     import traceback
                     import sys
 
@@ -565,63 +546,25 @@ class QuizGui(xbmcgui.WindowXML):
             if q is None or len(q.getAnswers()) < 3:
                 continue
 
-            print(type(q))
+            # print(type(q))
             if not q.getUniqueIdentifier() in self.previousQuestions:
                 self.previousQuestions.append(q.getUniqueIdentifier())
                 break
 
         return q
 
-    @buggalo.buggalo_try_except()
-    def onQuestionPointTimer(self):
-        """
-        onQuestionPointTimer handles the decreasing amount of points awarded to the user when a question is
-        answered correctly.
-
-        The points start a 100 and is decreasing exponentially slower to make it more difficult to get a higher score.
-        When the points reach 10 the decreasing ends, making 10 the lowest score you can get.
-
-        Before the timer starts the user gets a three second head start - this is to actually make it possible to get a
-        perfect 100 score.
-        """
-        if self.questionPointsThread is not None:
-            self.questionPointsThread.cancel()
-
-        if self.questionPoints is None:
-            self.questionPoints = 100
-        else:
-            self.questionPoints -= 1
-
-        self.getControl(4103).setLabel(str(self.questionPoints / 10.0))
-        if self.questionPoints == 100:
-            # three second head start
-            self.questionPointsThread = threading.Timer(3, self.onQuestionPointTimer)
-            self.questionPointsThread.start()
-        elif self.questionPoints > 10:
-            seconds = (100 - self.questionPoints) / 100.0
-            self.questionPointsThread = threading.Timer(seconds, self.onQuestionPointTimer)
-            self.questionPointsThread.start()
-
-    def _answer_correctly(self):
-        answer = self.question.getCorrectAnswer()
-        self.onQuestionAnswered(answer)
-
     def onQuestionAnswered(self, answer):
         """
         @param answer: the chosen answer by the user
         @type answer: Answer
         """
-        xbmc.log("onQuestionAnswered(..)")
-        if self.questionPointsThread is not None:
-            self.questionPointsThread.cancel()
+        logger.log("onQuestionAnswered(..)")
 
         if answer is not None and answer.correct:
             xbmc.playSFX(AUDIO_CORRECT)
-            self.gameInstance.correctAnswer(self.questionPoints / 10.0)
             self.getControl(self.C_MAIN_CORRECT_VISIBILITY).setVisible(False)
         else:
             xbmc.playSFX(AUDIO_WRONG)
-            self.gameInstance.wrongAnswer()
             self.getControl(self.C_MAIN_INCORRECT_VISIBILITY).setVisible(False)
 
         if self.player.isPlaying():
@@ -642,17 +585,11 @@ class QuizGui(xbmcgui.WindowXML):
                 self.getControl(self.C_MAIN_QUOTE_LABEL).setText(self.question.getDisplayType().getQuoteText())
 
             if self.uiState != self.STATE_GAME_OVER:
-                self.delayedNewQuestionTimer = threading.Timer(3.0, self.onNewQuestion)
+                self.delayedNewQuestionTimer = threading.Timer(2, self.onNewQuestion)
                 self.delayedNewQuestionTimer.start()
 
         else:
             self.onNewQuestion()
-
-    def onStatsChanged(self):
-        self.getControl(self.C_MAIN_CORRECT_SCORE).setLabel(str(self.gameInstance.getPoints()))
-
-        label = self.getControl(self.C_MAIN_QUESTION_COUNT)
-        label.setLabel(self.gameInstance.getStatsString())
 
     def onThumbChanged(self, controlId=None):
         if self.question is None:
@@ -693,7 +630,6 @@ class QuizGui(xbmcgui.WindowXML):
         self.getControl(self.C_MAIN_PHOTO_VISIBILITY).setVisible(not isinstance(displayType, question.PhotoDisplayType))
         self.getControl(self.C_MAIN_QUOTE_VISIBILITY).setVisible(not isinstance(displayType, question.QuoteDisplayType))
         self.getControl(self.C_MAIN_THREE_PHOTOS_VISIBILITY).setVisible(not isinstance(displayType, question.ThreePhotoDisplayType))
-        self.getControl(self.C_MAIN_THEME_VISIBILITY).setVisible(not isinstance(displayType, question.AudioDisplayType))
 
     def _obfuscateQuote(self, quote):
         names = list()

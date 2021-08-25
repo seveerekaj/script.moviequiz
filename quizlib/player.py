@@ -27,69 +27,52 @@ import xbmc
 import xbmcvfs
 import xbmcgui
 
+from quizlib import logger
 
-class TenSecondPlayer(xbmc.Player):
-    """TenSecondPlayer is a subclass of xbmc.Player that stops playback after about ten seconds."""
 
-    def __init__(self):
-        """
-        Creates and instance of TenSecondPlayer.
-        """
-        xbmc.Player.__init__(self)
-        xbmc.log(">> TenSecondPlayer.__init__()")
-        self.tenSecondTimer = None
+class TimeLimitedPlayer(xbmc.Player):
+    """TimeLimitedPlayer is a subclass of xbmc.Player that stops playback after a limited amount of time"""
 
+    def __init__(self, minPercent, maxPercent, duration):
+        super().__init__()
+        logger.log(">> TimeLimitedPlayer.__init__()")
+        self.minPercent = minPercent
+        self.maxPercent = maxPercent
+        self.duration = duration
+        self.eventTimer = None
         self.startingPlayback = False
-
         self.lastItem = None
         self.lastStartPercentage = None
-
         self.playBackEventReceived = False
-        self.isAudioFile = False
 
     def replay(self):
-        xbmc.log(">> TenSecondPlayer.replay()")
+        logger.log(">> TimeLimitedPlayer.replay()")
         if self.lastItem is not None:
             self.playWindowed(self.lastItem, replay=True)
 
     def stopPlayback(self, force=False):
         """
-        Cancels the Timer in case it's active and stars a new Timer for a delayed stop.
-        This method doesn't actually stop playback, this is handled by _delayedStop().
+        Cancels the Timer in case it's active and starts a new Timer for a delayed stop.
         """
-        xbmc.log(">> TenSecondPlayer.stop()")
+        logger.log(">> TimeLimitedPlayer.stop()")
         if force:
             self.startingPlayback = False
-            # call xbmc.Player.stop() in a seperate thread to attempt to avoid xbmc lockups/crashes
-        #threading.Timer(0.5, self._delayedStop).start()
 
         if not self.startingPlayback and self.isPlaying():
             xbmc.Player.stop(self)
-        if self.tenSecondTimer is not None:
-            self.tenSecondTimer.cancel()
-        xbmc.log(">> TenSecondPlayer.stop() - end")
-
-    def _delayedStop(self):
-        """
-        Stops playback by calling xbmc.Player.stop()
-
-        This is done in a seperate thread to attempt to avoid xbmc lockups/crashes
-        """
-        xbmc.log(">> TenSecondPlayer.delayedStop()")
-
-        if not self.startingPlayback and self.isPlaying():
-            xbmc.Player.stop(self)
-        xbmc.log(">> TenSecondPlayer.delayedStop() - end")
+        if self.eventTimer is not None:
+            self.eventTimer.cancel()
+        logger.log(">> TimeLimitedPlayer.stop() - end")
 
     def playWindowed(self, item, replay=False):
         """
-        Starts playback by calling xbmc.Player.play(windowed = True).
+        Starts playback by calling xbmc.Player.play(windowed=True).
         """
-        xbmc.log(">> TenSecondPlayer.playWindowed()")
+        logger.log(">> TimeLimitedPlayer.playWindowed()")
         self.startingPlayback = True
 
         if not xbmcvfs.exists(item):
-            xbmc.log(">> TenSecondPlayer - file not found")  #: %s" % file.encode('utf-8', 'ignore'))
+            logger.log(">> TimeLimitedPlayer - file not found")
             return False
 
         self.lastItem = item
@@ -97,9 +80,9 @@ class TenSecondPlayer(xbmc.Player):
         if not replay:
             self.lastStartPercentage = None
 
-        if self.tenSecondTimer is not None:
+        if self.eventTimer is not None:
             #self.stop()
-            self.tenSecondTimer.cancel()
+            self.eventTimer.cancel()
 
         if item[-4:].lower() == '.ifo':
             item = self._getRandomDvdVob(item)
@@ -107,20 +90,17 @@ class TenSecondPlayer(xbmc.Player):
             pass
             #todo file = self._getRandomDvdVob(file)
 
-        #xbmc.log(">> TenSecondPlayer.playWindowed() - about to play file %s" % file.encode('utf-8', 'ignore'))
-
-        self.isAudioFile = False
-        self.playBackEventReceived = False
-
         if self.lastStartPercentage is None:
-            self.lastStartPercentage = random.randint(10, 80)
+            self.lastStartPercentage = random.randint(self.minPercent, self.maxPercent)
 
-        xbmc.log(">> Playback from %d%% for 10 seconds" % self.lastStartPercentage)
+        logger.log(f">> Playback from {self.lastStartPercentage}% for {self.duration} seconds")
 
         listItem = xbmcgui.ListItem(path=item)
         listItem.setProperty("StartPercent", str(self.lastStartPercentage))
         # (Ab)use the original_listitem_url to avoid saving/overwriting a bookmark in the file
         listItem.setProperty("original_listitem_url", "plugin://script.moviequiz/dummy-savestate")
+
+        self.playBackEventReceived = False
         self.play(item=item, listitem=listItem, windowed=True)
 
         retries = 0
@@ -128,36 +108,10 @@ class TenSecondPlayer(xbmc.Player):
             xbmc.sleep(250)  # keep sleeping to get onPlayBackStarted() event
             retries += 1
 
-        xbmc.log(">> TenSecondPlayer.playWindowed() - end")
+        logger.log(">> TimeLimitedPlayer.playWindowed() - end")
         return True
 
-    def playAudio(self, item):
-        xbmc.log(">> TenSecondPlayer.playWindowed()")
-        self.startingPlayback = True
-
-        if not xbmcvfs.exists(item):
-            xbmc.log(">> TenSecondPlayer - file not found")
-            return False
-
-        #xbmc.log(">> TenSecondPlayer.playWindowed() - about to play file %s" % file)
-
-        self.bookmark = None
-        self.isAudioFile = True
-        self.playBackEventReceived = False
-
-        listItem = xbmcgui.ListItem(path=item)
-        # (Ab)use the original_listitem_url to avoid saving/overwriting a bookmark in the file
-        listItem.setProperty("original_listitem_url", "plugin://script.moviequiz/dummy-savestate")
-        self.play(item=item, listitem=listItem, windowed=True)
-
-        retries = 0
-        while not self.playBackEventReceived and retries < 20:
-            xbmc.sleep(250)  # keep sleeping to get onPlayBackStarted() event
-            retries += 1
-
     def _getRandomDvdVob(self, ifoFile):
-        #xbmc.log(">> TenSecondPlayer._getRandomDvdVob() - ifoFile = %s" % ifoFile)
-
         if not os.path.exists(ifoFile):
             return ifoFile
 
@@ -169,46 +123,39 @@ class TenSecondPlayer(xbmc.Player):
 
         random.shuffle(files)
         file = os.path.join(path, files[0])
-        #xbmc.log(">> TenSecondPlayer._getRandomDvdVob() - file = %s" % file)
         return file
 
-    def onTenSecondsPassed(self):
+    def onTimerComplete(self):
         """
-        Invoked when the player has played for about ten seconds.
-        
+        Invoked when the player has played for the set amount of time.
         The playback is stopped by calling xbmc.Player.stop()
         """
-        xbmc.log(">> TenSecondPlayer.onTenSecondsPassed()")
+        logger.log(">> TimeLimitedPlayer.onTimerComplete()")
         if self.startingPlayback:
             return
-
         if self.isPlaying():
             self.stopPlayback()
-
         retries = 0
-        while self.isPlaying() and retries < 20 and not self.startingPlayback:
+        self.playBackEventReceived = False
+        while self.isPlaying() and retries < 20 and not self.playBackEventReceived:
             xbmc.sleep(250)  # keep sleeping to get onPlayBackStopped() event
             retries += 1
 
-    def onPlayBackStarted(self):
-        xbmc.log(">> TenSecondPlayer.onPlayBackStarted()")
+    def onAVStarted(self):
+        logger.log(">> TimeLimitedPlayer.onPlayBackStarted()")
         self.playBackEventReceived = True
 
-        if self.isAudioFile:
-            self.startingPlayback = False
-            return
-
-        if self.tenSecondTimer is not None:
-            self.tenSecondTimer.cancel()
-        self.tenSecondTimer = threading.Timer(10.0, self.onTenSecondsPassed)
-        self.tenSecondTimer.start()
+        if self.eventTimer is not None:
+            self.eventTimer.cancel()
+        logger.log(f"IMPORTANT setting timer for {self.duration} seconds")
+        self.eventTimer = threading.Timer(self.duration, self.onTimerComplete)
+        self.eventTimer.start()
 
         self.startingPlayback = False
-        xbmc.log(">> TenSecondPlayer.onPlayBackStarted() - end")
+        logger.log(">> TimeLimitedPlayer.onPlayBackStarted() - end")
 
     def onPlayBackStopped(self):
-        xbmc.log(">> TenSecondPlayer.onPlayBackStopped()")
+        logger.log(">> TimeLimitedPlayer.onPlayBackStopped()")
         self.playBackEventReceived = True
-
-        if self.tenSecondTimer is not None:
-            self.tenSecondTimer.cancel()
+        if self.eventTimer is not None:
+            self.eventTimer.cancel()
