@@ -17,28 +17,23 @@
 #  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 #
-import random
-
-import threading
-import os
-import re
-import time
 import datetime
-
-import xbmc
-import xbmcgui
-import xbmcvfs
-
-from quizlib import game
-from quizlib import question
-from quizlib import player
-from quizlib import library
-from quizlib import imdb
-from quizlib import logger
+import os
+import random
+import re
+import threading
+import time
 
 import buggalo
+import xbmc
+import xbmcgui
 
-from quizlib.strings import *
+from . import game
+from . import imdb, question
+from . import library
+from . import logger
+from . import player
+from .strings import *
 
 # Constants from [xbmc]/xbmc/guilib/Key.h
 ACTION_SELECT_ITEM = 7
@@ -68,8 +63,8 @@ ACTION_JUMP_SMS8 = 148
 ACTION_JUMP_SMS9 = 149
 
 RESOURCES_PATH = os.path.join(ADDON.getAddonInfo('path'), 'resources')
-AUDIO_CORRECT = os.path.join(RESOURCES_PATH, 'audio', 'correct.wav')
-AUDIO_WRONG = os.path.join(RESOURCES_PATH, 'audio', 'wrong.wav')
+AUDIO_CORRECT = os.path.join(RESOURCES_PATH, 'media', 'audio', 'correct.wav')
+AUDIO_WRONG = os.path.join(RESOURCES_PATH, 'media', 'audio', 'wrong.wav')
 BACKGROUND_MOVIE = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'quiz-background-movie.jpg')
 BACKGROUND_TV = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'quiz-background-tvshows.jpg')
 BACKGROUND_THEME = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'quiz-background-theme.jpg')
@@ -80,19 +75,15 @@ CONTENT_RATINGS = ['TV-MA', 'TV-14', 'TV-PG', 'TV-G', 'TV-Y7-FV', 'TV-Y7', 'TV-Y
 
 
 class MenuGui(xbmcgui.WindowXMLDialog):
-    C_MENU_VISIBILITY = 4000
     C_MENU_LIST = 4001
-    C_MENU_ABOUT_VISIBILITY = 6000
-    C_MENU_ABOUT_TEXT = 6001
 
-    STATE_MAIN = 1
-    STATE_MOVIE_QUIZ = 2
-    STATE_TV_QUIZ = 3
-    STATE_MUSIC_QUIZ = 11
-    STATE_ABOUT = 5
-    STATE_DOWNLOAD_IMDB = 6
-    STATE_OPEN_SETTINGS = 7
-    STATE_EXIT = 99
+    ACTION_KEY = 'action'
+    ACTION_MOVIE_QUIZ = 1
+    ACTION_TV_QUIZ = 2
+    ACTION_MUSIC_QUIZ = 3
+    ACTION_DOWNLOAD_IMDB = 4
+    ACTION_OPEN_SETTINGS = 5
+    ACTION_EXIT = 6
 
     def __new__(cls, quizGui):
         return super().__new__(cls, 'script-moviequiz-menu.xml', ADDON.getAddonInfo('path'))
@@ -100,7 +91,6 @@ class MenuGui(xbmcgui.WindowXMLDialog):
     def __init__(self, quizGui):
         super().__init__()
         self.quizGui = quizGui
-        self.state = MenuGui.STATE_MAIN
         self.moviesEnabled = True
         self.tvShowsEnabled = True
         self.musicEnabled = True
@@ -122,28 +112,22 @@ class MenuGui(xbmcgui.WindowXMLDialog):
             self.close()
             self.quizGui.close()
             # Must have at least one movie or tvshow
-            # todo: anywhere we are calling dialog().ok with strings concated together, figure out how to separate with space or new line.
-            # todo: why are strings separated into fragments the first place?
-            xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_REQUIREMENTS_MISSING_LINE1) +
-                                strings(E_REQUIREMENTS_MISSING_LINE2) + strings(E_REQUIREMENTS_MISSING_LINE3))
+            xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_HAS_NO_CONTENT))
             return
 
         if not library.isAnyVideosWatched() and ADDON.getSetting(SETT_ONLY_WATCHED_MOVIES) == 'true':
             # Only watched movies requires at least one watched video files
-            xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_ONLY_WATCHED_LINE1) +
-                                strings(E_ONLY_WATCHED_LINE2) + strings(E_ONLY_WATCHED_LINE3))
+            xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_ONLY_WATCHED))
             ADDON.setSetting(SETT_ONLY_WATCHED_MOVIES, 'false')
 
         if not library.isAnyMPAARatingsAvailable() and ADDON.getSetting(SETT_MOVIE_RATING_LIMIT_ENABLED) == 'true':
             # MPAA rating requires ratings to be available in database
-            xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_MOVIE_RATING_LIMIT_LINE1) +
-                                strings(E_MOVIE_RATING_LIMIT_LINE2) + strings(E_MOVIE_RATING_LIMIT_LINE3))
+            xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_MOVIE_RATING_LIMIT))
             ADDON.setSetting(SETT_MOVIE_RATING_LIMIT_ENABLED, 'false')
 
         if not library.isAnyContentRatingsAvailable() and ADDON.getSetting(SETT_TVSHOW_RATING_LIMIT_ENABLED) == 'true':
             # Content rating requires ratings to be available in database
-            xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_TVSHOW_RATING_LIMIT_LINE1) +
-                                strings(E_TVSHOW_RATING_LIMIT_LINE2) + strings(E_TVSHOW_RATING_LIMIT_LINE3))
+            xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_TVSHOW_RATING_LIMIT))
             ADDON.setSetting(SETT_TVSHOW_RATING_LIMIT_ENABLED, 'false')
 
         self.moviesEnabled = bool(hasMovies and question.isAnyMovieQuestionsEnabled())
@@ -151,72 +135,42 @@ class MenuGui(xbmcgui.WindowXMLDialog):
         self.musicEnabled = bool(hasMusic) and question.isAnyMusicQuestionsEnabled()
 
         if not question.isAnyMovieQuestionsEnabled():
-            xbmcgui.Dialog().ok(strings(E_WARNING), strings(E_ALL_MOVIE_QUESTIONS_DISABLED) +
-                                strings(E_QUIZ_TYPE_NOT_AVAILABLE))
+            xbmcgui.Dialog().ok(strings(E_WARNING), strings(E_ALL_MOVIE_QUESTIONS_DISABLED, E_QUIZ_TYPE_NOT_AVAILABLE))
 
-        # if not question.isAnyTVShowQuestionsEnabled():
-        #     xbmcgui.Dialog().ok(strings(E_WARNING), strings(E_ALL_TVSHOW_QUESTIONS_DISABLED) +
-        #                         strings(E_QUIZ_TYPE_NOT_AVAILABLE))
+        if not question.isAnyTVShowQuestionsEnabled():
+            xbmcgui.Dialog().ok(strings(E_WARNING), strings(E_ALL_TVSHOW_QUESTIONS_DISABLED, E_QUIZ_TYPE_NOT_AVAILABLE))
 
         self.updateMenu()
-        self.getControl(MenuGui.C_MENU_VISIBILITY).setVisible(False)
-
-    def close(self):
-        # hide menus
-        # I think this causes the exit animation to happen?
-        self.getControl(MenuGui.C_MENU_VISIBILITY).setVisible(True)
-        self.getControl(MenuGui.C_MENU_ABOUT_VISIBILITY).setVisible(True)
-        super().close()
 
     @buggalo.buggalo_try_except()
     def onAction(self, action):
         if action.getId() in [ACTION_PARENT_DIR, ACTION_PREVIOUS_MENU, ACTION_NAV_BACK]:
-            self.getControl(MenuGui.C_MENU_VISIBILITY).setVisible(True)
-            self.getControl(MenuGui.C_MENU_ABOUT_VISIBILITY).setVisible(True)
-            xbmc.sleep(350)
-
-            if self.state == MenuGui.STATE_MAIN:
-                self.quizGui.close()
-                self.close()
-                return
-            elif self.state in [MenuGui.STATE_ABOUT]:
-                self.state = MenuGui.STATE_MAIN
-                self.updateMenu()
-
-            self.getControl(MenuGui.C_MENU_VISIBILITY).setVisible(False)
-
-        #elif action.getId() ==
+            self.quizGui.close()
+            self.close()
+            return
 
     def _buildMenuItemsList(self, itemsToAdd):
         items = []
-        for stringID, state in itemsToAdd:
+        for stringID, action in itemsToAdd:
             item = xbmcgui.ListItem(strings(stringID))
-            item.setProperty('state', str(state))
+            item.setProperty(MenuGui.ACTION_KEY, str(action))
             items.append(item)
         return items
 
     def updateMenu(self):
         listControl = self.getControl(MenuGui.C_MENU_LIST)
         listControl.reset()
-        if self.state == MenuGui.STATE_MAIN:
-            items = [
-                (30801, MenuGui.STATE_ABOUT),
-                (30519, MenuGui.STATE_DOWNLOAD_IMDB),
-                (30806, MenuGui.STATE_OPEN_SETTINGS),
-                (30103, MenuGui.STATE_EXIT)
-            ]
-            if self.musicEnabled:
-                items.insert(0, (30106, MenuGui.STATE_MUSIC_QUIZ))
-            if self.tvShowsEnabled:
-                items.insert(0, (30101, MenuGui.STATE_TV_QUIZ))
-            if self.moviesEnabled:
-                items.insert(0, (30100, MenuGui.STATE_MOVIE_QUIZ))
-        elif self.state == MenuGui.STATE_ABOUT:
-            items = [
-                (30801, None),
-                (30802, None),
-                (M_GO_BACK, None),
-            ]
+        items = [
+            (M_DOWNLOAD_IMDB, MenuGui.ACTION_DOWNLOAD_IMDB),
+            (M_SETTINGS, MenuGui.ACTION_OPEN_SETTINGS),
+            (M_EXIT, MenuGui.ACTION_EXIT)
+        ]
+        if self.musicEnabled:
+            items.insert(0, (M_PLAY_MUSIC_QUIZ, MenuGui.ACTION_MUSIC_QUIZ))
+        if self.tvShowsEnabled:
+            items.insert(0, (M_PLAY_TVSHOW_QUIZ, MenuGui.ACTION_TV_QUIZ))
+        if self.moviesEnabled:
+            items.insert(0, (M_PLAY_MOVIE_QUIZ, MenuGui.ACTION_MOVIE_QUIZ))
 
         listControl.addItems(self._buildMenuItemsList(items))
         self.setFocus(listControl)
@@ -228,61 +182,28 @@ class MenuGui(xbmcgui.WindowXMLDialog):
         @type controlId: int
         """
         if controlId == MenuGui.C_MENU_LIST:
-            self.getControl(MenuGui.C_MENU_VISIBILITY).setVisible(True)
-            xbmc.sleep(350)
+            item = self.getControl(MenuGui.C_MENU_LIST).getSelectedItem()
+            action = int(item.getProperty(MenuGui.ACTION_KEY))
 
-            if self.state == MenuGui.STATE_MAIN:
-                item = self.getControl(MenuGui.C_MENU_LIST).getSelectedItem()
-                self.state = int(item.getProperty('state'))
-
-                if self.state == MenuGui.STATE_MOVIE_QUIZ:
-                    gameInstance = game.UnlimitedGame(game.GAMETYPE_MOVIE)
-                    self.close()
-                    self.quizGui.newGame(gameInstance)
-                    return
-                elif self.state == MenuGui.STATE_ABOUT:
-                    f = open(os.path.join(ADDON.getAddonInfo('path'), 'about.txt'))
-                    self.getControl(MenuGui.C_MENU_ABOUT_TEXT).setText(f.read())
-                    f.close()
-                    self.getControl(MenuGui.C_MENU_ABOUT_VISIBILITY).setVisible(False)
-                elif self.state == MenuGui.STATE_DOWNLOAD_IMDB:
-                    imdb.downloadData()
-                    self.state = MenuGui.STATE_MAIN
-                elif self.state == MenuGui.STATE_OPEN_SETTINGS:
-                    ADDON.openSettings()
-                    self.quizGui.onSettingsChanged()
-                    self.state = MenuGui.STATE_MAIN
-                elif self.state == MenuGui.STATE_EXIT:
-                    self.quizGui.close()
-                    self.close()
-                    return
-                self.updateMenu()
-
-            elif self.state == MenuGui.STATE_ABOUT:
-                self.getControl(MenuGui.C_MENU_ABOUT_VISIBILITY).setVisible(True)
-                idx = self.getControl(MenuGui.C_MENU_LIST).getSelectedPosition()
-                xbmc.sleep(250)
-
-                if idx == 0:
-                    f = open(os.path.join(ADDON.getAddonInfo('path'), 'about.txt'))
-                    self.getControl(MenuGui.C_MENU_ABOUT_TEXT).setText(f.read())
-                    f.close()
-                    self.getControl(MenuGui.C_MENU_ABOUT_VISIBILITY).setVisible(False)
-                elif idx == 1:
-                    f = open(os.path.join(ADDON.getAddonInfo('changelog'))) #todo: this didn't work
-                    self.getControl(MenuGui.C_MENU_ABOUT_TEXT).setText(f.read())
-                    f.close()
-                    self.getControl(MenuGui.C_MENU_ABOUT_VISIBILITY).setVisible(False)
-                elif idx == 2:
-                    self.getControl(MenuGui.C_MENU_ABOUT_VISIBILITY).setVisible(True)
-                    self.state = MenuGui.STATE_MAIN
-                    self.updateMenu()
-
-            self.getControl(MenuGui.C_MENU_VISIBILITY).setVisible(False)
-
-    @buggalo.buggalo_try_except()
-    def onFocus(self, controlId):
-        pass
+            if action == MenuGui.ACTION_MOVIE_QUIZ or action == MenuGui.ACTION_TV_QUIZ or action == MenuGui.ACTION_MUSIC_QUIZ:
+                actionToQuizTypeDict = {
+                    MenuGui.ACTION_MOVIE_QUIZ: game.GAMETYPE_MOVIE,
+                    MenuGui.ACTION_TV_QUIZ: game.GAMETYPE_TVSHOW,
+                    MenuGui.ACTION_MUSIC_QUIZ: game.GAMETYPE_MUSIC
+                }
+                gameInstance = game.UnlimitedGame(actionToQuizTypeDict[action])
+                self.close()
+                self.quizGui.newGame(gameInstance)
+                return
+            elif action == MenuGui.ACTION_DOWNLOAD_IMDB:
+                imdb.downloadData()
+            elif action == MenuGui.ACTION_OPEN_SETTINGS:
+                ADDON.openSettings()
+                self.quizGui.onSettingsChanged()
+            elif action == MenuGui.ACTION_EXIT:
+                self.quizGui.close()
+                self.close()
+                return
 
 class QuizGui(xbmcgui.WindowXML):
     C_MAIN_FIRST_ANSWER = 4000
@@ -334,7 +255,6 @@ class QuizGui(xbmcgui.WindowXML):
         self.onSettingsChanged()
 
     def onSettingsChanged(self):
-        # minPercent = int(ADDON.getSetting('question.whatmovieisthis.min_percent'))
         minPercent = ADDON.getSettingInt('question.whatmovieisthis.min_percent')
         maxPercent = ADDON.getSettingInt('question.whatmovieisthis.max_percent')
         duration = ADDON.getSettingInt('question.whatmovieisthis.duration')
@@ -560,15 +480,15 @@ class QuizGui(xbmcgui.WindowXML):
         """
         logger.log("onQuestionAnswered(..)")
 
+        if self.player.isPlaying():
+            self.player.stopPlayback()
+
         if answer is not None and answer.correct:
             xbmc.playSFX(AUDIO_CORRECT)
             self.getControl(self.C_MAIN_CORRECT_VISIBILITY).setVisible(False)
         else:
             xbmc.playSFX(AUDIO_WRONG)
             self.getControl(self.C_MAIN_INCORRECT_VISIBILITY).setVisible(False)
-
-        if self.player.isPlaying():
-            self.player.stopPlayback()
 
         threading.Timer(0.5, self.onQuestionAnswerFeedbackTimer).start()
         if ADDON.getSetting('show.correct.answer') == 'true' and not answer.correct:

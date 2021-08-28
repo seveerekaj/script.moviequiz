@@ -21,7 +21,7 @@
 import xbmcvfs
 import xbmcaddon
 import buggalo
-from quizlib.gui import QuizGui
+from resources.lib.quizlib.gui import QuizGui
 
 buggalo.SUBMIT_URL = ''
 try:

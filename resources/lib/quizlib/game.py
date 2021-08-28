@@ -17,3 +17,20 @@
 #  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 #
+
+GAMETYPE_MOVIE = "movie"
+GAMETYPE_TVSHOW = "tvshow"
+GAMETYPE_MUSIC = "music"
+
+class UnlimitedGame():
+    def __init__(self, type):
+        self.type = type
+
+    def __repr__(self):
+        return "<UnlimitedGame>"
+
+    def __eq__(self, other):
+        return type(other) == UnlimitedGame and self.type == other.type
+
+    def getType(self):
+        return self.type

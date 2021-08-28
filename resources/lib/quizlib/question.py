@@ -18,17 +18,17 @@
 #  http://www.gnu.org/copyleft/gpl.html
 #
 
+import datetime
 import os
 import random
-import datetime
 import re
-from quizlib import imdb
-from quizlib import game
-from quizlib import library
 
 import xbmcvfs
 
-from quizlib.strings import *
+from . import game
+from . import imdb
+from . import library
+from .strings import *
 
 IMDB = imdb.Imdb()
 
@@ -311,7 +311,7 @@ class ActorNotInMovieQuestion(MovieQuestion):
             raise QuestionException("Didn't find any actors with at least three movies")
 
         random.shuffle(self.answers)
-        self.text = strings(Q_WHAT_MOVIE_IS_ACTOR_NOT_IN, actor['name'])
+        self.text = strings(Q_WHAT_MOVIE_IS_ACTOR_NOT_IN) % actor['name']
         photoDisplayType.setPhotoFile(actor['thumbnail'])
 
     @staticmethod
@@ -352,7 +352,7 @@ class WhatYearWasMovieReleasedQuestion(MovieQuestion):
         for year in years:
             self.addAnswer(id=movie['movieid'], text=str(year), correct=(year == int(movie['year'])))
 
-        self.text = strings(Q_WHAT_YEAR_WAS_MOVIE_RELEASED, movie['title'])
+        self.text = strings(Q_WHAT_YEAR_WAS_MOVIE_RELEASED) % movie['title']
         self.setFanartFile(movie['art']['fanart'])
 
     @staticmethod
@@ -391,7 +391,7 @@ class WhatTagLineBelongsToMovieQuestion(MovieQuestion):
                 break
 
         random.shuffle(self.answers)
-        self.text = strings(Q_WHAT_TAGLINE_BELONGS_TO_MOVIE, movie['title'])
+        self.text = strings(Q_WHAT_TAGLINE_BELONGS_TO_MOVIE) % movie['title']
         self.setFanartFile(movie['art']['fanart'])
 
     @staticmethod
@@ -441,7 +441,7 @@ class WhatStudioReleasedMovieQuestion(MovieQuestion):
                 break
 
         random.shuffle(self.answers)
-        self.text = strings(Q_WHAT_STUDIO_RELEASED_MOVIE, movie['title'])
+        self.text = strings(Q_WHAT_STUDIO_RELEASED_MOVIE) % movie['title']
         self.setFanartFile(movie['art']['fanart'])
 
     @staticmethod
@@ -607,7 +607,7 @@ class WhoDirectedThisMovieQuestion(MovieQuestion):
                 break
 
         random.shuffle(self.answers)
-        self.text = strings(Q_WHO_DIRECTED_THIS_MOVIE, movie['title'])
+        self.text = strings(Q_WHO_DIRECTED_THIS_MOVIE) % movie['title']
         self.setFanartFile(movie['art']['fanart'])
 
     @staticmethod
@@ -654,7 +654,7 @@ class WhatMovieIsNotDirectedByQuestion(MovieQuestion):
             self.addAnswer(-1, movie['title'], image=movie['art']['poster'])
 
         random.shuffle(self.answers)
-        self.text = strings(Q_WHAT_MOVIE_IS_NOT_DIRECTED_BY, director)
+        self.text = strings(Q_WHAT_MOVIE_IS_NOT_DIRECTED_BY) % director
         # todo perhaps set fanart instead?
 
     @staticmethod
@@ -765,7 +765,7 @@ class WhatActorIsInMovieBesidesOtherActorQuestion(MovieQuestion):
                 break
 
         random.shuffle(self.answers)
-        self.text = strings(Q_WHAT_ACTOR_IS_IN_MOVIE_BESIDES_OTHER_ACTOR, (movie['title'], actorTwo['name']))
+        self.text = strings(Q_WHAT_ACTOR_IS_IN_MOVIE_BESIDES_OTHER_ACTOR) % (movie['title'], actorTwo['name'])
         self.setFanartFile(movie['art']['fanart'])
 
     @staticmethod
@@ -1116,7 +1116,7 @@ class WhatSongIsThisQuestion(MusicQuestion):
             self.addAnswer(id=-1, text=song['title'], image=song['thumbnail'])
 
         random.shuffle(self.answers)
-        self.text = strings(Q_WHAT_SONG_IS_THIS, correctAnswer['artist'][0])
+        self.text = strings(Q_WHAT_SONG_IS_THIS) % correctAnswer['artist'][0]
         audioDisplayType.setAudioFile(correctAnswer['file'])
 
         artist = library.getArtistDetails(correctAnswer['artistid'][0], ['fanart']).asItem()
@@ -1147,7 +1147,7 @@ class WhoMadeThisSongQuestion(MusicQuestion):
             self.addAnswer(id=item['artist'], text=item['artist'], image=artist['thumbnail'])
 
         random.shuffle(self.answers)
-        self.text = strings(Q_WHO_MADE_THE_SONG, song['title'])
+        self.text = strings(Q_WHO_MADE_THE_SONG) % song['title']
         audioDisplayType.setAudioFile(song['file'])
 
     @staticmethod
@@ -1175,7 +1175,7 @@ class WhoMadeThisAlbumQuestion(MusicQuestion):
             self.addAnswer(id=item['artist'], text=item['artist'], image=artist['thumbnail'])
 
         random.shuffle(self.answers)
-        self.text = strings(Q_WHO_MADE_THE_ALBUM, album['title'])
+        self.text = strings(Q_WHO_MADE_THE_ALBUM) % album['title']
         photoDisplayType.setPhotoFile(album['thumbnail'])
         self.setFanartFile(album['fanart'])
 

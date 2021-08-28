@@ -10,6 +10,8 @@ Jake's TODOs:
     change hard-coded numbers to string constants
     add 5th or maybe even 6th answer option
     bug: changing from short to longer time in settings launched from in-game, does not work.
+    apparently fanart is required?
+    imdb download doesn't work
 
 
 twinther's TODOs:

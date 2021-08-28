@@ -18,8 +18,9 @@
 #  http://www.gnu.org/copyleft/gpl.html
 #
 
-import xbmc
 import json
+
+import xbmc
 
 
 def getMovies(properties=None):

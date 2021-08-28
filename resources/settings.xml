@@ -15,7 +15,7 @@
                 </setting>
             </group>
 
-            <group id="rating_limit" label="30501">
+            <group id="movie.rating.limits" label="30501">
                 <setting id="movie.rating.limit.enabled" label="30512" type="boolean">
                     <level>0</level>
                     <default>false</default>
@@ -38,14 +38,37 @@
                     <control type="spinner" format="string"/>
                 </setting>
             </group>
-<!--            <group label="30502">-->
-<!--                <setting id="tvshow.rating.limit.enabled" label="30516" type="boolean" default="false" />-->
-<!--                <setting id="tvshow.rating.limit" label="30517" type="labelenum" default="TV-MA" values="TV-MA|TV-14|TV-PG|TV-G|TV-Y7-FV|TV-Y7|TV-Y" visible="eq(-1,true)"/>-->
-<!--            </group>-->
+
+            <group id="tvshow.rating.limits" label="30502">
+                <setting id="tvshow.rating.limit.enabled" label="30516" type="boolean">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="tvshow.rating.limit" label="30517" type="string" parent="tvshow.rating.limit.enabled">
+                    <level>0</level>
+                    <default>TV-MA</default>
+                    <constraints>
+                        <options>
+                            <option label="TV-Y">TV-Y</option>
+                            <option label="TV-Y7">TV-Y7</option>
+                            <option label="TV-Y7-FV">TV-Y7-FV</option>
+                            <option label="TV-G">TV-G</option>
+                            <option label="TV-PG">TV-PG</option>
+                            <option label="TV-14">TV-14</option>
+                            <option label="TV-MA">TV-MA</option>
+                        </options>
+                    </constraints>
+                    <dependencies>
+                        <dependency type="enable" setting="tvshow.rating.limit.enabled">true</dependency>
+                    </dependencies>
+                    <control type="spinner" format="string"/>
+                </setting>
+            </group>
         </category>
 
         <category id="questions" label="30505">
-            <group id="movie_options" label="30550">
+            <group id="movie.options" label="30550">
                 <setting id="question.whatmovieisthis.enabled" label="30552" type="boolean">
                     <level>0</level>
                     <default>true</default>
@@ -161,21 +184,61 @@
                 </setting>
             </group>
 
-<!--            <group id="tv_show_options" label="30551">-->
-<!--                <setting id="question.whattvshowisthis.enabled" label="30580" type="boolean" default="true"/>-->
-<!--                <setting id="question.whatseasonisthis.enabled" label="30581" type="boolean" default="true"/>-->
-<!--                <setting id="question.whatepisodeisthis.enabled" label="30582" type="boolean" default="true"/>-->
-<!--                <setting id="question.whenwastvshowfirstaired.enabled" label="30583" type="boolean" default="true"/>-->
-<!--                <setting id="question.whoplayedroleintvshow.enabled" label="30584" type="boolean" default="true"/>-->
-<!--                <setting id="question.whattvshowisthisquotefrom.enabled" label="30585" type="boolean" default="true"/>-->
-<!--                <setting id="question.whattvshowisthisthemefrom.enabled" label="30586" type="boolean" default="true"/>-->
-<!--            </group>-->
-<!--            -->
-<!--            <group id="music_options" label="30570">-->
-<!--                <setting id="question.whatsongisthis.enabled" label="30571" type="boolean" default="true"/>-->
-<!--                <setting id="question.whomadethissong.enabled" label="30572" type="boolean" default="true"/>-->
-<!--                <setting id="question.whomadethisalbum.enabled" label="30573" type="boolean" default="true"/>-->
-<!--            </group>-->
+            <group id="tvshow.options" label="30551">
+                <setting id="question.whattvshowisthis.enabled" label="30580" type="boolean">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="question.whatseasonisthis.enabled" label="30581" type="boolean">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="question.whatepisodeisthis.enabled" label="30582" type="boolean">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="question.whenwastvshowfirstaired.enabled" label="30583" type="boolean">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="question.whoplayedroleintvshow.enabled" label="30584" type="boolean">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="question.whattvshowisthisquotefrom.enabled" label="30585" type="boolean">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="question.whattvshowisthisthemefrom.enabled" label="30586" type="boolean">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+            </group>
+
+            <group id="music.options" label="30570">
+                <setting id="question.whatsongisthis.enabled" label="30571" type="boolean">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="question.whomadethissong.enabled" label="30572" type="boolean">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="question.whomadethisalbum.enabled" label="30573" type="boolean">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+            </group>
 
          </category>
     </section>

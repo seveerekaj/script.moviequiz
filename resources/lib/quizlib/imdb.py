@@ -18,19 +18,19 @@
 #  http://www.gnu.org/copyleft/gpl.html
 #
 
-import re
-import random
 import os
-from urllib.request import urlopen
-import zlib
+import random
+import re
 import time
+import zlib
+from urllib.request import urlopen
 
-from quizlib.strings import *
-from quizlib import logger
-
-import xbmc
 import xbmcgui
 import xbmcvfs
+
+from resources.lib.quizlib import logger
+from .strings import *
+
 
 class Imdb:
     ACTOR_PATTERN = re.compile('^([^\t\(]+)( \([^\)]+\))?\t.*?$')

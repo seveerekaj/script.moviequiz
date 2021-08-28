@@ -332,16 +332,6 @@
             <width>1280</width>
             <height>720</height>
             <texture>quiz-fade-bottomright.png</texture>
-            <visible>Control.IsVisible(6000)</visible>
-        </control>
-        <control type="image">
-            <description>glasspane for about</description>
-            <posx>0</posx>
-            <posy>0</posy>
-            <width>1280</width>
-            <height>720</height>
-            <texture>quiz-background-glass.png</texture>
-            <visible>!Control.IsVisible(6000)</visible>
         </control>
 
         <control type="image">
@@ -352,16 +342,12 @@
             <texture>quiz-logo.png</texture>
         </control>
 
-        <control type="label" id="4000">
-            <description>visibility marker for group</description>
-        </control>
         <control type="group">
             <description>main menu</description>
             <posx>830</posx>
             <posy>280</posy>
             <width>480</width>
             <height>400</height>
-            <visible>!Control.IsVisible(4000)</visible>
 
             <control type="list" id="4001">
                 <posx>0</posx>
@@ -405,30 +391,6 @@
                         <font>font30</font>
                     </control>
                 </focusedlayout>
-            </control>
-        </control>
-
-        <control type="label" id="6000">
-            <description>visibility marker for group</description>
-        </control>
-        <control type="group">
-            <description>about</description>
-            <posx>120</posx>
-            <posy>80</posy>
-            <width>540</width>
-            <height>600</height>
-            <visible>!Control.IsVisible(6000)</visible>
-
-            <control type="textbox" id="6001">
-                <posx>0</posx>
-                <posy>0</posy>
-                <width>540</width>
-                <height>600</height>
-                <textcolor>ffffffff</textcolor>
-                <font>font13</font>
-                <wrapmultiline>true</wrapmultiline>
-                <autoscroll time="3600" delay="6000" repeat="6000">true</autoscroll>
-                <label>$ADDON[script.moviequiz 30008]</label>
             </control>
         </control>
     </controls>

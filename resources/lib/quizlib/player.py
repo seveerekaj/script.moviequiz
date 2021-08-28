@@ -18,16 +18,16 @@
 #  http://www.gnu.org/copyleft/gpl.html
 #
 
-import random
-import threading
 import os
+import random
 import re
+import threading
 
 import xbmc
-import xbmcvfs
 import xbmcgui
+import xbmcvfs
 
-from quizlib import logger
+from . import logger
 
 
 class TimeLimitedPlayer(xbmc.Player):
@@ -91,6 +91,7 @@ class TimeLimitedPlayer(xbmc.Player):
             #todo file = self._getRandomDvdVob(file)
 
         if self.lastStartPercentage is None:
+            random.seed()
             self.lastStartPercentage = random.randint(self.minPercent, self.maxPercent)
 
         logger.log(f">> Playback from {self.lastStartPercentage}% for {self.duration} seconds")
