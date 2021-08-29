@@ -142,7 +142,7 @@ class TimeLimitedPlayer(xbmc.Player):
             xbmc.sleep(250)  # keep sleeping to get onPlayBackStopped() event
             retries += 1
 
-    def onAVStarted(self):
+    def onPlayBackStarted(self):
         logger.log(">> TimeLimitedPlayer.onPlayBackStarted()")
         self.playBackEventReceived = True
 

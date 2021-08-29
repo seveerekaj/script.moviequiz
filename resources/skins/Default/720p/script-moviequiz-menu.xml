@@ -335,6 +335,16 @@
         </control>
 
         <control type="image">
+            <description>glasspane for about</description>
+            <posx>0</posx>
+            <posy>0</posy>
+            <width>1280</width>
+            <height>720</height>
+            <texture>quiz-background-glass.png</texture>
+            <visible>Control.IsVisible(6001)</visible>
+        </control>
+
+        <control type="image">
             <posx>800</posx>
             <posy>70</posy>
             <width>296</width>
@@ -392,6 +402,19 @@
                     </control>
                 </focusedlayout>
             </control>
+        </control>
+
+        <control type="textbox" id="6001">
+            <description>about</description>
+            <posx>60</posx>
+            <posy>80</posy>
+            <width>660</width>
+            <height>600</height>
+            <textcolor>ffffffff</textcolor>
+            <font>font13</font>
+            <wrapmultiline>true</wrapmultiline>
+            <autoscroll time="3600" delay="6000" repeat="6000">true</autoscroll>
+            <label>$ADDON[script.moviequiz 30008]</label>
         </control>
     </controls>
 </window>

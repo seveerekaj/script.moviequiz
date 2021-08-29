@@ -64,7 +64,7 @@ class Imdb:
         if os.path.exists(self.actorsPath):
             startTime = time.time()
             f = open(self.actorsPath)
-            self.actorNames = bytes(f.read(), 'iso-8859-1').decode('utf-8').splitlines()
+            self.actorNames = f.read().splitlines()
             f.close()
             logger.log("Loaded %d actor names in %d seconds" % (len(self.actorNames), (time.time() - startTime)))
 
@@ -167,7 +167,7 @@ class Imdb:
             if not chunk:
                 break
             contentReceived += len(chunk)
-            decompressedChunk = decompressor.decompress(chunk)
+            decompressedChunk = decompressor.decompress(chunk).decode('iso-8859-1')
 
             if postprocessLineCallback is not None:
                 if partialLine is not None:
@@ -185,7 +185,7 @@ class Imdb:
                     else: # partial line
                         partialLine = line
                 file.write(processedChunk)
-            
+
             else:
                 file.write(decompressedChunk)
 

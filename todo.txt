@@ -11,7 +11,9 @@ Jake's TODOs:
     add 5th or maybe even 6th answer option
     bug: changing from short to longer time in settings launched from in-game, does not work.
     apparently fanart is required?
-    imdb download doesn't work
+    delete other branches
+    30409 is used more than once, and so is tv show string as well.
+    imdb quotes seem to be for incorrect movie
 
 
 twinther's TODOs:

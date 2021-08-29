@@ -35,33 +35,6 @@ from . import logger
 from . import player
 from .strings import *
 
-# Constants from [xbmc]/xbmc/guilib/Key.h
-ACTION_SELECT_ITEM = 7
-ACTION_PARENT_DIR = 9
-ACTION_PREVIOUS_MENU = 10
-
-ACTION_REMOTE0 = 58
-ACTION_REMOTE1 = 59
-ACTION_REMOTE2 = 60
-ACTION_REMOTE3 = 61
-ACTION_REMOTE4 = 62
-ACTION_REMOTE5 = 63
-ACTION_REMOTE6 = 64
-ACTION_REMOTE7 = 65
-ACTION_REMOTE8 = 66
-ACTION_REMOTE9 = 67
-
-ACTION_NAV_BACK = 92
-
-ACTION_JUMP_SMS2 = 142
-ACTION_JUMP_SMS3 = 143
-ACTION_JUMP_SMS4 = 144
-ACTION_JUMP_SMS5 = 145
-ACTION_JUMP_SMS6 = 146
-ACTION_JUMP_SMS7 = 147
-ACTION_JUMP_SMS8 = 148
-ACTION_JUMP_SMS9 = 149
-
 RESOURCES_PATH = os.path.join(ADDON.getAddonInfo('path'), 'resources')
 AUDIO_CORRECT = os.path.join(RESOURCES_PATH, 'media', 'audio', 'correct.wav')
 AUDIO_WRONG = os.path.join(RESOURCES_PATH, 'media', 'audio', 'wrong.wav')
@@ -76,6 +49,7 @@ CONTENT_RATINGS = ['TV-MA', 'TV-14', 'TV-PG', 'TV-G', 'TV-Y7-FV', 'TV-Y7', 'TV-Y
 
 class MenuGui(xbmcgui.WindowXMLDialog):
     C_MENU_LIST = 4001
+    C_INFO_TEXT = 6001
 
     ACTION_KEY = 'action'
     ACTION_MOVIE_QUIZ = 1
@@ -84,6 +58,7 @@ class MenuGui(xbmcgui.WindowXMLDialog):
     ACTION_DOWNLOAD_IMDB = 4
     ACTION_OPEN_SETTINGS = 5
     ACTION_EXIT = 6
+    ACTION_ABOUT = 7
 
     def __new__(cls, quizGui):
         return super().__new__(cls, 'script-moviequiz-menu.xml', ADDON.getAddonInfo('path'))
@@ -144,10 +119,18 @@ class MenuGui(xbmcgui.WindowXMLDialog):
 
     @buggalo.buggalo_try_except()
     def onAction(self, action):
-        if action.getId() in [ACTION_PARENT_DIR, ACTION_PREVIOUS_MENU, ACTION_NAV_BACK]:
+        if action.getId() in [xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_PARENT_DIR, xbmcgui.ACTION_NAV_BACK]:
             self.quizGui.close()
             self.close()
             return
+        elif action.getId() in [xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN]: #todo: what about analog move down/up? and is there a better way to do this, perhaps onFocus for ListItem?
+            item = self.getControl(MenuGui.C_MENU_LIST).getSelectedItem()
+            action = int(item.getProperty(MenuGui.ACTION_KEY))
+            if action == MenuGui.ACTION_ABOUT:
+                self.getControl(MenuGui.C_INFO_TEXT).setText(strings(M_ABOUT_TEXT_BODY))
+            elif action == MenuGui.ACTION_DOWNLOAD_IMDB:
+                self.getControl(MenuGui.C_INFO_TEXT).setText(strings(M_DOWNLOAD_IMDB_INFO))
+            self.getControl(MenuGui.C_INFO_TEXT).setVisible(action == MenuGui.ACTION_ABOUT or action == MenuGui.ACTION_DOWNLOAD_IMDB)
 
     def _buildMenuItemsList(self, itemsToAdd):
         items = []
@@ -158,11 +141,13 @@ class MenuGui(xbmcgui.WindowXMLDialog):
         return items
 
     def updateMenu(self):
+        self.getControl(MenuGui.C_INFO_TEXT).setVisible(False)
         listControl = self.getControl(MenuGui.C_MENU_LIST)
         listControl.reset()
         items = [
-            (M_DOWNLOAD_IMDB, MenuGui.ACTION_DOWNLOAD_IMDB),
             (M_SETTINGS, MenuGui.ACTION_OPEN_SETTINGS),
+            (M_DOWNLOAD_IMDB, MenuGui.ACTION_DOWNLOAD_IMDB),
+            (M_ABOUT, MenuGui.ACTION_ABOUT),
             (M_EXIT, MenuGui.ACTION_EXIT)
         ]
         if self.musicEnabled:
@@ -259,9 +244,6 @@ class QuizGui(xbmcgui.WindowXML):
         maxPercent = ADDON.getSettingInt('question.whatmovieisthis.max_percent')
         duration = ADDON.getSettingInt('question.whatmovieisthis.duration')
         logger.log(f"setting new player with min:{minPercent} max:{maxPercent}, duration:{duration}")
-        if self.player is not None:
-            self.player.stopPlayback(True)
-            del self.player
         self.player = player.TimeLimitedPlayer(min(minPercent, maxPercent), max(minPercent, maxPercent), duration)
 
     @buggalo.buggalo_try_except()
@@ -270,8 +252,8 @@ class QuizGui(xbmcgui.WindowXML):
         startTime = datetime.datetime.now()
         question.IMDB.loadData()
         delta = datetime.datetime.now() - startTime
-        # if delta.seconds < 2:
-        #     xbmc.sleep(1000 * (2 - delta.seconds))
+        if delta.seconds < 2:
+            xbmc.sleep(1000 * (2 - delta.seconds))
         self.showMenuDialog()
 
     def showMenuDialog(self):
@@ -321,25 +303,25 @@ class QuizGui(xbmcgui.WindowXML):
 
     @buggalo.buggalo_try_except()
     def onAction(self, action):
-        if self.uiState == self.STATE_SPLASH and (action.getId() == ACTION_PARENT_DIR or action.getId() == ACTION_PREVIOUS_MENU):
+        if self.uiState == self.STATE_SPLASH and action.getId() in [xbmcgui.ACTION_PARENT_DIR, xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK]:
             self.close()
             return
 
-        if action.getId() == ACTION_PARENT_DIR or action.getId() == ACTION_PREVIOUS_MENU:
+        if action.getId() in [xbmcgui.ACTION_PARENT_DIR, xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK]:
             self.onGameOver()
 
         if self.uiState == self.STATE_LOADING:
             return
-        elif action.getId() in [ACTION_REMOTE1]:
+        elif action.getId() in [xbmcgui.REMOTE_1]:
             self.setFocusId(self.C_MAIN_FIRST_ANSWER)
             self.onQuestionAnswered(self.question.getAnswer(0))
-        elif action.getId() in [ACTION_REMOTE2, ACTION_JUMP_SMS2]:
+        elif action.getId() in [xbmcgui.REMOTE_2, xbmcgui.ACTION_JUMP_SMS2]:
             self.setFocusId(self.C_MAIN_FIRST_ANSWER + 1)
             self.onQuestionAnswered(self.question.getAnswer(1))
-        elif action.getId() in [ACTION_REMOTE3, ACTION_JUMP_SMS3]:
+        elif action.getId() in [xbmcgui.REMOTE_3, xbmcgui.ACTION_JUMP_SMS3]:
             self.setFocusId(self.C_MAIN_FIRST_ANSWER + 2)
             self.onQuestionAnswered(self.question.getAnswer(2))
-        elif action.getId() in [ACTION_REMOTE4, ACTION_JUMP_SMS4]:
+        elif action.getId() in [xbmcgui.REMOTE_4, xbmcgui.ACTION_JUMP_SMS4]:
             self.setFocusId(self.C_MAIN_FIRST_ANSWER + 3)
             self.onQuestionAnswered(self.question.getAnswer(3))
 
