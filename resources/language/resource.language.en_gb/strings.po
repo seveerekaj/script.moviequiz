@@ -279,8 +279,8 @@ msgstr ""
 msgctxt "#30522"
 msgid ""
 "Select this option to download IMDB quotes to be used in the following question types:\n\n"
-"[I]What movie is this quote from?[/I]\n"
-"[I]What TV show is this quote from?[/I]\n\n"
+"[I]%s[/I]\n"
+"[I]%s[/I]\n\n"
 "Quotes will be downloaded from the archive at:\n"
 "The Free University of Berlin: fu-berlin.de\n\n"
 "[B]After downloading, exit the addon then reopen it for the quotes to be loaded in the game.[/B]\n\n"
@@ -333,10 +333,6 @@ msgstr ""
 
 msgctxt "#30559"
 msgid "Who played this role in movie?"
-msgstr ""
-
-msgctxt "#30560"
-msgid "What movie is this quote from?"
 msgstr ""
 
 msgctxt "#30561"
@@ -393,10 +389,6 @@ msgstr ""
 
 msgctxt "#30584"
 msgid "Who played role in TV show?"
-msgstr ""
-
-msgctxt "#30585"
-msgid "What TV show is this quote from?"
 msgstr ""
 
 msgctxt "#30586"

@@ -152,7 +152,7 @@
                     <default>true</default>
                     <control type="toggle"/>
                 </setting>
-                <setting id="question.whatmovieisthisquotefrom.enabled" label="30560" type="boolean">
+                <setting id="question.whatmovieisthisquotefrom.enabled" label="30409" type="boolean">
                     <level>0</level>
                     <default>true</default>
                     <control type="toggle"/>
@@ -210,7 +210,7 @@
                     <default>true</default>
                     <control type="toggle"/>
                 </setting>
-                <setting id="question.whattvshowisthisquotefrom.enabled" label="30585" type="boolean">
+                <setting id="question.whattvshowisthisquotefrom.enabled" label="30457" type="boolean">
                     <level>0</level>
                     <default>true</default>
                     <control type="toggle"/>

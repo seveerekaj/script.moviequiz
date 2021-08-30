@@ -129,7 +129,8 @@ class MenuGui(xbmcgui.WindowXMLDialog):
             if action == MenuGui.ACTION_ABOUT:
                 self.getControl(MenuGui.C_INFO_TEXT).setText(strings(M_ABOUT_TEXT_BODY))
             elif action == MenuGui.ACTION_DOWNLOAD_IMDB:
-                self.getControl(MenuGui.C_INFO_TEXT).setText(strings(M_DOWNLOAD_IMDB_INFO))
+                text = strings(M_DOWNLOAD_IMDB_INFO) % (strings(Q_WHAT_MOVIE_IS_THIS_QUOTE_FROM), strings(Q_WHAT_TVSHOW_IS_THIS_QUOTE_FROM))
+                self.getControl(MenuGui.C_INFO_TEXT).setText(text)
             self.getControl(MenuGui.C_INFO_TEXT).setVisible(action == MenuGui.ACTION_ABOUT or action == MenuGui.ACTION_DOWNLOAD_IMDB)
 
     def _buildMenuItemsList(self, itemsToAdd):
@@ -430,6 +431,7 @@ class QuizGui(xbmcgui.WindowXML):
 
             self.getControl(self.C_MAIN_LOADING).setPercent(retries)
 
+            random.seed()
             random.shuffle(self.questionCandidates)
             for candidate in self.questionCandidates:
                 try:

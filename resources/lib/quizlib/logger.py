@@ -1,4 +1,4 @@
 import xbmc
 
 def log(message, level=xbmc.LOGDEBUG):
-    xbmc.log("script.moviequiz >> " + message, xbmc.LOGINFO)
+    xbmc.log("script.moviequiz >> " + message, xbmc.LOGDEBUG)

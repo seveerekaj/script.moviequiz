@@ -33,53 +33,37 @@ from .strings import *
 
 
 class Imdb:
-    ACTOR_PATTERN = re.compile('^([^\t\(]+)( \([^\)]+\))?\t.*?$')
-
     QUOTES_INDEX = 'quotes.index'
     QUOTES_LIST = 'quotes.list'
-    ACTORS_LIST = 'actors.list'
     QUOTES_URL = 'ftp://ftp.fu-berlin.de/pub/misc/movies/database/frozendata/quotes.list.gz'
-    ACTORS_URL = 'ftp://ftp.fu-berlin.de/pub/misc/movies/database/frozendata/actors.list.gz'
 
     def __init__(self):
         listsPath = xbmcvfs.translatePath(ADDON.getAddonInfo('profile'))
-        self.actorsPath = os.path.join(listsPath, self.ACTORS_LIST)
         self.quotesIndexPath = os.path.join(listsPath, self.QUOTES_INDEX)
         self.quotesListPath = os.path.join(listsPath, self.QUOTES_LIST)
-
-        self.actorNames = None
         self.quotesIndex = None
 
     def isDataPresent(self):
-        return os.path.exists(self.actorsPath) and os.path.exists(self.quotesIndexPath) and os.path.exists(self.quotesListPath)
+        return os.path.exists(self.quotesIndexPath) and os.path.exists(self.quotesListPath)
 
     def loadData(self):
         if os.path.exists(self.quotesIndexPath):
             startTime = time.time()
-            f = open(self.quotesIndexPath)
+            f = open(self.quotesIndexPath, encoding='utf8')
             self.quotesIndex = f.read()
             f.close()
             logger.log("Loaded %d MB quotes index in %d seconds" % (len(self.quotesIndex) / 1048576, (time.time() - startTime)))
 
-        if os.path.exists(self.actorsPath):
-            startTime = time.time()
-            f = open(self.actorsPath)
-            self.actorNames = f.read().splitlines()
-            f.close()
-            logger.log("Loaded %d actor names in %d seconds" % (len(self.actorNames), (time.time() - startTime)))
-
     def downloadFiles(self, downloadState):
         downloadState.idx += 1
         self._downloadGzipFile(self.QUOTES_URL, self.quotesListPath, downloadState.progress, self._createQuotesIndex)
-        downloadState.idx += 1
-        self._downloadGzipFile(self.ACTORS_URL, self.actorsPath, downloadState.progress, self._postprocessActorNames)
 
-
-    def getRandomQuote(self, name, season = None, episode = None, maxLength = None):
-        quotes = self._loadQuotes(name, season, episode)
+    def getRandomQuote(self, name, year=None, season=None, episode=None, maxLength=None):
+        quotes = self._loadQuotes(name, season, episode, year)
         if not quotes:
             return None
 
+        random.seed()
         quote = None
         for retries in range(0, 25):
             quote = quotes[random.randint(0, len(quotes)-1)]
@@ -88,39 +72,6 @@ class Imdb:
 
         # filter and cleanup
         return re.sub('\n  ', ' ', quote)
-
-    def isActor(self, name):
-        if self.actorNames:
-            #m = re.search('^%s$' % name, self.actorNames, re.MULTILINE)
-            return name in self.actorNames
-        else:
-            logger.log("%s does not exists, has it been downloaded yet?" % self.ACTORS_LIST)
-            return None
-
-
-    def _postprocessActorNames(self, line):
-        """
-        Changes author names from Lastname, Firstname into Firstname Lastname line by line
-        and removes duplicate lines. It is assumed the lines are provided sorted.
-
-        @param line: a line from ACTORS_LIST
-        @type line: str
-        """
-        if not hasattr(self, 'previousLastnameFirstname'):
-            self.previousLastnameFirstname = None
-
-        m = self.ACTOR_PATTERN.search(line)
-        if m is not None:
-            lastnameFirstname = m.group(1).strip()
-            if lastnameFirstname != self.previousLastnameFirstname:
-                self.previousLastnameFirstname = lastnameFirstname
-
-                parts = lastnameFirstname.split(', ', 2)
-                if len(parts) == 2:
-                    firstnameLastname = "%s %s\n" % (parts[1], parts[0])
-                    return firstnameLastname
-
-        return ''
 
     def _createQuotesIndex(self, line):
         """
@@ -133,12 +84,13 @@ class Imdb:
         """
         if not hasattr(self, 'indexFile'):
             self.bytesProcessed = 0
-            self.indexFile = open(self.quotesIndexPath, 'w')
+            self.indexFile = open(self.quotesIndexPath, 'w', encoding='utf8')
 
         if line.startswith('#'):
             self.indexFile.write(line[2:].strip() + "\t" + str(self.bytesProcessed) + "\n")
 
-        self.bytesProcessed += len(line)
+        # must get length of bytes encoded as utf-8, and must decode files as utf-8, in order for the byte offset to work.
+        self.bytesProcessed += len(line.encode('utf8'))
         return line
 
 
@@ -156,7 +108,7 @@ class Imdb:
         @type progressCallback: method
         """
         response = urlopen(url, timeout=30)
-        file = open(destination, 'w')
+        file = open(destination, 'w', encoding='utf8')
         decompressor = zlib.decompressobj(16+zlib.MAX_WBITS)
 
         partialLine = None
@@ -197,7 +149,7 @@ class Imdb:
         file.close()
         response.close() # todo: .close() may not be needed/supported anymore. should I be using "with" syntax?
 
-    def _loadQuotes(self, name, season, episode):
+    def _loadQuotes(self, name, season, episode, year):
         """
         Loads quotes from QUOTES_LIST using the byte offsets in QUOTES_INDEX,
         so we only need to load a few kilobytes instead of a few 100 megabytes.
@@ -216,7 +168,8 @@ class Imdb:
             start = 2
             end = 3
         else:
-            pattern = '\n%s [^\t]+\t([0-9]+)\n[^\t]+\t([0-9]+)' % name
+            year = '' if year is None else year
+            pattern = f'\n{name} *\({year}[^\t]+\t([0-9]+)\n[^\t]+\t([0-9]+)'
             start = 1
             end = 2
         m = re.search(pattern, self.quotesIndex, re.DOTALL)
@@ -224,12 +177,12 @@ class Imdb:
             return []
 
         # load quotes based on position
-        f = open(self.quotesListPath)
+        f = open(self.quotesListPath, encoding='utf8')
         f.seek(int(m.group(start)))
         quotes = f.read(int(m.group(end)) - int(m.group(start)))
         f.close()
 
-        # remove first line and split on double new lines
+        # remove first line, remove last two newline chars, and split on double new lines
         return quotes[quotes.find('\n')+1:-2].split('\n\n')
 
 def downloadData():
@@ -247,7 +200,7 @@ def downloadData():
     i = Imdb()
     d = xbmcgui.DialogProgress()
     try:
-        ds = DownloadState(2)
+        ds = DownloadState(1)
         d.create(strings(S_DOWNLOADING_IMDB_DATA))
         i.downloadFiles(ds)
 
