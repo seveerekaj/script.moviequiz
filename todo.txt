@@ -14,7 +14,6 @@ Jake's TODOs:
     ask about onfocus for listitem
     put random in util module along with logger
     get movie quotes from subtitle tracks of locally-stored movies?
-    make the win/lose sounds quieter
 
 twinther's TODOs:
 - Error message when we are unable to find additional questions
