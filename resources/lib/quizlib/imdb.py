@@ -192,8 +192,8 @@ def downloadData():
             self.count = count
 
         def progress(self, received, size, percentage):
-            line1 = strings(S_FILE_X_OF_Y) % (self.idx, self.count)
-            line2 = strings(S_RETRIEVED_X_OF_Y_MB) % (received / 1048576, size / 1048576)
+            line1 = strings(M_FILE_X_OF_Y) % (self.idx, self.count)
+            line2 = strings(M_RETRIEVED_X_OF_Y_MB) % (received / 1048576, size / 1048576)
             d.update(percentage, line1 + "\n" + line2)
             return not d.iscanceled()
 
@@ -201,7 +201,7 @@ def downloadData():
     d = xbmcgui.DialogProgress()
     try:
         ds = DownloadState(1)
-        d.create(strings(S_DOWNLOADING_IMDB_DATA))
+        d.create(strings(M_DOWNLOADING_IMDB_DATA))
         i.downloadFiles(ds)
 
         canceled = d.iscanceled()
@@ -209,8 +209,8 @@ def downloadData():
         del d
 
         if not canceled:
-            xbmcgui.Dialog().ok(strings(S_DOWNLOADING_IMDB_DATA), strings(S_DOWNLOAD_COMPLETE))
+            xbmcgui.Dialog().ok(strings(M_DOWNLOADING_IMDB_DATA), strings(M_DOWNLOAD_COMPLETE))
     except Exception as ex:
         d.close()
         del d
-        xbmcgui.Dialog().ok(strings(S_DOWNLOADING_IMDB_DATA), str(ex))
+        xbmcgui.Dialog().ok(strings(M_DOWNLOADING_IMDB_DATA), str(ex))

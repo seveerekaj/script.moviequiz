@@ -468,7 +468,7 @@
             <font>font13</font>
             <wrapmultiline>true</wrapmultiline>
             <autoscroll time="3600" delay="6000" repeat="6000">true</autoscroll>
-            <label>$ADDON[script.moviequiz 30008]</label>
+            <label>$ADDON[script.moviequiz 32010]</label>
         </control>
     </controls>
 </window>

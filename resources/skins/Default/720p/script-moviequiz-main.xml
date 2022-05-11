@@ -53,7 +53,7 @@
                 <width>1280</width>
                 <height>40</height>
                 <align>center</align>
-                <label>$ADDON[script.moviequiz 30008]</label>
+                <label>$ADDON[script.moviequiz 32010]</label>
                 <textcolor>ff000000</textcolor>
                 <font>font30</font>
             </control>
@@ -323,7 +323,7 @@
                 <aligny>center</aligny>
                 <font>font30</font>
                 <textcolor>ffffffff</textcolor>
-                <label>$ADDON[script.moviequiz 30008]</label>
+                <label>$ADDON[script.moviequiz 32010]</label>
                 <visible>Control.IsVisible(5005)</visible>
                 <animation type="Visible" reversible="false">
                     <effect type="fade" start="0" end="100" time="500" delay="500" />
@@ -357,7 +357,7 @@
                     <font>font13</font>
                     <texturefocus>quiz-button-background.png</texturefocus>
                     <texturenofocus />
-                    <label>$ADDON[script.moviequiz 30011]</label>
+                    <label>$ADDON[script.moviequiz 32011]</label>
                     <align>center</align>
                     <onright>4011</onright>
                     <enable>!Control.IsVisible(5000) + !Control.IsVisible(4800)</enable>
@@ -372,7 +372,7 @@
                     <font>font13</font>
                     <texturefocus>quiz-button-background.png</texturefocus>
                     <texturenofocus/>
-                    <label>$ADDON[script.moviequiz 30012]</label>
+                    <label>$ADDON[script.moviequiz 32012]</label>
                     <align>center</align>
                     <onleft>4010</onleft>
                     <onright>4000</onright>

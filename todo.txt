@@ -10,10 +10,11 @@ Jake's TODOs:
     add 5th or maybe even 6th answer option
     bug: changing from short to longer time in settings launched from in-game, does not work.
     apparently fanart is required?
-    delete duplicate strings in strings.po
     ask about onfocus for listitem
     put random in util module along with logger
     get movie quotes from subtitle tracks of locally-stored movies?
+    delete old image resources
+    add readme with link to forum?
 
 twinther's TODOs:
 - Error message when we are unable to find additional questions

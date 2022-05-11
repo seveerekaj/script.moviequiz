@@ -828,16 +828,6 @@ class TVQuestion(Question):
         """
         super().__init__(displayType)
 
-    def _get_season_title(self, season):
-        if not int(season):
-            return strings(Q_SPECIALS)
-        else:
-            return strings(Q_SEASON_NO) % int(season)
-
-    def _get_episode_title(self, season, episode, title):
-        return "%dx%02d - %s" % (int(season), int(episode), title)
-
-
 class WhatTVShowIsThisQuestion(TVQuestion):
     def __init__(self, defaultFilters):
         """
