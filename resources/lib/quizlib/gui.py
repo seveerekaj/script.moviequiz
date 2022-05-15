@@ -473,16 +473,19 @@ class QuizGui(xbmcgui.WindowXML):
         else:
             xbmc.playSFX(AUDIO_WRONG)
             self.getControl(self.C_MAIN_INCORRECT_VISIBILITY).setVisible(False)
-
         threading.Timer(0.5, self.onQuestionAnswerFeedbackTimer).start()
-        if ADDON.getSetting('show.correct.answer') == 'true' and not answer.correct:
-            for idx, answer in enumerate(self.question.getAnswers()):
-                if answer.correct:
-                    self.getControl(self.C_MAIN_FIRST_ANSWER + idx).setLabel('[B]%s[/B]' % answer.text)
-                    self.setFocusId(self.C_MAIN_FIRST_ANSWER + idx)
-                    self.onThumbChanged(self.C_MAIN_FIRST_ANSWER + idx)
-                else:
-                    self.getControl(self.C_MAIN_FIRST_ANSWER + idx).setLabel(textColor='0x88888888')
+
+        # show correct answers if setting enabled and if user answered incorrectly or the question type is quote
+        # it's nice to see non-obfuscated quote even when answered correctly
+        if ADDON.getSetting('show.correct.answer') == 'true' and (not answer.correct or isinstance(self.question.getDisplayType(), question.QuoteDisplayType)):
+            if not answer.correct:
+                for idx, answerIter in enumerate(self.question.getAnswers()):
+                    if answerIter.correct:
+                        self.getControl(self.C_MAIN_FIRST_ANSWER + idx).setLabel('[B]%s[/B]' % answerIter.text)
+                        self.setFocusId(self.C_MAIN_FIRST_ANSWER + idx)
+                        self.onThumbChanged(self.C_MAIN_FIRST_ANSWER + idx)
+                    else:
+                        self.getControl(self.C_MAIN_FIRST_ANSWER + idx).setLabel(textColor='0x88888888')
 
             if isinstance(self.question.getDisplayType(), question.QuoteDisplayType):
                 # Display non-obfuscated quote text
