@@ -36,14 +36,17 @@ class TimeLimitedPlayer(xbmc.Player):
     def __init__(self, minPercent, maxPercent, duration):
         super().__init__()
         logger.log(">> TimeLimitedPlayer.__init__()")
-        self.minPercent = minPercent
-        self.maxPercent = maxPercent
-        self.duration = duration
+        self.setBounds(minPercent, maxPercent, duration)
         self.eventTimer = None
         self.startingPlayback = False
         self.lastItem = None
         self.lastStartPercentage = None
         self.playBackEventReceived = False
+
+    def setBounds(self, minPercent, maxPercent, duration):
+        self.minPercent = minPercent
+        self.maxPercent = maxPercent
+        self.duration = duration
 
     def replay(self):
         logger.log(">> TimeLimitedPlayer.replay()")
@@ -106,7 +109,7 @@ class TimeLimitedPlayer(xbmc.Player):
 
         retries = 0
         while not self.playBackEventReceived and retries < 20:
-            xbmc.sleep(250)  # keep sleeping to get onPlayBackStarted() event
+            xbmc.sleep(250)  # keep sleeping to get onAVStarted() event
             retries += 1
 
         logger.log(">> TimeLimitedPlayer.playWindowed() - end")
@@ -142,18 +145,18 @@ class TimeLimitedPlayer(xbmc.Player):
             xbmc.sleep(250)  # keep sleeping to get onPlayBackStopped() event
             retries += 1
 
-    def onPlayBackStarted(self):
-        logger.log(">> TimeLimitedPlayer.onPlayBackStarted()")
+    def onAVStarted(self):
+        logger.log(">> TimeLimitedPlayer.onAVStarted()")
         self.playBackEventReceived = True
 
         if self.eventTimer is not None:
             self.eventTimer.cancel()
-        logger.log(f"IMPORTANT setting timer for {self.duration} seconds")
+        logger.log(f">> TimeLimitedPlayer.onAVStarted() - setting timer for {self.duration} seconds")
         self.eventTimer = threading.Timer(self.duration, self.onTimerComplete)
         self.eventTimer.start()
 
         self.startingPlayback = False
-        logger.log(">> TimeLimitedPlayer.onPlayBackStarted() - end")
+        logger.log(">> TimeLimitedPlayer.onAVStarted() - end")
 
     def onPlayBackStopped(self):
         logger.log(">> TimeLimitedPlayer.onPlayBackStopped()")

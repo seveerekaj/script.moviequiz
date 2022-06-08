@@ -137,7 +137,7 @@ def buildRatingsFilters(field, ratings):
     return filters
 
 
-def buildOnlyWathcedFilter():
+def buildOnlyWatchedFilter():
     return [{
             'operator': 'greaterthan',
             'field': 'playcount',

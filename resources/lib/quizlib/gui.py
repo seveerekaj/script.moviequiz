@@ -79,6 +79,9 @@ class MenuGui(xbmcgui.WindowXMLDialog):
                 self.getControl(1000 + idx).setImage(posters[idx % len(posters)])
 
         # Check preconditions
+        self.validateSettings()
+
+    def validateSettings(self):
         hasMovies = library.hasMovies()
         hasTVShows = library.hasTVShows()
         hasMusic = library.hasMusic()
@@ -107,7 +110,7 @@ class MenuGui(xbmcgui.WindowXMLDialog):
 
         self.moviesEnabled = bool(hasMovies and question.isAnyMovieQuestionsEnabled())
         self.tvShowsEnabled = bool(hasTVShows and question.isAnyTVShowQuestionsEnabled())
-        self.musicEnabled = bool(hasMusic) and question.isAnyMusicQuestionsEnabled()
+        self.musicEnabled = bool(hasMusic and question.isAnyMusicQuestionsEnabled())
 
         if not question.isAnyMovieQuestionsEnabled():
             xbmcgui.Dialog().ok(strings(E_WARNING), strings(E_ALL_MOVIE_QUESTIONS_DISABLED, E_QUIZ_TYPE_NOT_AVAILABLE))
@@ -185,6 +188,7 @@ class MenuGui(xbmcgui.WindowXMLDialog):
                 imdb.downloadData()
             elif action == MenuGui.ACTION_OPEN_SETTINGS:
                 ADDON.openSettings()
+                self.validateSettings()
                 self.quizGui.onSettingsChanged()
             elif action == MenuGui.ACTION_EXIT:
                 self.quizGui.close()
@@ -244,8 +248,14 @@ class QuizGui(xbmcgui.WindowXML):
         minPercent = ADDON.getSettingInt('question.whatmovieisthis.min_percent')
         maxPercent = ADDON.getSettingInt('question.whatmovieisthis.max_percent')
         duration = ADDON.getSettingInt('question.whatmovieisthis.duration')
-        logger.log(f"setting new player with min:{minPercent} max:{maxPercent}, duration:{duration}")
-        self.player = player.TimeLimitedPlayer(min(minPercent, maxPercent), max(minPercent, maxPercent), duration)
+        if self.player is None:
+            self.player = player.TimeLimitedPlayer(min(minPercent, maxPercent), max(minPercent, maxPercent), duration)
+        else:
+            # note: I could create a new instance of self.player with the new parameters here, but when I tried that, weird stuff happened -
+            # the player's threading timer was getting called twice: with both old and new duration. I also tried "del self.player" before creating a new player,
+            # but the destructor was never actually invoked. So I just use the setBounds function on the existing player instead of creating a new one
+            logger.log(f"setting new player with min:{minPercent} max:{maxPercent}, duration:{duration}")
+            self.player.setBounds(min(minPercent, maxPercent), max(minPercent, maxPercent), duration)
 
     @buggalo.buggalo_try_except()
     def onInit(self):
@@ -286,7 +296,7 @@ class QuizGui(xbmcgui.WindowXML):
             self.defaultLibraryFilters.extend(iter(library.buildRatingsFilters('rating', CONTENT_RATINGS[:idx])))
 
         if ADDON.getSetting(SETT_ONLY_WATCHED_MOVIES) == 'true':
-            self.defaultLibraryFilters.extend(library.buildOnlyWathcedFilter())
+            self.defaultLibraryFilters.extend(library.buildOnlyWatchedFilter())
 
         self.questionCandidates = question.getEnabledQuestionCandidates(self.gameInstance)
 
