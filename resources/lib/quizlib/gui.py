@@ -198,10 +198,10 @@ class MenuGui(xbmcgui.WindowXMLDialog):
 class QuizGui(xbmcgui.WindowXML):
     C_MAIN_FIRST_ANSWER = 4000
     C_MAIN_LAST_ANSWER = 4003
-    C_MAIN_REPLAY = 4010
-    C_MAIN_EXIT = 4011
+    C_MAIN_FIRST_ANSWER_COVER_IMAGE = 4010
+    C_MAIN_REPLAY = 4301
+    C_MAIN_EXIT = 4302
     C_MAIN_LOADING = 4020
-    C_MAIN_COVER_IMAGE = 4200
     C_MAIN_QUESTION_LABEL = 4300
     C_MAIN_PHOTO = 4400
     C_MAIN_MOVIE_BACKGROUND = 4500
@@ -221,7 +221,6 @@ class QuizGui(xbmcgui.WindowXML):
     C_MAIN_CORRECT_VISIBILITY = 5002
     C_MAIN_INCORRECT_VISIBILITY = 5003
     C_MAIN_LOADING_VISIBILITY = 5005
-    C_MAIN_COVER_IMAGE_VISIBILITY = 5007
 
     STATE_SPLASH = 1
     STATE_LOADING = 2
@@ -307,9 +306,8 @@ class QuizGui(xbmcgui.WindowXML):
         self.onNewQuestion()
 
     def close(self):
-        if self.player:
-            if self.player.isPlaying():
-                self.player.stopPlayback(True)
+        if self.player and self.player.isPlaying():
+            self.player.stopPlayback(True)
         super().close()
 
     @buggalo.buggalo_try_except()
@@ -356,7 +354,7 @@ class QuizGui(xbmcgui.WindowXML):
 
     @buggalo.buggalo_try_except()
     def onFocus(self, controlId):
-        self.onThumbChanged(controlId)
+        pass
 
     def onGameOver(self):
         if self.uiState == self.STATE_GAME_OVER:
@@ -389,9 +387,12 @@ class QuizGui(xbmcgui.WindowXML):
                 button.setVisible(False)
             else:
                 button.setLabel(answers[idx].text, textColor='0xFFFFFFFF')
+                coverImage = self.getControl(self.C_MAIN_FIRST_ANSWER_COVER_IMAGE + idx)
+                if answers[idx].coverFile is not None:
+                    coverImage.setImage(answers[idx].coverFile)
+                else:
+                    coverImage.setImage(NO_PHOTO_IMAGE)
                 button.setVisible(True)
-
-        self.onThumbChanged()
 
         displayType = self.question.getDisplayType()
         if self.question.getFanartFile():
@@ -493,7 +494,6 @@ class QuizGui(xbmcgui.WindowXML):
                     if answerIter.correct:
                         self.getControl(self.C_MAIN_FIRST_ANSWER + idx).setLabel('[B]%s[/B]' % answerIter.text)
                         self.setFocusId(self.C_MAIN_FIRST_ANSWER + idx)
-                        self.onThumbChanged(self.C_MAIN_FIRST_ANSWER + idx)
                     else:
                         self.getControl(self.C_MAIN_FIRST_ANSWER + idx).setLabel(textColor='0x88888888')
 
@@ -507,25 +507,6 @@ class QuizGui(xbmcgui.WindowXML):
 
         else:
             self.onNewQuestion()
-
-    def onThumbChanged(self, controlId=None):
-        if self.question is None:
-            return  # not initialized yet
-
-        if controlId is None:
-            controlId = self.getFocusId()
-
-        if self.C_MAIN_FIRST_ANSWER <= controlId <= self.C_MAIN_LAST_ANSWER:
-            answer = self.question.getAnswer(controlId - self.C_MAIN_FIRST_ANSWER)
-            coverImage = self.getControl(self.C_MAIN_COVER_IMAGE)
-            if answer is not None and answer.coverFile is not None:
-                self.getControl(self.C_MAIN_COVER_IMAGE_VISIBILITY).setVisible(False)
-                coverImage.setImage(answer.coverFile)
-            elif answer is not None and answer.coverFile is not None:
-                self.getControl(self.C_MAIN_COVER_IMAGE_VISIBILITY).setVisible(False)
-                coverImage.setImage(NO_PHOTO_IMAGE)
-            else:
-                self.getControl(self.C_MAIN_COVER_IMAGE_VISIBILITY).setVisible(True)
 
     @buggalo.buggalo_try_except()
     def onQuestionAnswerFeedbackTimer(self):
