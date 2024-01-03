@@ -45,7 +45,10 @@
         <forum>https://forum.kodi.tv/showthread.php?tid=364172</forum>
         <source>https://github.com/seveerekaj/script.moviequiz</source>
         <news>v2.1.0 (2024-01-02)
-            - The quiz gui has a new look! The answers are now in a horizontal layout, with a cover image for each answer option. The movie player is now fullscreen.
+        - The quiz interface has a new look! The answers are now in a horizontal layout, with a cover image for each answer option. The movie player is now fullscreen.
+
+v2.0.0 (2021-08-26)
+        - Complete overhaul of the addon to get it working in Kodi 19 Matrix, add new features, and remove old non-essential features.
         </news>
         <assets>
             <icon>resources/media/images/icon.png</icon>

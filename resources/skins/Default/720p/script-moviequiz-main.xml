@@ -383,6 +383,7 @@
                     <align>left</align>
                 </control>
 
+                <!-- Replay & Quit buttons -->
                 <control type="button" id="4301">
                     <description>Replay video</description>
                     <posx>1050</posx>
@@ -396,8 +397,8 @@
                     <label>$ADDON[script.moviequiz 32011]</label>
                     <align>center</align>
                     <onright>4302</onright>
-                    <ondown>4003</ondown>
-                    <onup>4003</onup>
+                    <ondown>4000</ondown>
+                    <onup>4000</onup>
                     <enable>!Control.IsVisible(5000) + !Control.IsVisible(4800)</enable>
                 </control>
                 <control type="button" id="4302">
@@ -413,8 +414,8 @@
                     <label>$ADDON[script.moviequiz 32012]</label>
                     <align>center</align>
                     <onleft>4301</onleft>
-                    <ondown>4003</ondown>
-                    <onup>4003</onup>
+                    <ondown>4000</ondown>
+                    <onup>4000</onup>
                 </control>
 
                 <!-- Answer buttons -->
