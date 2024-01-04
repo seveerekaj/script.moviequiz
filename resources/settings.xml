@@ -21,30 +21,35 @@
                     <default>false</default>
                     <control type="toggle"/>
                 </setting>
-                <setting id="movie.rating.limit" label="32505" type="string" parent="movie.rating.limit.enabled">
+                <setting id="movie.rating.limit" label="32505" type="list[string]" parent="movie.rating.limit.enabled">
                     <level>0</level>
-                    <default>R</default>
+                    <default>G|PG|PG-13</default>
                     <constraints>
                         <options>
                             <option label="G">G</option>
                             <option label="PG">PG</option>
                             <option label="PG-13">PG-13</option>
                             <option label="R">R</option>
+                            <option label="NR">NR</option>
+                            <option label="No rating (empty)">empty</option>
                         </options>
                     </constraints>
                     <dependencies>
                         <dependency type="enable" setting="movie.rating.limit.enabled">true</dependency>
                     </dependencies>
-                    <control type="spinner" format="string"/>
+                    <control type="list" format="string">
+                        <multiselect>true</multiselect>
+                        <hidevalue>false</hidevalue>
+                    </control>
                 </setting>
                 <setting id="tvshow.rating.limit.enabled" label="32508" type="boolean">
                     <level>0</level>
                     <default>false</default>
                     <control type="toggle"/>
                 </setting>
-                <setting id="tvshow.rating.limit" label="32509" type="string" parent="tvshow.rating.limit.enabled">
+                <setting id="tvshow.rating.limit" label="32509" type="list[string]" parent="tvshow.rating.limit.enabled">
                     <level>0</level>
-                    <default>TV-MA</default>
+                    <default>TV-Y|TV-Y7|TV-Y7-FV|TV-G|TV-PG|TV-14</default>
                     <constraints>
                         <options>
                             <option label="TV-Y">TV-Y</option>
@@ -54,12 +59,16 @@
                             <option label="TV-PG">TV-PG</option>
                             <option label="TV-14">TV-14</option>
                             <option label="TV-MA">TV-MA</option>
+                            <option label="No rating (empty)">empty</option>
                         </options>
                     </constraints>
                     <dependencies>
                         <dependency type="enable" setting="tvshow.rating.limit.enabled">true</dependency>
                     </dependencies>
-                    <control type="spinner" format="string"/>
+                    <control type="list" format="string">
+                        <multiselect>true</multiselect>
+                        <hidevalue>false</hidevalue>
+                    </control>
                 </setting>
             </group>
         </category>
