@@ -387,12 +387,12 @@ class QuizGui(xbmcgui.WindowXML):
                 button.setVisible(False)
             else:
                 button.setLabel(answers[idx].text, textColor='0xFFFFFFFF')
+                button.setVisible(True)
                 coverImage = self.getControl(self.C_MAIN_FIRST_ANSWER_COVER_IMAGE + idx)
                 if answers[idx].coverFile is not None:
                     coverImage.setImage(answers[idx].coverFile)
                 else:
                     coverImage.setImage(NO_PHOTO_IMAGE)
-                button.setVisible(True)
 
         displayType = self.question.getDisplayType()
         if self.question.getFanartFile():
