@@ -327,7 +327,7 @@ msgid "Max. Content rating"
 msgstr ""
 
 msgctxt "#32510"
-msgid "Play videos fullscreen"
+msgid "Play videos full screen"
 msgstr ""
 
 #empty strings from id 32511 to 32549
