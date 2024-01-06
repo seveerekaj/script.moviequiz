@@ -190,7 +190,7 @@
                     <width>840</width>
                     <height>342</height>
                     <textcolor>ff000000</textcolor>
-                    <font>font30</font>
+                    <font>font40</font>
                     <wrapmultiline>true</wrapmultiline>
                     <autoscroll time="3600" delay="6000" repeat="6000">true</autoscroll>
                 </control>
