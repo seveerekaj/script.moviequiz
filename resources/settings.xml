@@ -13,6 +13,11 @@
                     <default>true</default>
                     <control type="toggle"/>
                 </setting>
+                <setting id="video.fullscreen.enabled" label="32510" type="boolean">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
             </group>
 
             <group id="movie.rating.limits" label="32501">
@@ -243,4 +248,3 @@
          </category>
     </section>
 </settings>
-

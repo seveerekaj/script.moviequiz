@@ -326,7 +326,11 @@ msgctxt "#32509"
 msgid "Max. Content rating"
 msgstr ""
 
-#empty strings from id 32510 to 32549
+msgctxt "#32510"
+msgid "Play videos fullscreen"
+msgstr ""
+
+#empty strings from id 32511 to 32549
 
 msgctxt "#32550"
 msgid "Use these question types for movies"

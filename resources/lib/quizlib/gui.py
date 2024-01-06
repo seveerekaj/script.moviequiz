@@ -215,6 +215,7 @@ class QuizGui(xbmcgui.WindowXML):
     C_MAIN_PHOTO_LABEL_3 = 4713
     C_MAIN_VIDEO_FILE_NOT_FOUND = 4800
     C_MAIN_VIDEO_VISIBILITY = 5000
+    C_MAIN_VIDEO_FULLSCREEN_VISIBILITY = 5007
     C_MAIN_PHOTO_VISIBILITY = 5001
     C_MAIN_QUOTE_VISIBILITY = 5004
     C_MAIN_THREE_PHOTOS_VISIBILITY = 5006
@@ -241,12 +242,12 @@ class QuizGui(xbmcgui.WindowXML):
         self.lastClickTime = -1
         self.delayedNewQuestionTimer = None
         self.uiState = self.STATE_SPLASH
-        self.onSettingsChanged()
 
     def onSettingsChanged(self):
         minPercent = ADDON.getSettingInt('question.whatmovieisthis.min_percent')
         maxPercent = ADDON.getSettingInt('question.whatmovieisthis.max_percent')
         duration = ADDON.getSettingInt('question.whatmovieisthis.duration')
+        self.getControl(self.C_MAIN_VIDEO_FULLSCREEN_VISIBILITY).setVisible(ADDON.getSettingBool('video.fullscreen.enabled'))
         if self.player is None:
             self.player = player.TimeLimitedPlayer(min(minPercent, maxPercent), max(minPercent, maxPercent), duration)
         else:
@@ -258,6 +259,7 @@ class QuizGui(xbmcgui.WindowXML):
 
     @buggalo.buggalo_try_except()
     def onInit(self):
+        self.onSettingsChanged()
         self.getControl(2).setVisible(False)
         startTime = datetime.datetime.now()
         question.IMDB.loadData()
@@ -404,7 +406,7 @@ class QuizGui(xbmcgui.WindowXML):
 
         if isinstance(displayType, question.VideoDisplayType):
             self.getControl(self.C_MAIN_VIDEO_FILE_NOT_FOUND).setVisible(False)
-            xbmc.sleep(1500)  # give skin animation time to execute
+            xbmc.sleep(1000)  # give skin animation time to execute
             if not self.player.playWindowed(displayType.getVideoFile()):
                 self.getControl(self.C_MAIN_VIDEO_FILE_NOT_FOUND).setVisible(True)
 

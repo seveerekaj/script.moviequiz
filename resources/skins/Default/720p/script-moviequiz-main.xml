@@ -83,6 +83,9 @@
             <control type="label" id="5006">
                 <description>visibility marker for three photos group</description>
             </control>
+            <control type="label" id="5007">
+                <description>visibility marker for fullscreen video</description>
+            </control>
 
             <!-- Background -->
             <control type="image" id="4500" background="true">
@@ -102,7 +105,6 @@
                 <width>336</width>
                 <height>452</height>
                 <visible>!Control.IsVisible(5001)</visible>
-                <animation effect="fade" start="100" end="0" time="1000">Hidden</animation>
                 <animation effect="fade" start="0" end="100" delay="1000" time="500">Visible</animation>
 
                 <control type="image">
@@ -142,6 +144,14 @@
                     <posy>0</posy>
                     <width>1280</width>
                     <height>720</height>
+                    <visible>Control.IsVisible(5007)</visible>
+                </control>
+                <control type="videowindow" id="3">
+                    <posx>0</posx>
+                    <posy>0</posy>
+                    <width>1280</width>
+                    <height>452</height>
+                    <visible>!Control.IsVisible(5007)</visible>
                 </control>
 
                 <control type="label" id="4800">
@@ -165,7 +175,6 @@
                 <width>1280</width>
                 <height>720</height>
                 <visible>!Control.IsVisible(5004)</visible>
-                <animation effect="fade" start="100" end="0" time="1000">Hidden</animation>
                 <animation effect="fade" start="0" end="100" time="1000">Visible</animation>
 
                 <control type="image">
@@ -219,7 +228,6 @@
                     <aspectratio>keep</aspectratio>
                     <fadetime>1000</fadetime>
                     <visible>Control.IsVisible(4700)</visible>
-                    <animation effect="fade" start="100" end="0" time="1000">Hidden</animation>
                     <animation effect="fade" start="0" end="100" time="500">Visible</animation>
                 </control>
                 <control type="label" id="4711">
@@ -250,7 +258,6 @@
                     <aspectratio>keep</aspectratio>
                     <fadetime>1000</fadetime>
                     <visible>Control.IsVisible(4700)</visible>
-                    <animation effect="fade" start="100" end="0" delay="250" time="1000">Hidden</animation>
                     <animation effect="fade" start="0" end="100" delay="250" time="500">Visible</animation>
                 </control>
                 <control type="label" id="4712">
@@ -282,7 +289,6 @@
                     <aspectratio>keep</aspectratio>
                     <fadetime>1000</fadetime>
                     <visible>Control.IsVisible(4700)</visible>
-                    <animation effect="fade" start="100" end="0" delay="500" time="1000">Hidden</animation>
                     <animation effect="fade" start="0" end="100" delay="500" time="500">Visible</animation>
                 </control>
                 <control type="label" id="4713">
@@ -435,6 +441,7 @@
                     <onleft>4003</onleft>
                     <onright>4001</onright>
                     <onup>4302</onup>
+                    <ondown>4302</ondown>
                     <align>left</align>
                     <aligny>top</aligny>
                 </control>
@@ -474,6 +481,7 @@
                     <onleft>4000</onleft>
                     <onright>4002</onright>
                     <onup>4302</onup>
+                    <ondown>4302</ondown>
                     <align>left</align>
                     <aligny>top</aligny>
                 </control>
@@ -513,6 +521,7 @@
                     <onleft>4001</onleft>
                     <onright>4003</onright>
                     <onup>4302</onup>
+                    <ondown>4302</ondown>
                     <align>left</align>
                     <aligny>top</aligny>
                 </control>
@@ -552,6 +561,7 @@
                     <onleft>4002</onleft>
                     <onright>4000</onright>
                     <onup>4302</onup>
+                    <ondown>4302</ondown>
                     <align>left</align>
                     <aligny>top</aligny>
                 </control>
