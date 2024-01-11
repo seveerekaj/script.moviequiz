@@ -28,7 +28,7 @@ from urllib.request import urlopen
 import xbmcgui
 import xbmcvfs
 
-from resources.lib.quizlib import logger
+from . import logger
 from .strings import *
 
 
@@ -76,7 +76,7 @@ class Imdb:
     def _createQuotesIndex(self, line):
         """
         Creates an index file of the QUOTES_LIST file. The index contains
-        byte offsets of each movie title to make it possible to load just 
+        byte offsets of each movie title to make it possible to load just
         part of the QUOTES_LIST file.
 
         @param line: a line from QUOTES_LIST

@@ -4,16 +4,50 @@ Jake's TODOs:
     maybe have new question that finds a random movie and grabs a single frame from that movie, and displays to the user.
         or maybe grab several frames, each from a different random position of the film, and show each to the user? have the number of frames grabbed configurable
     where is cinema vision getting their quotes, trivia from?
-    have name the movie be full screen, and show all posters as choices
     pause instead of stop at end of "what movie is this?" then have banner show "time's up! (change the length of time to play in settings)"
     change hard-coded numbers to string constants
     for settings strings accessed in code, use const variables rather than hard-coding the strings
     add 5th or maybe even 6th answer option
     apparently fanart is required?
+        also add screenshots to be seen in addon info
     ask about onfocus for listitem
     put random in util module along with logger
     get movie quotes from subtitle tracks of locally-stored movies?
     delete old image resources
+        loading.gif
+        quiz-button-focus
+        quiz-button-movie
+        quiz-button-music
+        quiz-button-nofocus
+        quiz-button-radio
+        quiz-button-theater
+        quiz-button-tvshows
+        quiz-gameover-background
+        quiz-gametype-background
+        quiz-icon-player
+        quiz-icon-world
+        quiz-laquo
+        quiz-logo-gameover
+        quiz-menu-background
+        quiz-question-background
+        quiz-quote-background
+        quiz-raquo
+    can i get rid of game.py ?
+    multiplayer support
+        possible to host web server that each player can connect to (on same wifi network) and select the answer to each question?
+    buggalo error:
+        AttributeError: module 'xbmc' has no attribute 'translatePath'
+    invert the visibility markers that are done opposite of what would be intuitive?
+        maybe they were done that way because they are visible by default?
+    move the stuff in resources/media to resources/skins/Default/media
+
+    probably broken questions:
+        what movie is actor not in?
+        what actor is in these movies?
+            this is the only question that uses the 3 photos display type
+        what tv show is this theme from?
+    probably pointless question:
+        what actor is in these movies besides other actor?
 
 twinther's TODOs:
 - Error message when we are unable to find additional questions
