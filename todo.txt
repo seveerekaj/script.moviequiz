@@ -14,7 +14,6 @@ Jake's TODOs:
     put random in util module along with logger
     get movie quotes from subtitle tracks of locally-stored movies?
     delete old image resources
-    exit automatically from addon after downloading imdb data
     maybe move <min start %>, <max start %>, and <duration> to "advanced" category within settings?
         that way the "questions" category can actually just be question types,
         and I don't have to specify that the % and duration settings apply to both movie and tv show <what _ is this> question type
@@ -25,6 +24,7 @@ Jake's TODOs:
         AttributeError: module 'xbmc' has no attribute 'translatePath'
     invert the visibility markers that are done opposite of what would be intuitive?
         maybe they were done that way because they are visible by default?
+    move the stuff in resources/media to resources/skins/Default/media
 
     probably broken questions:
         what movie is actor not in?

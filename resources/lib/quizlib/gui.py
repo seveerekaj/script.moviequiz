@@ -186,6 +186,10 @@ class MenuGui(xbmcgui.WindowXMLDialog):
                 return
             elif action == MenuGui.ACTION_DOWNLOAD_IMDB:
                 imdb.downloadData()
+                # force a quit/reopen as quotes are only loaded once in QuizGui.onInit
+                self.quizGui.close()
+                self.close()
+                return
             elif action == MenuGui.ACTION_OPEN_SETTINGS:
                 ADDON.openSettings()
                 self.validateSettings()
