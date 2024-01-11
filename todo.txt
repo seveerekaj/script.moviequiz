@@ -14,9 +14,24 @@ Jake's TODOs:
     put random in util module along with logger
     get movie quotes from subtitle tracks of locally-stored movies?
     delete old image resources
-    maybe move <min start %>, <max start %>, and <duration> to "advanced" category within settings?
-        that way the "questions" category can actually just be question types,
-        and I don't have to specify that the % and duration settings apply to both movie and tv show <what _ is this> question type
+        loading.gif
+        quiz-button-focus
+        quiz-button-movie
+        quiz-button-music
+        quiz-button-nofocus
+        quiz-button-radio
+        quiz-button-theater
+        quiz-button-tvshows
+        quiz-gameover-background
+        quiz-gametype-background
+        quiz-icon-player
+        quiz-icon-world
+        quiz-laquo
+        quiz-logo-gameover
+        quiz-menu-background
+        quiz-question-background
+        quiz-quote-background
+        quiz-raquo
     can i get rid of game.py ?
     multiplayer support
         possible to host web server that each player can connect to (on same wifi network) and select the answer to each question?

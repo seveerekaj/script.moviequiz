@@ -248,9 +248,9 @@ class QuizGui(xbmcgui.WindowXML):
         self.uiState = self.STATE_SPLASH
 
     def onSettingsChanged(self):
-        minPercent = ADDON.getSettingInt('question.whatmovieisthis.min_percent')
-        maxPercent = ADDON.getSettingInt('question.whatmovieisthis.max_percent')
-        duration = ADDON.getSettingInt('question.whatmovieisthis.duration')
+        minPercent = ADDON.getSettingInt('video.player.min_percent')
+        maxPercent = ADDON.getSettingInt('video.player.max_percent')
+        duration = ADDON.getSettingInt('video.player.duration')
         self.getControl(self.C_MAIN_VIDEO_FULLSCREEN_VISIBILITY).setVisible(ADDON.getSettingBool('video.fullscreen.enabled'))
         if self.player is None:
             self.player = player.TimeLimitedPlayer(min(minPercent, maxPercent), max(minPercent, maxPercent), duration)

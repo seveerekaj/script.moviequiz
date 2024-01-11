@@ -289,12 +289,10 @@ msgid "General"
 msgstr ""
 
 msgctxt "#32501"
-msgid "Movies"
+msgid "Content Limits"
 msgstr ""
 
-msgctxt "#32502"
-msgid "TV Shows"
-msgstr ""
+#empty string with id 32502
 
 msgctxt "#32503"
 msgid "Questions"
@@ -324,11 +322,7 @@ msgctxt "#32509"
 msgid "Max. Content rating"
 msgstr ""
 
-msgctxt "#32510"
-msgid "Play videos full screen"
-msgstr ""
-
-#empty strings from id 32511 to 32549
+#empty strings from id 32510 to 32549
 
 msgctxt "#32550"
 msgid "Use these question types for movies"
@@ -436,14 +430,28 @@ msgctxt "#32585"
 msgid "What TV show is this theme from?"
 msgstr ""
 
-msgctxt "#32586"
+#empty strings from id 32586 to 32599
+
+msgctxt "#32600"
+msgid "Video Player"
+msgstr ""
+
+msgctxt "#32601"
+msgid "Play videos full screen"
+msgstr ""
+
+msgctxt "#32602"
 msgid "Minimum start %"
 msgstr ""
 
-msgctxt "#32587"
+msgctxt "#32603"
 msgid "Maximum start %"
 msgstr ""
 
-msgctxt "#32588"
-msgid "Duration (in seconds)"
+msgctxt "#32604"
+msgid "Video clip length (seconds)"
+msgstr ""
+
+msgctxt "#32605"
+msgid "These settings apply to question types that play a clip from a movie or TV show."
 msgstr ""

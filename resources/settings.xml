@@ -13,14 +13,9 @@
                     <default>true</default>
                     <control type="toggle"/>
                 </setting>
-                <setting id="video.fullscreen.enabled" label="32510" type="boolean">
-                    <level>0</level>
-                    <default>true</default>
-                    <control type="toggle"/>
-                </setting>
             </group>
 
-            <group id="movie.rating.limits" label="32501">
+            <group id="content.rating.limits" label="32501">
                 <setting id="movie.rating.limit.enabled" label="32504" type="boolean">
                     <level>0</level>
                     <default>false</default>
@@ -42,9 +37,6 @@
                     </dependencies>
                     <control type="spinner" format="string"/>
                 </setting>
-            </group>
-
-            <group id="tvshow.rating.limits" label="32502">
                 <setting id="tvshow.rating.limit.enabled" label="32508" type="boolean">
                     <level>0</level>
                     <default>false</default>
@@ -79,49 +71,6 @@
                     <default>true</default>
                     <control type="toggle"/>
                 </setting>
-
-
-                <setting id="question.whatmovieisthis.min_percent" label="32586" type="integer" parent="question.whatmovieisthis.enabled">
-                    <level>0</level>
-                    <default>10</default>
-                    <constraints>
-                        <minimum>0</minimum>
-                        <step>1</step>
-                        <maximum>99</maximum>
-                    </constraints>
-                    <control type="slider" format="percentage"/>
-                    <dependencies>
-                        <dependency type="enable" setting="question.whatmovieisthis.enabled">true</dependency>
-                    </dependencies>
-                </setting>
-                <setting id="question.whatmovieisthis.max_percent" label="32587" type="integer" parent="question.whatmovieisthis.enabled">
-                    <level>0</level>
-                    <default>80</default>
-                    <constraints>
-                        <minimum>0</minimum>
-                        <step>1</step>
-                        <maximum>99</maximum>
-                    </constraints>
-                    <control type="slider" format="percentage"/>
-                    <dependencies>
-                        <dependency type="enable" setting="question.whatmovieisthis.enabled">true</dependency>
-                    </dependencies>
-                </setting>
-                <setting id="question.whatmovieisthis.duration" label="32588" type="integer" parent="question.whatmovieisthis.enabled">
-                    <level>0</level>
-                    <default>30</default>
-                    <constraints>
-                        <minimum>1</minimum>
-                        <maximum>10000</maximum>
-                    </constraints>
-                    <control type="edit" format="integer"/>
-                    <dependencies>
-                        <dependency type="enable" setting="question.whatmovieisthis.enabled">true</dependency>
-                    </dependencies>
-                </setting>
-
-
-
                 <setting id="question.actornotinmovie.enabled" label="32553" type="boolean">
                     <level>0</level>
                     <default>true</default>
@@ -244,7 +193,45 @@
                     <control type="toggle"/>
                 </setting>
             </group>
+        </category>
 
-         </category>
+        <category id="video.player" label="32600" help="32605">
+            <group id="video.player">
+                <setting id="video.fullscreen.enabled" label="32601" type="boolean">
+                    <level>0</level>
+                    <default>true</default>
+                    <control type="toggle"/>
+                </setting>
+                <setting id="video.player.min_percent" label="32602" type="integer">
+                    <level>0</level>
+                    <default>10</default>
+                    <constraints>
+                        <minimum>0</minimum>
+                        <step>1</step>
+                        <maximum>99</maximum>
+                    </constraints>
+                    <control type="slider" format="percentage"/>
+                </setting>
+                <setting id="video.player.max_percent" label="32603" type="integer">
+                    <level>0</level>
+                    <default>80</default>
+                    <constraints>
+                        <minimum>0</minimum>
+                        <step>1</step>
+                        <maximum>99</maximum>
+                    </constraints>
+                    <control type="slider" format="percentage"/>
+                </setting>
+                <setting id="video.player.duration" label="32604" type="integer">
+                    <level>0</level>
+                    <default>30</default>
+                    <constraints>
+                        <minimum>1</minimum>
+                        <maximum>10000</maximum>
+                    </constraints>
+                    <control type="edit" format="integer"/>
+                </setting>
+            </group>
+        </category>
     </section>
 </settings>
