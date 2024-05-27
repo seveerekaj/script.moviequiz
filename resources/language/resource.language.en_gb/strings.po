@@ -68,7 +68,35 @@ msgctxt "#32021"
 msgid "None of your movies has a Content rating, so the [I]Limit TV show selection based on Content rating[/I] setting will be disabled."
 msgstr ""
 
-#empty strings from id 32022 to 32099
+msgctxt "#32022"
+msgid "Login failed: no such user"
+msgstr ""
+
+msgctxt "#32023"
+msgid "Login failed: invalid password"
+msgstr ""
+
+msgctxt "#32024"
+msgid "No database connected"
+msgstr ""
+
+msgctxt "#32025"
+msgid "This user already exists. Please choose another name"
+msgstr ""
+
+msgctxt "#32026"
+msgid "Failed to create user"
+msgstr ""
+
+msgctxt "#32027"
+msgid "This user does not exists"
+msgstr ""
+
+msgctxt "#32028"
+msgid "Failed to remove user"
+msgstr ""
+
+#empty strings from id 32029 to 32099
 
 #Menu
 
@@ -148,7 +176,63 @@ msgid ""
 "2011.11.13"
 msgstr ""
 
-#empty strings from id 32113 to 32399
+msgctxt "#32113"
+msgid "User Management"
+msgstr ""
+
+msgctxt "#32114"
+msgid "Back"
+msgstr ""
+
+msgctxt "#32115"
+msgid "Create user"
+msgstr ""
+
+msgctxt "#32116"
+msgid "Remove user"
+msgstr ""
+
+msgctxt "#32117"
+msgid "Login"
+msgstr ""
+
+msgctxt "#32118"
+msgid "Logout"
+msgstr ""
+
+msgctxt "#32119"
+msgid "Password"
+msgstr ""
+
+msgctxt "#32120"
+msgid "Highscores"
+msgstr ""
+
+msgctxt "#32121"
+msgid "{0} questions"
+msgstr ""
+
+msgctxt "#32122"
+msgid "No highscore yet"
+msgstr ""
+
+msgctxt "#32123"
+msgid "[B]{0}[/B]) [B]{1}[/B] scores [COLOR red]{2}[/COLOR] on [I]{3}[/I]"
+msgstr ""
+
+msgctxt "#32124"
+msgid "Competitive Mode"
+msgstr ""
+
+msgctxt "#32125"
+msgid "Logged as {0}"
+msgstr ""
+
+msgctxt "#32126"
+msgid "Got {0} correct answers on {1} questions"
+msgstr ""
+
+#empty strings from id 32127 to 32399
 
 #Movie Questions
 
@@ -322,7 +406,11 @@ msgctxt "#32509"
 msgid "Max. Content rating"
 msgstr ""
 
-#empty strings from id 32510 to 32549
+msgctxt "#32510"
+msgid "Hide menus IMDB and About"
+msgstr ""
+
+#empty strings from id 32511 to 32549
 
 msgctxt "#32550"
 msgid "Use these question types for movies"
