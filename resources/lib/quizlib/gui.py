@@ -393,19 +393,30 @@ class MenuGui(xbmcgui.WindowXMLDialog):
                 self.updateUserManagementMenu()
                 return
             elif action == MenuGui.ACTION_USER_LOGIN:
-                dialog = xbmcgui.Dialog()
-                login = dialog.input(strings(M_USER_LOGIN))
+                login = ''
+                existing = self.quizGui.user.list()
+                if len(existing) > 0:
+                  dialog = xbmcgui.Dialog()
+                  user_idx = dialog.select(strings(M_EXISTING_USER), existing)
+                  if user_idx >= 0 and user_idx < len(existing):
+                    login = existing[user_idx]
+                if login == '':
+                  dialog = xbmcgui.Dialog()
+                  login = dialog.input(strings(M_USER_LOGIN))
                 if login != '':
                   password = dialog.input(strings(M_USER_PASSWORD), type=xbmcgui.INPUT_ALPHANUM, option=xbmcgui.ALPHANUM_HIDE_INPUT)
                   status, error = self.quizGui.user.login(login, password)
                   if not status:
                     logger.notification(strings(error))
                   else:
-                    self.updateUserManagementMenu()
+                    #self.updateUserManagementMenu()
+                    # Directly back to main menu
+                    self.updateMenu()
                 return
             elif action == MenuGui.ACTION_USER_LOGOUT:
                 self.quizGui.user.logout()
-                self.updateUserManagementMenu()
+                #self.updateUserManagementMenu()
+                self.updateMenu()
                 return
             elif action == MenuGui.ACTION_USER_ADD:
                 dialog = xbmcgui.Dialog()

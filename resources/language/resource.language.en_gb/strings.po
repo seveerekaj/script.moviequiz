@@ -232,7 +232,11 @@ msgctxt "#32126"
 msgid "Got {0} correct answers on {1} questions"
 msgstr ""
 
-#empty strings from id 32127 to 32399
+msgctxt "#32127"
+msgid "Choose an existing user"
+msgstr ""
+
+#empty strings from id 32128 to 32399
 
 #Movie Questions
 

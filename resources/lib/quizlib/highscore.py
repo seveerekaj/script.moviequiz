@@ -216,6 +216,16 @@ class User:
   # Logout the user
   def logout(self):
     self.currentUser = None
+
+  def list(self):
+    ret = []
+    if self.database is not None:
+      res = self.database.execute("SELECT name FROM users", "users")
+      if res is not None and len(res) > 0:
+          for r in res:
+              ret.append(r[0])
+
+    return ret
     
   # Clean-up the instance
   def close(self):
