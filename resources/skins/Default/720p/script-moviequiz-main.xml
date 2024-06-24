@@ -372,7 +372,7 @@
                     <posy>0</posy>
                     <width>1280</width>
                     <height>268</height>
-                    <!--<texture>quiz-background-glass.png</texture>-->
+                    <texture>quiz-background-glass.png</texture>
                 </control>
 
                 <control type="label" id="4300">
