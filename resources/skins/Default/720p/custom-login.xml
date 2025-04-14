@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<window id="1100">
+    <defaultcontrol always="true">100</defaultcontrol>
+    <coordinates>
+        <system>1</system>
+        <posx>0</posx>
+        <posy>0</posy>
+    </coordinates>
+
+    <controls>
+        <!-- Text field for login -->
+        <control type="edit" id="100">
+            <label>Login:</label>
+            <hinttext>Login name</hinttext>
+            <posx>50</posx>
+            <posy>50</posy>
+            <width>200</width>
+            <height>30</height>
+        </control>
+
+        <!-- Password field -->
+        <control type="edit" id="101">
+            <label>Password:</label>
+            <hinttext>Password</hinttext>
+            <password>true</password> <!-- This hides the text with star characters -->
+            <posx>50</posx>
+            <posy>100</posy>
+            <width>200</width>
+            <height>30</height>
+        </control>
+        
+        <control type="edit" id="202">
+        <description>My First edit control</description>
+        <left>80</left>
+        <top>60</top>
+        <width>250</width>
+        <visible>true</visible>
+        <aligny>center</aligny>
+        <label>Search</label>
+        <hinttext>Enter search string</hinttext>
+        <font>font14</font>
+	<textoffsetx>10</textoffsetx>
+        <textcolor>FFB2D4F5</textcolor>
+	<disabledcolor>FF000000</disabledcolor>
+	<invalidcolor>FFFFFFFF</invalidcolor>
+	<texturefocus>button-focus.png</texturefocus>
+	<texturenofocus>button-nofocus.png</texturenofocus>
+	<pulseonselect>no</pulseonselect>
+  </control>
+  
+  <!-- Cancel button -->
+        <control type="button" id="203">
+            <label>Prout</label>
+            <posx>300</posx>
+            <posy>150</posy>
+            <width>80</width>
+            <height>30</height>
+        </control>
+        
+
+        <!-- OK button -->
+        <control type="button" id="200">
+            <label>OK</label>
+            <posx>50</posx>
+            <posy>150</posy>
+            <width>80</width>
+            <height>30</height>
+        </control>
+
+        <!-- Cancel button -->
+        <control type="button" id="201">
+            <label>Cancel</label>
+            <posx>150</posx>
+            <posy>150</posy>
+            <width>80</width>
+            <height>30</height>
+        </control>
+    </controls>
+</window>
+

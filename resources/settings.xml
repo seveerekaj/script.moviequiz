@@ -62,6 +62,14 @@
                     <control type="spinner" format="string"/>
                 </setting>
             </group>
+            
+            <group id="menu">
+                <setting id="hide.imdb.about" label="32510" type="boolean">
+                    <level>0</level>
+                    <default>false</default>
+                    <control type="toggle"/>
+                </setting>
+            </group>
         </category>
 
         <category id="questions" label="32503">

@@ -33,6 +33,7 @@ from . import imdb, question
 from . import library
 from . import logger
 from . import player
+from . import highscore
 from .strings import *
 
 RESOURCES_PATH = os.path.join(ADDON.getAddonInfo('path'), 'resources')
@@ -46,10 +47,12 @@ NO_PHOTO_IMAGE = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'quiz
 MPAA_RATINGS = ['R', 'Rated R', 'PG-13', 'Rated PG-13', 'PG', 'Rated PG', 'G', 'Rated G']
 CONTENT_RATINGS = ['TV-MA', 'TV-14', 'TV-PG', 'TV-G', 'TV-Y7-FV', 'TV-Y7', 'TV-Y']
 
+databaseTypeDisplayed = False
 
 class MenuGui(xbmcgui.WindowXMLDialog):
     C_MENU_LIST = 4001
     C_INFO_TEXT = 6001
+    C_LOGGED_USER = 8001
 
     ACTION_KEY = 'action'
     ACTION_MOVIE_QUIZ = 1
@@ -59,16 +62,34 @@ class MenuGui(xbmcgui.WindowXMLDialog):
     ACTION_OPEN_SETTINGS = 5
     ACTION_EXIT = 6
     ACTION_ABOUT = 7
+    ACTION_USER_MANAGEMENT = 8
+    ACTION_MAIN_MENU = 9
+    ACTION_USER_ADD = 10
+    ACTION_USER_DEL = 11
+    ACTION_USER_LOGIN = 12
+    ACTION_USER_LOGOUT = 13
+    ACTION_HIGHSCORE = 14
+    ACTION_HIGHSCORE_ROUND = 15
+    ACTION_COMPETITIVE_MODE = 16
+    ACTION_COMPETITIVE_ROUND = 17
+    ACTION_COMPETITIVE_MUSIC_QUIZ = 18
+    ACTION_COMPETITIVE_TV_QUIZ = 19
+    ACTION_COMPETITIVE_MOVIE_QUIZ = 20
+    ACTION_HIGHSCORE_TYPE = 21
 
     def __new__(cls, quizGui):
         return super().__new__(cls, 'script-moviequiz-menu.xml', ADDON.getAddonInfo('path'))
 
     def __init__(self, quizGui):
+        global databaseTypeDisplayed
         super().__init__()
         self.quizGui = quizGui
         self.moviesEnabled = True
         self.tvShowsEnabled = True
         self.musicEnabled = True
+        if not databaseTypeDisplayed:
+            logger.notification(self.quizGui.user.database.getType())
+            databaseTypeDisplayed = True
 
     @buggalo.buggalo_try_except()
     def onInit(self):
@@ -112,11 +133,12 @@ class MenuGui(xbmcgui.WindowXMLDialog):
         self.tvShowsEnabled = bool(hasTVShows and question.isAnyTVShowQuestionsEnabled())
         self.musicEnabled = bool(hasMusic and question.isAnyMusicQuestionsEnabled())
 
-        if not question.isAnyMovieQuestionsEnabled():
-            xbmcgui.Dialog().ok(strings(E_WARNING), strings(E_ALL_MOVIE_QUESTIONS_DISABLED, E_QUIZ_TYPE_NOT_AVAILABLE))
+        # Disable annoying dialogs
+        #if not question.isAnyMovieQuestionsEnabled():
+        #    xbmcgui.Dialog().ok(strings(E_WARNING), strings(E_ALL_MOVIE_QUESTIONS_DISABLED, E_QUIZ_TYPE_NOT_AVAILABLE))
 
-        if not question.isAnyTVShowQuestionsEnabled():
-            xbmcgui.Dialog().ok(strings(E_WARNING), strings(E_ALL_TVSHOW_QUESTIONS_DISABLED, E_QUIZ_TYPE_NOT_AVAILABLE))
+        #if not question.isAnyTVShowQuestionsEnabled():
+        #    xbmcgui.Dialog().ok(strings(E_WARNING), strings(E_ALL_TVSHOW_QUESTIONS_DISABLED, E_QUIZ_TYPE_NOT_AVAILABLE))
 
         self.updateMenu()
 
@@ -136,6 +158,9 @@ class MenuGui(xbmcgui.WindowXMLDialog):
                 self.getControl(MenuGui.C_INFO_TEXT).setText(text)
             self.getControl(MenuGui.C_INFO_TEXT).setVisible(action == MenuGui.ACTION_ABOUT or action == MenuGui.ACTION_DOWNLOAD_IMDB)
 
+    def getRoundLengths(self):
+        return [10, 20, 50, 100, 150, 200, 250]
+    
     def _buildMenuItemsList(self, itemsToAdd):
         items = []
         for stringID, action in itemsToAdd:
@@ -146,24 +171,180 @@ class MenuGui(xbmcgui.WindowXMLDialog):
 
     def updateMenu(self):
         self.getControl(MenuGui.C_INFO_TEXT).setVisible(False)
+        if self.quizGui.user.currentUser is None:
+            self.getControl(MenuGui.C_LOGGED_USER).setLabel('')
+        else:
+            username = strings(M_USER_NAME).format(self.quizGui.user.currentUser)
+            self.getControl(MenuGui.C_LOGGED_USER).setLabel(username)
+
         listControl = self.getControl(MenuGui.C_MENU_LIST)
         listControl.reset()
         items = [
             (M_SETTINGS, MenuGui.ACTION_OPEN_SETTINGS),
-            (M_DOWNLOAD_IMDB, MenuGui.ACTION_DOWNLOAD_IMDB),
-            (M_ABOUT, MenuGui.ACTION_ABOUT),
+            (M_USER_MANAGEMENT, MenuGui.ACTION_USER_MANAGEMENT),
+            (M_HIGHSCORE, MenuGui.ACTION_HIGHSCORE),
             (M_EXIT, MenuGui.ACTION_EXIT)
         ]
+        if ADDON.getSetting('hide.imdb.about') == 'false':
+            items.insert(3, (M_DOWNLOAD_IMDB, MenuGui.ACTION_DOWNLOAD_IMDB))
+            items.insert(4, (M_ABOUT, MenuGui.ACTION_ABOUT))
         if self.musicEnabled:
             items.insert(0, (M_PLAY_MUSIC_QUIZ, MenuGui.ACTION_MUSIC_QUIZ))
         if self.tvShowsEnabled:
             items.insert(0, (M_PLAY_TVSHOW_QUIZ, MenuGui.ACTION_TV_QUIZ))
         if self.moviesEnabled:
             items.insert(0, (M_PLAY_MOVIE_QUIZ, MenuGui.ACTION_MOVIE_QUIZ))
+        if self.quizGui.user.currentUser is not None:
+            items.insert(0, (M_COMPETITIVE_MODE, MenuGui.ACTION_COMPETITIVE_MODE))
 
         listControl.addItems(self._buildMenuItemsList(items))
         self.setFocus(listControl)
 
+    def updateCompetitiveModeMenu(self, roundLength):
+        self.getControl(MenuGui.C_INFO_TEXT).setVisible(False)
+        if self.quizGui.user.currentUser is None:
+            self.getControl(MenuGui.C_LOGGED_USER).setLabel('')
+        else:
+            username = strings(M_USER_NAME).format(self.quizGui.user.currentUser)
+            self.getControl(MenuGui.C_LOGGED_USER).setLabel(username)
+            
+        listControl = self.getControl(MenuGui.C_MENU_LIST)
+        listControl.reset()
+        
+        items = []
+        if self.musicEnabled:
+            item = xbmcgui.ListItem(strings(M_PLAY_MUSIC_QUIZ))
+            item.setProperty(MenuGui.ACTION_KEY, str(MenuGui.ACTION_COMPETITIVE_MUSIC_QUIZ))
+            item.setProperty('round', str(roundLength))
+            items.append(item)
+        if self.tvShowsEnabled:
+            item = xbmcgui.ListItem(strings(M_PLAY_TVSHOW_QUIZ))
+            item.setProperty(MenuGui.ACTION_KEY, str(MenuGui.ACTION_COMPETITIVE_TV_QUIZ))
+            item.setProperty('round', str(roundLength))
+            items.append(item)
+        if self.moviesEnabled:
+            item = xbmcgui.ListItem(strings(M_PLAY_MOVIE_QUIZ))
+            item.setProperty(MenuGui.ACTION_KEY, str(MenuGui.ACTION_COMPETITIVE_MOVIE_QUIZ))
+            item.setProperty('round', str(roundLength))
+            items.append(item)
+
+        listControl.addItems(items)
+        self.setFocus(listControl)
+            
+    def updateUserManagementMenu(self):
+        self.getControl(MenuGui.C_INFO_TEXT).setVisible(False)
+        if self.quizGui.user.currentUser is None:
+            self.getControl(MenuGui.C_LOGGED_USER).setLabel('')
+        else:
+            username = strings(M_USER_NAME).format(self.quizGui.user.currentUser)
+            self.getControl(MenuGui.C_LOGGED_USER).setLabel(username)
+            
+        listControl = self.getControl(MenuGui.C_MENU_LIST)
+        listControl.reset()
+        items = [
+            (M_USER_ADD, MenuGui.ACTION_USER_ADD),
+            (M_USER_DEL, MenuGui.ACTION_USER_DEL),
+            (M_BACK, MenuGui.ACTION_MAIN_MENU)
+        ]
+        if self.quizGui.user.currentUser is None:
+            items.insert(0, (M_USER_LOGIN, MenuGui.ACTION_USER_LOGIN))
+        else:
+            items.insert(0, (M_USER_LOGOUT, MenuGui.ACTION_USER_LOGOUT))
+
+        listControl.addItems(self._buildMenuItemsList(items))
+        self.setFocus(listControl)
+
+    def updateRoundLengthsMenu(self, action):
+        self.getControl(MenuGui.C_INFO_TEXT).setVisible(False)
+        if self.quizGui.user.currentUser is None:
+            self.getControl(MenuGui.C_LOGGED_USER).setLabel('')
+        else:
+            username = strings(M_USER_NAME).format(self.quizGui.user.currentUser)
+            self.getControl(MenuGui.C_LOGGED_USER).setLabel(username)
+            
+        listControl = self.getControl(MenuGui.C_MENU_LIST)
+        listControl.reset()
+        
+        rounds = self.getRoundLengths()
+        
+        items = []
+        for r in rounds:
+          item = xbmcgui.ListItem(strings(M_HIGHSCORE_ROUND).format(r))
+          item.setProperty(MenuGui.ACTION_KEY, action)
+          item.setProperty('round', str(r))
+          items.append(item)
+        item = xbmcgui.ListItem(strings(M_BACK))
+        item.setProperty(MenuGui.ACTION_KEY, str(MenuGui.ACTION_MAIN_MENU))
+        items.append(item)
+
+        listControl.addItems(items)
+        self.setFocus(listControl)
+
+    def updateHighscoreTypeMenu(self, roundLength):
+        self.getControl(MenuGui.C_INFO_TEXT).setVisible(False)
+        if self.quizGui.user.currentUser is None:
+            self.getControl(MenuGui.C_LOGGED_USER).setLabel('')
+        else:
+            username = strings(M_USER_NAME).format(self.quizGui.user.currentUser)
+            self.getControl(MenuGui.C_LOGGED_USER).setLabel(username)
+            
+        listControl = self.getControl(MenuGui.C_MENU_LIST)
+        listControl.reset()
+        
+        items = []
+        if self.musicEnabled:
+            item = xbmcgui.ListItem(strings(M_PLAY_MUSIC_QUIZ))
+            item.setProperty(MenuGui.ACTION_KEY, str(MenuGui.ACTION_HIGHSCORE_TYPE))
+            item.setProperty('round', str(roundLength))
+            item.setProperty('type', game.GAMETYPE_MUSIC)
+            items.append(item)
+        if self.tvShowsEnabled:
+            item = xbmcgui.ListItem(strings(M_PLAY_TVSHOW_QUIZ))
+            item.setProperty(MenuGui.ACTION_KEY, str(MenuGui.ACTION_HIGHSCORE_TYPE))
+            item.setProperty('round', str(roundLength))
+            item.setProperty('type', game.GAMETYPE_TVSHOW)
+            items.append(item)
+        if self.moviesEnabled:
+            item = xbmcgui.ListItem(strings(M_PLAY_MOVIE_QUIZ))
+            item.setProperty(MenuGui.ACTION_KEY, str(MenuGui.ACTION_HIGHSCORE_TYPE))
+            item.setProperty('round', str(roundLength))
+            item.setProperty('type', game.GAMETYPE_MOVIE)
+            items.append(item)        
+
+        listControl.addItems(items)
+        self.setFocus(listControl)
+                        
+    def updateHighscoreList(self, roundLength, gameType):
+        self.getControl(MenuGui.C_INFO_TEXT).setVisible(False)
+        if self.quizGui.user.currentUser is None:
+            self.getControl(MenuGui.C_LOGGED_USER).setLabel('')
+        else:
+            username = strings(M_USER_NAME).format(self.quizGui.user.currentUser)
+            self.getControl(MenuGui.C_LOGGED_USER).setLabel(username)
+            
+        listControl = self.getControl(MenuGui.C_MENU_LIST)
+        listControl.reset()
+        
+        hs = highscore.Highscore()
+        scores = hs.list(roundLength, gameType)
+        logger.log('Found highscores for round {0} and type {1} : {2}'.format(roundLength, gameType, scores))
+        
+        items = []
+        if scores is None or len(scores) == 0:
+          item = xbmcgui.ListItem(strings(M_NO_HIGHSCORE))
+          item.setProperty(MenuGui.ACTION_KEY, str(MenuGui.ACTION_HIGHSCORE))
+          items.append(item)
+        else:
+          rank = 1
+          for s in scores:
+            item = xbmcgui.ListItem(strings(M_HIGHSCORE_ENTRY).format(rank, s[0], s[1], s[2]))
+            item.setProperty(MenuGui.ACTION_KEY, str(MenuGui.ACTION_HIGHSCORE))
+            items.append(item)
+            rank = rank + 1
+        
+        listControl.addItems(items)
+        self.setFocus(listControl)
+    
     @buggalo.buggalo_try_except()
     def onClick(self, controlId):
         """
@@ -184,11 +365,88 @@ class MenuGui(xbmcgui.WindowXMLDialog):
                 self.close()
                 self.quizGui.newGame(gameInstance)
                 return
+            elif action == MenuGui.ACTION_COMPETITIVE_MODE:
+                self.updateRoundLengthsMenu(str(MenuGui.ACTION_COMPETITIVE_ROUND))
+                return
+            elif action == MenuGui.ACTION_COMPETITIVE_ROUND:
+                roundLength = int(item.getProperty('round'))
+                self.updateCompetitiveModeMenu(roundLength)
+                return
+            if action == MenuGui.ACTION_COMPETITIVE_MOVIE_QUIZ or action == MenuGui.ACTION_COMPETITIVE_TV_QUIZ or action == MenuGui.ACTION_COMPETITIVE_MUSIC_QUIZ:
+                actionToQuizTypeDict = {
+                    MenuGui.ACTION_COMPETITIVE_MOVIE_QUIZ: game.GAMETYPE_MOVIE,
+                    MenuGui.ACTION_COMPETITIVE_TV_QUIZ: game.GAMETYPE_TVSHOW,
+                    MenuGui.ACTION_COMPETITIVE_MUSIC_QUIZ: game.GAMETYPE_MUSIC
+                }
+                roundLength = int(item.getProperty('round'))
+                gameInstance = game.CompetitiveGame(actionToQuizTypeDict[action], roundLength, self.quizGui.user.currentUser)
+                self.close()
+                self.quizGui.newGame(gameInstance)
+                return
             elif action == MenuGui.ACTION_DOWNLOAD_IMDB:
                 imdb.downloadData()
                 # force a quit/reopen as quotes are only loaded once in QuizGui.onInit
                 self.quizGui.close()
                 self.close()
+                return
+            elif action == MenuGui.ACTION_USER_MANAGEMENT:
+                self.updateUserManagementMenu()
+                return
+            elif action == MenuGui.ACTION_USER_LOGIN:
+                login = ''
+                existing = self.quizGui.user.list()
+                if len(existing) > 0:
+                  dialog = xbmcgui.Dialog()
+                  user_idx = dialog.select(strings(M_EXISTING_USER), existing)
+                  if user_idx >= 0 and user_idx < len(existing):
+                    login = existing[user_idx]
+                if login == '':
+                  dialog = xbmcgui.Dialog()
+                  login = dialog.input(strings(M_USER_LOGIN))
+                if login != '':
+                  password = dialog.input(strings(M_USER_PASSWORD), type=xbmcgui.INPUT_ALPHANUM, option=xbmcgui.ALPHANUM_HIDE_INPUT)
+                  status, error = self.quizGui.user.login(login, password)
+                  if not status:
+                    logger.notification(strings(error))
+                  else:
+                    #self.updateUserManagementMenu()
+                    # Directly back to main menu
+                    self.updateMenu()
+                return
+            elif action == MenuGui.ACTION_USER_LOGOUT:
+                self.quizGui.user.logout()
+                #self.updateUserManagementMenu()
+                self.updateMenu()
+                return
+            elif action == MenuGui.ACTION_USER_ADD:
+                dialog = xbmcgui.Dialog()
+                login = dialog.input(strings(M_USER_LOGIN))
+                if login != '':
+                  password = dialog.input(strings(M_USER_PASSWORD), type=xbmcgui.INPUT_ALPHANUM, option=xbmcgui.ALPHANUM_HIDE_INPUT)
+                  status, error = self.quizGui.user.create(login, password)
+                  if not status:
+                    logger.notification(strings(error))
+                return
+            elif action == MenuGui.ACTION_USER_DEL:
+                dialog = xbmcgui.Dialog()
+                login = dialog.input(strings(M_USER_LOGIN))
+                if login != '':
+                  password = dialog.input(strings(M_USER_PASSWORD), type=xbmcgui.INPUT_ALPHANUM, option=xbmcgui.ALPHANUM_HIDE_INPUT)
+                  status, error = self.quizGui.user.remove(login, password)
+                  if not status:
+                    logger.notification(strings(error))
+                return
+            elif action == MenuGui.ACTION_HIGHSCORE:
+                self.updateRoundLengthsMenu(str(MenuGui.ACTION_HIGHSCORE_ROUND))
+                return
+            elif action == MenuGui.ACTION_HIGHSCORE_ROUND:
+                roundLength = int(item.getProperty('round'))
+                self.updateHighscoreTypeMenu(roundLength)
+                return
+            elif action == MenuGui.ACTION_HIGHSCORE_TYPE:
+                roundLength = int(item.getProperty('round'))
+                gameType = item.getProperty('type')
+                self.updateHighscoreList(roundLength, gameType)
                 return
             elif action == MenuGui.ACTION_OPEN_SETTINGS:
                 ADDON.openSettings()
@@ -197,6 +455,9 @@ class MenuGui(xbmcgui.WindowXMLDialog):
             elif action == MenuGui.ACTION_EXIT:
                 self.quizGui.close()
                 self.close()
+                return
+            elif action == MenuGui.ACTION_MAIN_MENU:
+                self.updateMenu()
                 return
 
 class QuizGui(xbmcgui.WindowXML):
@@ -246,6 +507,7 @@ class QuizGui(xbmcgui.WindowXML):
         self.lastClickTime = -1
         self.delayedNewQuestionTimer = None
         self.uiState = self.STATE_SPLASH
+        self.user = highscore.User()
 
     def onSettingsChanged(self):
         minPercent = ADDON.getSettingInt('video.player.min_percent')
@@ -372,6 +634,11 @@ class QuizGui(xbmcgui.WindowXML):
 
         if self.player.isPlaying():
             self.player.stopPlayback(True)
+        
+        report = self.gameInstance.addHighscore()
+        if report is not None:
+            logger.notification(report)
+        
         self.showMenuDialog()
 
     @buggalo.buggalo_try_except()
@@ -380,7 +647,7 @@ class QuizGui(xbmcgui.WindowXML):
         self.uiState = self.STATE_LOADING
         self.getControl(self.C_MAIN_LOADING_VISIBILITY).setVisible(True)
         self.question = self._getNewQuestion()
-        if not self.question:
+        if not self.question or self.gameInstance.isGameFinished():
             self.onGameOver()
             return
         self.getControl(self.C_MAIN_QUESTION_LABEL).setLabel(self.question.getText())
@@ -491,6 +758,8 @@ class QuizGui(xbmcgui.WindowXML):
             xbmc.playSFX(AUDIO_WRONG)
             self.getControl(self.C_MAIN_INCORRECT_VISIBILITY).setVisible(False)
         threading.Timer(0.5, self.onQuestionAnswerFeedbackTimer).start()
+        
+        self.gameInstance.questionAnswered(answer is not None and answer.correct)
 
         # show correct answers if setting enabled and if user answered incorrectly or the question type is quote
         # it's nice to see non-obfuscated quote even when answered correctly

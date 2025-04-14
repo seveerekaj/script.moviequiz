@@ -337,7 +337,7 @@
             <control type="group">
                 <description>Question and answers</description>
                 <posx>0</posx>
-                <posy>452</posy>
+                <posy>540</posy>
                 <width>1280</width>
                 <height>268</height>
                 <animation type="Visible">
@@ -429,8 +429,8 @@
                     <description>Answer 1</description>
                     <posx>0</posx>
                     <posy>40</posy>
-                    <width>320</width>
-                    <height>228</height>
+                    <width>160</width>
+                    <height>114</height>
                     <textoffsetx>55</textoffsetx>
                     <textwidth>265</textwidth>
                     <textcolor>ffffffff</textcolor>
@@ -449,8 +449,8 @@
                     <description>cover image 1</description>
                     <posx>0</posx>
                     <posy>80</posy>
-                    <width>320</width>
-                    <height>188</height>
+                    <width>160</width>
+                    <height>94</height>
                     <aspectratio>keep</aspectratio>
                     <fadetime>500</fadetime>
                     <visible>Control.IsVisible(4000)</visible>
@@ -469,8 +469,8 @@
                     <description>Answer 2</description>
                     <posx>320</posx>
                     <posy>40</posy>
-                    <width>320</width>
-                    <height>228</height>
+                    <width>160</width>
+                    <height>114</height>
                     <textoffsetx>55</textoffsetx>
                     <textwidth>265</textwidth>
                     <textcolor>ffffffff</textcolor>
@@ -489,8 +489,8 @@
                     <description>cover image 2</description>
                     <posx>320</posx>
                     <posy>80</posy>
-                    <width>320</width>
-                    <height>188</height>
+                    <width>160</width>
+                    <height>94</height>
                     <aspectratio>keep</aspectratio>
                     <fadetime>500</fadetime>
                     <visible>Control.IsVisible(4001)</visible>
@@ -509,8 +509,8 @@
                     <description>Answer 3</description>
                     <posx>640</posx>
                     <posy>40</posy>
-                    <width>320</width>
-                    <height>228</height>
+                    <width>160</width>
+                    <height>114</height>
                     <textoffsetx>55</textoffsetx>
                     <textwidth>265</textwidth>
                     <textcolor>ffffffff</textcolor>
@@ -529,8 +529,8 @@
                     <description>cover image 3</description>
                     <posx>640</posx>
                     <posy>80</posy>
-                    <width>320</width>
-                    <height>188</height>
+                    <width>160</width>
+                    <height>94</height>
                     <aspectratio>keep</aspectratio>
                     <fadetime>500</fadetime>
                     <visible>Control.IsVisible(4002)</visible>
@@ -549,8 +549,8 @@
                     <description>Answer 4</description>
                     <posx>960</posx>
                     <posy>40</posy>
-                    <width>320</width>
-                    <height>228</height>
+                    <width>160</width>
+                    <height>114</height>
                     <textoffsetx>55</textoffsetx>
                     <textwidth>265</textwidth>
                     <textcolor>ffffffff</textcolor>
@@ -569,8 +569,8 @@
                     <description>cover image 4</description>
                     <posx>960</posx>
                     <posy>80</posy>
-                    <width>320</width>
-                    <height>188</height>
+                    <width>160</width>
+                    <height>94</height>
                     <aspectratio>keep</aspectratio>
                     <fadetime>500</fadetime>
                     <visible>Control.IsVisible(4003)</visible>

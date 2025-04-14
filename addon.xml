@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="script.moviequiz" name="Movie Quiz" version="2.1.0" provider-name="twinther, seveerekaj">
+<addon id="script.moviequiz" name="Movie Quiz" version="2.2.0" provider-name="twinther, seveerekaj">
     <requires>
         <import addon="xbmc.python" version="3.0.0"/>
         <import addon="script.module.buggalo" version="1.2.0"/>
+        <import addon="script.module.myconnpy"/>
     </requires>
     <extension point="xbmc.python.script" library="addon.py"/>
     <extension point="xbmc.addon.metadata">
@@ -44,11 +45,8 @@
         <website>https://github.com/seveerekaj/script.moviequiz</website>
         <forum>https://forum.kodi.tv/showthread.php?tid=364172</forum>
         <source>https://github.com/seveerekaj/script.moviequiz</source>
-        <news>v2.1.0 (2024-01-02)
-        - The quiz interface has a new look! The answers are now in a horizontal layout, with a cover image for each answer option. The video player can now be toggled full screen.
-
-v2.0.0 (2021-08-26)
-        - Complete overhaul of the addon to get it working in Kodi 19 Matrix, add new features, and remove old non-essential features.
+        <news>v2.2.0 (2024-05-16)
+        - Highscores with multiplayer support
         </news>
         <assets>
             <icon>resources/media/images/icon.png</icon>
