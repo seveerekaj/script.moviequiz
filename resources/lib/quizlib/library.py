@@ -21,7 +21,22 @@
 import json
 
 import xbmc
+from resources.lib.quizlib import logger
 
+MPAA_RATINGS = {
+    'G': ['G', 'Rated G'],
+    'PG': ['PG', 'Rated PG'],
+    'PG-13': ['PG-13', 'Rated PG-13'],
+    'R': ['R', 'Rated R'],
+    'NR': ['NR', 'Rated NR', 'Not Rated'],
+    'TV-Y': ['TV-Y', 'Rated TV-Y'],
+    'TV-Y7': ['TV-Y7', 'Rated TV-Y7'],
+    'TV-G': ['TV-G', 'Rated TV-G'],
+    'TV-PG': ['TV-PG', 'Rated TV-PG'],
+    'TV-14': ['TV-14', 'Rated TV-14'],
+    'TV-MA': ['TV-MA', 'Rated TV-MA'],
+    'none': ['']
+}
 
 def getMovies(properties=None):
     params = {'sort': {'method': 'random'}}
@@ -120,22 +135,29 @@ def isAnyContentRatingsAvailable():
     query = getTVShows([]).limitTo(1)
     query.filters.append({
         'operator': 'isnot',
-        'field': 'rating',
+        'field': 'mpaarating',
         'value': ''
     })
     return len(query.asList()) > 0
 
 
-def buildRatingsFilters(field, ratings):
+def buildRatingsFilters(ratings):
+    logger.debug(f"ratings string: {ratings}")
+    ratings = [r.strip() for r in ratings.split('|') if r.strip()]
     filters = list()
-    for rating in ratings:
-        filters.append({
-            'operator': 'isnot',
-            'field': field,
-            'value': rating
-        })
-    return filters
 
+    for rating in ratings:
+        for ratingAlias in MPAA_RATINGS[rating]:
+            filters.append({
+                'operator': 'is',
+                'field': 'mpaarating',
+                'value': ratingAlias
+            })
+
+    logger.debug(f"filters: {filters}")
+    return [{
+        'or': filters
+    }]
 
 def buildOnlyWatchedFilter():
     return [{
@@ -167,8 +189,9 @@ class Query:
             self.query['params'] = self.params
 
         command = json.dumps(self.query)
+        logger.debug(f'jsonrpc command: {command}')
         resp = xbmc.executeJSONRPC(command)
-        # print(resp)
+        logger.debug(f'jsonrpc response: {resp}')
         return json.loads(resp)
 
     def asList(self):
@@ -304,14 +327,6 @@ class VideoQuery(Query):
             'operator': 'is',
             'field': 'episode',
             'value': str(episode)
-        })
-        return self
-
-    def limitToMPAARating(self, rating):
-        self.filters.append({
-            'operator': 'isnot',
-            'field': 'mpaarating',
-            'value': rating
         })
         return self
 
