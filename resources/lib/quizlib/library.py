@@ -154,7 +154,7 @@ def buildRatingsFilters(ratings):
                 'value': ratingAlias
             })
 
-    logger.debug(f"filters: {filters}")
+    logger.debug(f"ratings filters: {filters}")
     return [{
         'or': filters
     }]
@@ -189,7 +189,7 @@ class Query:
             self.query['params'] = self.params
 
         command = json.dumps(self.query)
-        logger.debug(f'jsonrpc command: {command}')
+        logger.debug(f'jsonrpc request: {command}')
         resp = xbmc.executeJSONRPC(command)
         logger.debug(f'jsonrpc response: {resp}')
         return json.loads(resp)
