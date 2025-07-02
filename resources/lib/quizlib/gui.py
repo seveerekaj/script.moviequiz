@@ -43,10 +43,6 @@ BACKGROUND_TV = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'quiz-
 BACKGROUND_THEME = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'quiz-background-theme.jpg')
 NO_PHOTO_IMAGE = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'quiz-no-photo.png')
 
-MPAA_RATINGS = ['R', 'Rated R', 'PG-13', 'Rated PG-13', 'PG', 'Rated PG', 'G', 'Rated G']
-CONTENT_RATINGS = ['TV-MA', 'TV-14', 'TV-PG', 'TV-G', 'TV-Y7-FV', 'TV-Y7', 'TV-Y']
-
-
 class MenuGui(xbmcgui.WindowXMLDialog):
     C_MENU_LIST = 4001
     C_INFO_TEXT = 6001
@@ -292,13 +288,10 @@ class QuizGui(xbmcgui.WindowXML):
 
         self.defaultLibraryFilters = list()
         if gameInstance.getType() == game.GAMETYPE_MOVIE and ADDON.getSetting('movie.rating.limit.enabled') == 'true':
-            idx = MPAA_RATINGS.index(ADDON.getSetting('movie.rating.limit'))
-            self.defaultLibraryFilters.extend(iter(library.buildRatingsFilters('mpaarating', MPAA_RATINGS[:idx])))
+            self.defaultLibraryFilters.extend(library.buildRatingsFilters(ADDON.getSetting('movie.rating.limit')))
 
-        elif gameInstance.getType() == game.GAMETYPE_TVSHOW and ADDON.getSetting(
-                'tvshow.rating.limit.enabled') == 'true':
-            idx = CONTENT_RATINGS.index(ADDON.getSetting('tvshow.rating.limit'))
-            self.defaultLibraryFilters.extend(iter(library.buildRatingsFilters('rating', CONTENT_RATINGS[:idx])))
+        elif gameInstance.getType() == game.GAMETYPE_TVSHOW and ADDON.getSetting('tvshow.rating.limit.enabled') == 'true':
+            self.defaultLibraryFilters.extend(library.buildRatingsFilters(ADDON.getSetting('tvshow.rating.limit')))
 
         if ADDON.getSetting(SETT_ONLY_WATCHED_MOVIES) == 'true':
             self.defaultLibraryFilters.extend(library.buildOnlyWatchedFilter())
