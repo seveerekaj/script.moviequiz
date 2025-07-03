@@ -36,8 +36,8 @@ from . import player
 from .strings import *
 
 RESOURCES_PATH = os.path.join(ADDON.getAddonInfo('path'), 'resources')
-AUDIO_CORRECT = os.path.join(RESOURCES_PATH, 'media', 'audio', 'correct.wav')
-AUDIO_WRONG = os.path.join(RESOURCES_PATH, 'media', 'audio', 'wrong.wav')
+AUDIO_CORRECT = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'audio', 'correct.wav')
+AUDIO_WRONG = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'audio', 'wrong.wav')
 BACKGROUND_MOVIE = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'quiz-background-movie.jpg')
 BACKGROUND_TV = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'quiz-background-tvshows.jpg')
 BACKGROUND_THEME = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'quiz-background-theme.jpg')
