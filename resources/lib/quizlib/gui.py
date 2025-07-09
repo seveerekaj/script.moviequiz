@@ -31,17 +31,17 @@ import xbmcgui
 from . import game
 from . import imdb, question
 from . import library
-from . import logger
+from resources.lib.util import logger
 from . import player
 from .strings import *
 
-RESOURCES_PATH = os.path.join(ADDON.getAddonInfo('path'), 'resources')
-AUDIO_CORRECT = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'audio', 'correct.wav')
-AUDIO_WRONG = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'audio', 'wrong.wav')
-BACKGROUND_MOVIE = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'quiz-background-movie.jpg')
-BACKGROUND_TV = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'quiz-background-tvshows.jpg')
-BACKGROUND_THEME = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'quiz-background-theme.jpg')
-NO_PHOTO_IMAGE = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'quiz-no-photo.png')
+MEDIA_PATH = os.path.join(ADDON.getAddonInfo('path'), 'resources', 'skins', 'Default', 'media')
+AUDIO_CORRECT = os.path.join(MEDIA_PATH, 'audio', 'correct.wav')
+AUDIO_WRONG = os.path.join(MEDIA_PATH, 'audio', 'wrong.wav')
+BACKGROUND_MOVIE = os.path.join(MEDIA_PATH, 'quiz-background-movie.jpg')
+BACKGROUND_TV = os.path.join(MEDIA_PATH, 'quiz-background-tvshows.jpg')
+BACKGROUND_THEME = os.path.join(MEDIA_PATH, 'quiz-background-theme.jpg')
+NO_PHOTO_IMAGE = os.path.join(MEDIA_PATH, 'quiz-no-photo.png')
 
 class MenuGui(xbmcgui.WindowXMLDialog):
     C_MENU_LIST = 4001
@@ -254,7 +254,7 @@ class QuizGui(xbmcgui.WindowXML):
             # note: I could create a new instance of self.player with the new parameters here, but when I tried that, weird stuff happened -
             # the player's threading timer was getting called twice: with both old and new duration. I also tried "del self.player" before creating a new player,
             # but the destructor was never actually invoked. So I just use the setBounds function on the existing player instead of creating a new one
-            logger.log(f"setting new player with min:{minPercent} max:{maxPercent}, duration:{duration}")
+            logger.debug(f"setting new player with min:{minPercent} max:{maxPercent}, duration:{duration}")
             self.player.setBounds(min(minPercent, maxPercent), max(minPercent, maxPercent), duration)
 
     @buggalo.buggalo_try_except()
@@ -278,7 +278,7 @@ class QuizGui(xbmcgui.WindowXML):
         self.getControl(2).setVisible(True)
 
         self.gameInstance = gameInstance
-        logger.log("Starting game: %s" % str(self.gameInstance))
+        logger.debug(f"Starting game: {str(self.gameInstance)}")
 
         if self.gameInstance.getType() == game.GAMETYPE_TVSHOW:
             self.defaultBackground = BACKGROUND_TV
@@ -338,7 +338,7 @@ class QuizGui(xbmcgui.WindowXML):
         difference = time.time() - self.lastClickTime
         self.lastClickTime = time.time()
         if difference < 0.7:
-            logger.log("Ignoring key-repeat onClick")
+            logger.debug("Ignoring key-repeat onClick")
             return
 
         elif controlId == self.C_MAIN_EXIT:
@@ -451,7 +451,7 @@ class QuizGui(xbmcgui.WindowXML):
                     pass
                     # print("QuestionException: %s" % str(ex))
                 except Exception as ex:
-                    logger.log("%s in %s" % (ex.__class__.__name__, candidate.__name__))
+                    logger.error(f"{ex.__class__.__name__} in {candidate.__name__}")
                     import traceback
                     import sys
 
@@ -472,8 +472,6 @@ class QuizGui(xbmcgui.WindowXML):
         @param answer: the chosen answer by the user
         @type answer: Answer
         """
-        logger.log("onQuestionAnswered(..)")
-
         if self.player.isPlaying():
             self.player.stopPlayback()
 

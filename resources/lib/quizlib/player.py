@@ -27,7 +27,7 @@ import xbmc
 import xbmcgui
 import xbmcvfs
 
-from . import logger
+from resources.lib.util import logger
 
 
 class TimeLimitedPlayer(xbmc.Player):
@@ -35,7 +35,7 @@ class TimeLimitedPlayer(xbmc.Player):
 
     def __init__(self, minPercent, maxPercent, duration):
         super().__init__()
-        logger.log(">> TimeLimitedPlayer.__init__()")
+        logger.debug("TimeLimitedPlayer.__init__()")
         self.setBounds(minPercent, maxPercent, duration)
         self.eventTimer = None
         self.startingPlayback = False
@@ -49,7 +49,7 @@ class TimeLimitedPlayer(xbmc.Player):
         self.duration = duration
 
     def replay(self):
-        logger.log(">> TimeLimitedPlayer.replay()")
+        logger.debug("TimeLimitedPlayer.replay()")
         if self.lastItem is not None:
             self.playWindowed(self.lastItem, replay=True)
 
@@ -57,7 +57,7 @@ class TimeLimitedPlayer(xbmc.Player):
         """
         Cancels the Timer in case it's active and starts a new Timer for a delayed stop.
         """
-        logger.log(">> TimeLimitedPlayer.stop()")
+        logger.debug("TimeLimitedPlayer.stop()")
         if force:
             self.startingPlayback = False
 
@@ -65,17 +65,17 @@ class TimeLimitedPlayer(xbmc.Player):
             xbmc.Player.stop(self)
         if self.eventTimer is not None:
             self.eventTimer.cancel()
-        logger.log(">> TimeLimitedPlayer.stop() - end")
+        logger.debug("TimeLimitedPlayer.stop() - end")
 
     def playWindowed(self, item, replay=False):
         """
         Starts playback by calling xbmc.Player.play(windowed=True).
         """
-        logger.log(">> TimeLimitedPlayer.playWindowed()")
+        logger.debug("TimeLimitedPlayer.playWindowed()")
         self.startingPlayback = True
 
         if not xbmcvfs.exists(item):
-            logger.log(">> TimeLimitedPlayer - file not found")
+            logger.debug("TimeLimitedPlayer - file not found")
             return False
 
         self.lastItem = item
@@ -97,7 +97,7 @@ class TimeLimitedPlayer(xbmc.Player):
             random.seed()
             self.lastStartPercentage = random.randint(self.minPercent, self.maxPercent)
 
-        logger.log(f">> Playback from {self.lastStartPercentage}% for {self.duration} seconds")
+        logger.debug(f"Playback from {self.lastStartPercentage}% for {self.duration} seconds")
 
         listItem = xbmcgui.ListItem(path=item)
         listItem.setProperty("StartPercent", str(self.lastStartPercentage))
@@ -112,7 +112,7 @@ class TimeLimitedPlayer(xbmc.Player):
             xbmc.sleep(250)  # keep sleeping to get onAVStarted() event
             retries += 1
 
-        logger.log(">> TimeLimitedPlayer.playWindowed() - end")
+        logger.debug("TimeLimitedPlayer.playWindowed() - end")
         return True
 
     def _getRandomDvdVob(self, ifoFile):
@@ -134,7 +134,7 @@ class TimeLimitedPlayer(xbmc.Player):
         Invoked when the player has played for the set amount of time.
         The playback is stopped by calling xbmc.Player.stop()
         """
-        logger.log(">> TimeLimitedPlayer.onTimerComplete()")
+        logger.debug("TimeLimitedPlayer.onTimerComplete()")
         if self.startingPlayback:
             return
         if self.isPlaying():
@@ -146,20 +146,20 @@ class TimeLimitedPlayer(xbmc.Player):
             retries += 1
 
     def onAVStarted(self):
-        logger.log(">> TimeLimitedPlayer.onAVStarted()")
+        logger.debug("TimeLimitedPlayer.onAVStarted()")
         self.playBackEventReceived = True
 
         if self.eventTimer is not None:
             self.eventTimer.cancel()
-        logger.log(f">> TimeLimitedPlayer.onAVStarted() - setting timer for {self.duration} seconds")
+        logger.debug(f"TimeLimitedPlayer.onAVStarted() - setting timer for {self.duration} seconds")
         self.eventTimer = threading.Timer(self.duration, self.onTimerComplete)
         self.eventTimer.start()
 
         self.startingPlayback = False
-        logger.log(">> TimeLimitedPlayer.onAVStarted() - end")
+        logger.debug("TimeLimitedPlayer.onAVStarted() - end")
 
     def onPlayBackStopped(self):
-        logger.log(">> TimeLimitedPlayer.onPlayBackStopped()")
+        logger.debug("TimeLimitedPlayer.onPlayBackStopped()")
         self.playBackEventReceived = True
         if self.eventTimer is not None:
             self.eventTimer.cancel()

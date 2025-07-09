@@ -28,7 +28,7 @@ from urllib.request import urlopen
 import xbmcgui
 import xbmcvfs
 
-from . import logger
+from resources.lib.util import logger
 from .strings import *
 
 
@@ -52,7 +52,7 @@ class Imdb:
             f = open(self.quotesIndexPath, encoding='utf8')
             self.quotesIndex = f.read()
             f.close()
-            logger.log("Loaded %d MB quotes index in %d seconds" % (len(self.quotesIndex) / 1048576, (time.time() - startTime)))
+            logger.debug(f"Loaded {len(self.quotesIndex) / 1048576} MB quotes index in {time.time() - startTime} seconds")
 
     def downloadFiles(self, downloadState):
         downloadState.idx += 1

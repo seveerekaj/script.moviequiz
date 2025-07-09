@@ -21,7 +21,7 @@
 import json
 
 import xbmc
-from resources.lib.quizlib import logger
+from resources.lib.util import logger
 
 MPAA_RATINGS = {
     'G': ['G', 'Rated G'],
