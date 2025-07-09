@@ -51,7 +51,7 @@ v2.0.0 (2021-08-26)
         - Complete overhaul of the addon to get it working in Kodi 19 Matrix, add new features, and remove old non-essential features.
         </news>
         <assets>
-            <icon>resources/skins/Default/media/icon.png</icon>
+            <icon>resources/media/icon.png</icon>
         </assets>
     </extension>
 </addon>
