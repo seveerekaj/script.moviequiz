@@ -44,7 +44,7 @@ class Answer:
         self.coverFile = coverFile
 
     def __repr__(self):
-        return "<Answer(id=%s, text=%s, correct=%s)>" % (self.id, self.text, self.correct)
+        return f"<Answer(id={self.id}, text={self.text}, correct={self.correct})>"
 
 
 class Question:
@@ -86,7 +86,7 @@ class Question:
         return None
 
     def getUniqueIdentifier(self):
-        return "%s-%s" % (self.__class__.__name__, str(self.getCorrectAnswer().id))
+        return f"{self.__class__.__name__}-{str(self.getCorrectAnswer().id)}"
 
     def setFanartFile(self, fanartFile):
         self.fanartFile = fanartFile
@@ -129,7 +129,7 @@ class VideoDisplayType(DisplayType):
     def setVideoFile(self, videoFile):
         self.videoFile = videoFile
         if not xbmcvfs.exists(self.videoFile):
-            raise QuestionException('Video file not found: %s' % self.videoFile.encode('utf-8', 'ignore'))
+            raise QuestionException(f'Video file not found: {self.videoFile.encode('utf-8', 'ignore')}')
 
     def getVideoFile(self):
         return self.videoFile
@@ -868,7 +868,7 @@ class WhatSeasonIsThisQuestion(TVQuestion):
             raise QuestionException('TVshow has no episodes')
 
         for idx, season in enumerate(seasons):
-            self.addAnswer("%s-%s" % (show['tvshowid'], season['season']), season['label'],
+            self.addAnswer(f"{show['tvshowid']}-{season['season']}", season['label'],
                            image=season['art']['poster'], sortWeight=season['season'], correct=(idx == correctIdx))
 
         self.answers = sorted(self.answers, key=lambda answer: int(answer.sortWeight))
@@ -902,7 +902,7 @@ class WhatEpisodeIsThisQuestion(TVQuestion):
         correctIdx = random.randint(0, len(episodes) - 1)
 
         for idx, episode in enumerate(episodes):
-            id = "%s-%s-%s" % (show['tvshowid'], season['season'], episode['episode'])
+            id = f"{show['tvshowid']}-{season['season']}-{episode['episode']}"
             self.addAnswer(id=id, text=episode['label'], image=season['art']['poster'], sortWeight=episode['episode'],
                            correct=(idx == correctIdx))
 
@@ -957,7 +957,7 @@ class WhenWasTVShowFirstAiredQuestion(TVQuestion):
         list.sort(years)
 
         for year in years:
-            self.addAnswer(id="%s-%s" % (show['tvshowid'], season['season']), text=str(year),
+            self.addAnswer(id=f"{show['tvshowid']}-{season['season']}", text=str(year),
                            correct=(year == episodeYear))
 
         self.text = strings(Q_WHEN_WAS_TVSHOW_FIRST_AIRED) % (show['title'] + ' - ' + season['label'])
@@ -1080,7 +1080,7 @@ class MusicQuestion(Question):
     pass
 
     def get_song_title(self, title, artist):
-        return "[B]%s[/B] by [B]%s[/B]" % (title, artist[0])
+        return f"[B]{title}[/B] by [B]{artist[0]}[/B]"
 
 
 class WhatSongIsThisQuestion(MusicQuestion):

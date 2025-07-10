@@ -163,7 +163,7 @@ class Imdb:
         """
         # find position using index
         if season is not None and episode is not None:
-            pattern = '\n"%s" \([0-9]+\)( \{.*?\(\#%s.%s\)\})?\t([0-9]+)\n[^\t]+\t([0-9]+)' % (name, season, episode)
+            pattern = f'\n"{name}" \([0-9]+\)( \{{.*?\(\#{season}.{episode}\)\}})?\t([0-9]+)\n[^\t]+\t([0-9]+)'
             start = 2
             end = 3
         else:

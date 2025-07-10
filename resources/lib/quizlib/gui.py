@@ -444,7 +444,6 @@ class QuizGui(xbmcgui.WindowXML):
                     break
                 except question.QuestionException as ex:
                     pass
-                    # print("QuestionException: %s" % str(ex))
                 except Exception as ex:
                     logger.error(f"{ex.__class__.__name__} in {candidate.__name__}")
                     import traceback
@@ -484,7 +483,7 @@ class QuizGui(xbmcgui.WindowXML):
             if not answer.correct:
                 for idx, answerIter in enumerate(self.question.getAnswers()):
                     if answerIter.correct:
-                        self.getControl(self.C_MAIN_FIRST_ANSWER + idx).setLabel('[B]%s[/B]' % answerIter.text)
+                        self.getControl(self.C_MAIN_FIRST_ANSWER + idx).setLabel(f'[B]{answerIter.text}[/B]')
                         self.setFocusId(self.C_MAIN_FIRST_ANSWER + idx)
                     else:
                         self.getControl(self.C_MAIN_FIRST_ANSWER + idx).setLabel(textColor='0x88888888')
@@ -532,7 +531,7 @@ class QuizGui(xbmcgui.WindowXML):
                 names.append(name)
 
         for idx, name in enumerate(names):
-            repl = '#%d:' % (idx + 1)
+            repl = f'#{idx + 1}:'
             quote = quote.replace(name, repl)
 
         return quote
