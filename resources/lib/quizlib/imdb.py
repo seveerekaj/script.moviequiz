@@ -63,7 +63,6 @@ class Imdb:
         if not quotes:
             return None
 
-        random.seed()
         quote = None
         for retries in range(0, 25):
             quote = quotes[random.randint(0, len(quotes)-1)]

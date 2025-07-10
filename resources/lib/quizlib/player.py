@@ -94,7 +94,6 @@ class TimeLimitedPlayer(xbmc.Player):
             #todo file = self._getRandomDvdVob(file)
 
         if self.lastStartPercentage is None:
-            random.seed()
             self.lastStartPercentage = random.randint(self.minPercent, self.maxPercent)
 
         logger.debug(f"Playback from {self.lastStartPercentage}% for {self.duration} seconds")

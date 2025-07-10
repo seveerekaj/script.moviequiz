@@ -18,6 +18,8 @@
 #  http://www.gnu.org/copyleft/gpl.html
 #
 
+import random
+
 import xbmcvfs
 import xbmcaddon
 
@@ -28,6 +30,9 @@ from resources.lib.quizlib.gui import QuizGui
 PROFILE = xbmcaddon.Addon().getAddonInfo('profile')
 if not xbmcvfs.exists(PROFILE):
     xbmcvfs.mkdirs(PROFILE)
+
+# seed the random number generator used in various places
+random.seed()
 
 w = QuizGui()
 w.doModal()

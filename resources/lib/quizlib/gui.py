@@ -432,7 +432,6 @@ class QuizGui(xbmcgui.WindowXML):
 
             self.getControl(self.C_MAIN_LOADING).setPercent(retries)
 
-            random.seed()
             random.shuffle(self.questionCandidates)
             for candidate in self.questionCandidates:
                 try:

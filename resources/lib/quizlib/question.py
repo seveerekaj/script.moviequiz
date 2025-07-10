@@ -32,19 +32,6 @@ from .strings import *
 
 IMDB = imdb.Imdb()
 
-def randint(a, b):
-    random.seed()
-    return random.randint(a, b)
-
-def shuffle(a):
-    random.seed()
-    random.shuffle(a)
-
-def randchoice(seq):
-    random.seed()
-    return random.choice(seq)
-
-
 class Answer:
     def __init__(self, id, text, image=None, sortWeight=None, correct=False):
         self.correct = correct
@@ -228,7 +215,7 @@ class WhatMovieIsThisQuestion(MovieQuestion):
             for movie in theRest:
                 self.addAnswer(id=movie['movieid'], text=movie['title'], image=movie['art']['poster'])
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
         self.text = strings(Q_WHAT_MOVIE_IS_THIS)
         videoDisplayType.setVideoFile(correctAnswer['file'])
 
@@ -257,7 +244,7 @@ class WhatActorIsThisQuestion(MovieQuestion):
         if not actors:
             raise QuestionException("Didn't find any actors with thumbnail")
 
-        shuffle(actors)
+        random.shuffle(actors)
         actor = actors.pop()
 
         # The actor
@@ -268,7 +255,7 @@ class WhatActorIsThisQuestion(MovieQuestion):
             if len(self.answers) == 4:
                 break
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
         self.text = strings(Q_WHAT_ACTOR_IS_THIS)
         photoDisplayType.setPhotoFile(actor['thumbnail'])
 
@@ -294,7 +281,7 @@ class ActorNotInMovieQuestion(MovieQuestion):
         if not actors:
             raise QuestionException("Didn't find any actors with thumbnail")
 
-        shuffle(actors)
+        random.shuffle(actors)
 
         actor = None
         for actor in actors:
@@ -318,7 +305,7 @@ class ActorNotInMovieQuestion(MovieQuestion):
         if not self.answers:
             raise QuestionException("Didn't find any actors with at least three movies")
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
         self.text = strings(Q_WHAT_MOVIE_IS_ACTOR_NOT_IN) % actor['name']
         photoDisplayType.setPhotoFile(actor['thumbnail'])
 
@@ -339,7 +326,7 @@ class WhatYearWasMovieReleasedQuestion(MovieQuestion):
         if not movie:
             raise QuestionException('No movies found')
 
-        skew = randint(0, 10)
+        skew = random.randint(0, 10)
         minYear = int(movie['year']) - skew
         maxYear = int(movie['year']) + (10 - skew)
 
@@ -351,7 +338,7 @@ class WhatYearWasMovieReleasedQuestion(MovieQuestion):
         years = list()
         years.append(int(movie['year']))
         while len(years) < 4:
-            year = randint(minYear, maxYear)
+            year = random.randint(minYear, maxYear)
             if not year in years:
                 years.append(year)
 
@@ -398,7 +385,7 @@ class WhatTagLineBelongsToMovieQuestion(MovieQuestion):
             if len(self.answers) == 4:
                 break
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
         self.text = strings(Q_WHAT_TAGLINE_BELONGS_TO_MOVIE) % movie['title']
         self.setFanartFile(movie['art']['fanart'])
 
@@ -426,7 +413,7 @@ class WhatStudioReleasedMovieQuestion(MovieQuestion):
         if not movie:
             raise QuestionException('No movies found')
 
-        studio = randchoice(movie['studio'])
+        studio = random.choice(movie['studio'])
         self.addCorrectAnswer(id=movie['movieid'], text=studio)
 
         otherMovies = library.getMovies(['studio']).withFilters(defaultFilters).excludeTitles(movie['title']).limitTo(
@@ -444,11 +431,11 @@ class WhatStudioReleasedMovieQuestion(MovieQuestion):
             if studioFound:
                 continue
 
-            self.addAnswer(id=otherMovie['movieid'], text=randchoice(otherMovie['studio']))
+            self.addAnswer(id=otherMovie['movieid'], text=random.choice(otherMovie['studio']))
             if len(self.answers) == 4:
                 break
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
         self.text = strings(Q_WHAT_STUDIO_RELEASED_MOVIE) % movie['title']
         self.setFanartFile(movie['art']['fanart'])
 
@@ -476,12 +463,12 @@ class WhoPlayedRoleInMovieQuestion(MovieQuestion):
         if not movie:
             raise QuestionException('No applicable movie found')
 
-        actor = randchoice(movie['cast'])
+        actor = random.choice(movie['cast'])
         role = actor['role']
         if re.search('[|/,]', role):
             roles = re.split('[|/,]', role)
             # find random role
-            role = roles[randint(0, len(roles) - 1)]
+            role = roles[random.randint(0, len(roles) - 1)]
 
         self.addCorrectAnswer(actor['name'], actor['name'], image=actor['thumbnail'])
 
@@ -494,7 +481,7 @@ class WhoPlayedRoleInMovieQuestion(MovieQuestion):
             if len(self.answers) == 4:
                 break
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
 
         if self._isAnimationGenre(movie['genre']):
             self.text = strings(Q_WHO_VOICES_ROLE_IN_MOVIE) % (role, movie['title'])
@@ -534,7 +521,7 @@ class WhatMovieIsThisQuoteFrom(MovieQuestion):
         for movie in theRest:
             self.addAnswer(movie['movieid'], movie['title'], image=movie['art']['poster'])
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
         quoteDisplayType.setQuoteText(quoteText)
         self.text = strings(Q_WHAT_MOVIE_IS_THIS_QUOTE_FROM)
 
@@ -565,7 +552,7 @@ class WhatMovieIsNewestQuestion(MovieQuestion):
         for otherMovie in otherMovies:
             self.addAnswer(otherMovie['movieid'], otherMovie['title'], image=otherMovie['art']['poster'])
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
         self.text = strings(Q_WHAT_MOVIE_IS_THE_NEWEST)
 
     @staticmethod
@@ -592,7 +579,7 @@ class WhoDirectedThisMovieQuestion(MovieQuestion):
         if not movie:
             raise QuestionException('No movies found')
 
-        director = randchoice(movie['director'])
+        director = random.choice(movie['director'])
         self.addCorrectAnswer(id=movie['movieid'], text=director)
 
         otherMovies = library.getMovies(['director']).withFilters(defaultFilters).excludeTitles(movie['title']).limitTo(
@@ -610,11 +597,11 @@ class WhoDirectedThisMovieQuestion(MovieQuestion):
             if directorFound:
                 continue
 
-            self.addAnswer(id=otherMovie['movieid'], text=randchoice(otherMovie['director']))
+            self.addAnswer(id=otherMovie['movieid'], text=random.choice(otherMovie['director']))
             if len(self.answers) == 4:
                 break
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
         self.text = strings(Q_WHO_DIRECTED_THIS_MOVIE) % movie['title']
         self.setFanartFile(movie['art']['fanart'])
 
@@ -661,7 +648,7 @@ class WhatMovieIsNotDirectedByQuestion(MovieQuestion):
         for movie in movies:
             self.addAnswer(-1, movie['title'], image=movie['art']['poster'])
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
         self.text = strings(Q_WHAT_MOVIE_IS_NOT_DIRECTED_BY) % director
         # todo perhaps set fanart instead?
 
@@ -717,7 +704,7 @@ class WhatActorIsInTheseMoviesQuestion(MovieQuestion):
         for item in items:
             actors.extend(iter(item['cast']))
 
-        shuffle(actors)
+        random.shuffle(actors)
         for actor in actors:
             if not 'thumbnail' in actor:
                 continue
@@ -725,7 +712,7 @@ class WhatActorIsInTheseMoviesQuestion(MovieQuestion):
             if len(self.answers) == 4:
                 break
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
         self.text = strings(Q_WHAT_ACTOR_IS_IN_THESE_MOVIES)
 
     @staticmethod
@@ -752,7 +739,7 @@ class WhatActorIsInMovieBesidesOtherActorQuestion(MovieQuestion):
             raise QuestionException('No movies with two actors found')
 
         actors = movie['cast']
-        shuffle(actors)
+        random.shuffle(actors)
         actorOne = actors[0]
         actorTwo = actors[1]
         self.addCorrectAnswer(actorOne['name'], actorOne['name'], image=actorOne['thumbnail'])
@@ -763,7 +750,7 @@ class WhatActorIsInMovieBesidesOtherActorQuestion(MovieQuestion):
             actorOne['name']).withoutActor(actorTwo['name']).limitTo(10).asList()
         for item in items:
             otherActors.extend(iter(item['cast']))
-        shuffle(otherActors)
+        random.shuffle(otherActors)
 
         for otherActor in otherActors:
             if not 'thumbnail' in otherActor:
@@ -772,7 +759,7 @@ class WhatActorIsInMovieBesidesOtherActorQuestion(MovieQuestion):
             if len(self.answers) == 4:
                 break
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
         self.text = strings(Q_WHAT_ACTOR_IS_IN_MOVIE_BESIDES_OTHER_ACTOR) % (movie['title'], actorTwo['name'])
         self.setFanartFile(movie['art']['fanart'])
 
@@ -808,7 +795,7 @@ class WhatMovieHasTheLongestRuntimeQuestion(MovieQuestion):
             if len(self.answers) == 4:
                 break
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
         self.text = strings(Q_WHAT_MOVIE_HAS_THE_LONGEST_RUNTIME)
 
     @staticmethod
@@ -851,7 +838,7 @@ class WhatTVShowIsThisQuestion(TVQuestion):
         for otherShow in otherShows:
             self.addAnswer(id=otherShow['tvshowid'], text=otherShow['title'], image=otherShow['art']['poster'])
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
         self.text = strings(Q_WHAT_TVSHOW_IS_THIS)
         videoDisplayType.setVideoFile(episode['file'])
 
@@ -873,7 +860,7 @@ class WhatSeasonIsThisQuestion(TVQuestion):
             raise QuestionException('No tvshows found')
 
         seasons = library.getSeasons(show['tvshowid'], ['season', 'art']).limitTo(4).asList()
-        correctIdx = randint(0, len(seasons) - 1)
+        correctIdx = random.randint(0, len(seasons) - 1)
 
         episode = library.getEpisodes(['file']).withFilters(defaultFilters).fromShow(
             show['title']).fromSeason(seasons[correctIdx]['season']).limitTo(1).asItem()
@@ -912,7 +899,7 @@ class WhatEpisodeIsThisQuestion(TVQuestion):
 
         episodes = library.getEpisodes(['episode', 'title', 'file']).fromShow(show['title']).fromSeason(
             season['season']).limitTo(4).asList()
-        correctIdx = randint(0, len(episodes) - 1)
+        correctIdx = random.randint(0, len(episodes) - 1)
 
         for idx, episode in enumerate(episodes):
             id = "%s-%s-%s" % (show['tvshowid'], season['season'], episode['episode'])
@@ -951,7 +938,7 @@ class WhenWasTVShowFirstAiredQuestion(TVQuestion):
 
         episodeYear = int(episode['firstaired'][0:4])
 
-        skew = randint(0, 10)
+        skew = random.randint(0, 10)
         minYear = episodeYear - skew
         maxYear = episodeYear + (10 - skew)
 
@@ -963,7 +950,7 @@ class WhenWasTVShowFirstAiredQuestion(TVQuestion):
         years = list()
         years.append(episodeYear)
         while len(years) < 4:
-            year = randint(minYear, maxYear)
+            year = random.randint(minYear, maxYear)
             if not year in years:
                 years.append(year)
 
@@ -993,13 +980,13 @@ class WhoPlayedRoleInTVShowQuestion(TVQuestion):
             raise QuestionException('No tvshows found')
 
         otherActors = show['cast']
-        actor = otherActors.pop(randint(0, len(otherActors) - 1))
+        actor = otherActors.pop(random.randint(0, len(otherActors) - 1))
 
         role = actor['role']
         if re.search('[|/,]', role):
             roles = re.split('[|/,]', role)
             # find random role
-            role = roles[randint(0, len(roles) - 1)]
+            role = roles[random.randint(0, len(roles) - 1)]
 
         self.addCorrectAnswer(id=actor['name'], text=actor['name'], image=actor.get('thumbnail'))
 
@@ -1009,7 +996,7 @@ class WhoPlayedRoleInTVShowQuestion(TVQuestion):
             if len(self.answers) == 4:
                 break
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
 
         if self._isAnimationGenre(show['genre']):
             self.text = strings(Q_WHO_VOICES_ROLE_IN_TVSHOW) % (role, show['title'])
@@ -1047,7 +1034,7 @@ class WhatTVShowIsThisQuoteFrom(TVQuestion):
         for otherShow in otherShows:
             self.addAnswer(id=otherShow['title'].encode('utf-8', 'ignore'), text=otherShow['title'], image=otherShow['art']['poster'])
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
         quoteDisplayType.setQuoteText(quoteText)
         self.text = strings(Q_WHAT_TVSHOW_IS_THIS_QUOTE_FROM)
 
@@ -1080,7 +1067,7 @@ class WhatTVShowIsThisThemeFromQuestion(TVQuestion):
         for otherShow in otherShows:
             self.addAnswer(id=otherShow['tvshowid'], text=otherShow['title'], image=otherShow['art']['poster'])
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
         audioDisplayType.setAudioFile(os.path.join(show['file'], 'theme.mp3'))
         self.text = strings(Q_WHAT_TVSHOW_IS_THIS_THEME_FROM)
 
@@ -1113,7 +1100,7 @@ class WhatSongIsThisQuestion(MusicQuestion):
         for song in theRest:
             self.addAnswer(id=-1, text=song['title'], image=song['thumbnail'])
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
         self.text = strings(Q_WHAT_SONG_IS_THIS) % correctAnswer['artist'][0]
         audioDisplayType.setAudioFile(correctAnswer['file'])
 
@@ -1144,7 +1131,7 @@ class WhoMadeThisSongQuestion(MusicQuestion):
             artist = library.getArtistDetails(item['artistid'], ['thumbnail']).asItem()
             self.addAnswer(id=item['artist'], text=item['artist'], image=artist['thumbnail'])
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
         self.text = strings(Q_WHO_MADE_THE_SONG) % song['title']
         audioDisplayType.setAudioFile(song['file'])
 
@@ -1172,7 +1159,7 @@ class WhoMadeThisAlbumQuestion(MusicQuestion):
             artist = library.getArtistDetails(item['artistid'], ['thumbnail']).asItem()
             self.addAnswer(id=item['artist'], text=item['artist'], image=artist['thumbnail'])
 
-        shuffle(self.answers)
+        random.shuffle(self.answers)
         self.text = strings(Q_WHO_MADE_THE_ALBUM) % album['title']
         photoDisplayType.setPhotoFile(album['thumbnail'])
         self.setFanartFile(album['fanart'])
