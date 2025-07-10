@@ -15,8 +15,6 @@ Jake's TODOs:
     can i get rid of game.py ?
     multiplayer support
         possible to host web server that each player can connect to (on same wifi network) and select the answer to each question?
-    buggalo error:
-        AttributeError: module 'xbmc' has no attribute 'translatePath'
     invert the visibility markers that are done opposite of what would be intuitive?
         maybe they were done that way because they are visible by default?
 

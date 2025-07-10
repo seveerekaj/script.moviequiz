@@ -24,7 +24,6 @@ import re
 import threading
 import time
 
-import buggalo
 import xbmc
 import xbmcgui
 
@@ -66,7 +65,6 @@ class MenuGui(xbmcgui.WindowXMLDialog):
         self.tvShowsEnabled = True
         self.musicEnabled = True
 
-    @buggalo.buggalo_try_except()
     def onInit(self):
         movies = library.getMovies(['art']).limitTo(44).asList()
         posters = [movie['art']['poster'] for movie in movies if 'art' in movie and 'poster' in movie['art']]
@@ -116,7 +114,6 @@ class MenuGui(xbmcgui.WindowXMLDialog):
 
         self.updateMenu()
 
-    @buggalo.buggalo_try_except()
     def onAction(self, action):
         if action.getId() in [xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_PARENT_DIR, xbmcgui.ACTION_NAV_BACK]:
             self.quizGui.close()
@@ -160,7 +157,6 @@ class MenuGui(xbmcgui.WindowXMLDialog):
         listControl.addItems(self._buildMenuItemsList(items))
         self.setFocus(listControl)
 
-    @buggalo.buggalo_try_except()
     def onClick(self, controlId):
         """
         @param controlId: id of the control that was clicked
@@ -257,7 +253,6 @@ class QuizGui(xbmcgui.WindowXML):
             logger.debug(f"setting new player with min:{minPercent} max:{maxPercent}, duration:{duration}")
             self.player.setBounds(min(minPercent, maxPercent), max(minPercent, maxPercent), duration)
 
-    @buggalo.buggalo_try_except()
     def onInit(self):
         self.onSettingsChanged()
         self.getControl(2).setVisible(False)
@@ -309,7 +304,6 @@ class QuizGui(xbmcgui.WindowXML):
             self.player.stopPlayback(True)
         super().close()
 
-    @buggalo.buggalo_try_except()
     def onAction(self, action):
         if self.uiState == self.STATE_SPLASH and action.getId() in [xbmcgui.ACTION_PARENT_DIR, xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK]:
             self.close()
@@ -333,7 +327,6 @@ class QuizGui(xbmcgui.WindowXML):
             self.setFocusId(self.C_MAIN_FIRST_ANSWER + 3)
             self.onQuestionAnswered(self.question.getAnswer(3))
 
-    @buggalo.buggalo_try_except()
     def onClick(self, controlId):
         difference = time.time() - self.lastClickTime
         self.lastClickTime = time.time()
@@ -351,7 +344,6 @@ class QuizGui(xbmcgui.WindowXML):
         elif controlId == self.C_MAIN_REPLAY:
             self.player.replay()
 
-    @buggalo.buggalo_try_except()
     def onFocus(self, controlId):
         pass
 
@@ -367,7 +359,6 @@ class QuizGui(xbmcgui.WindowXML):
             self.player.stopPlayback(True)
         self.showMenuDialog()
 
-    @buggalo.buggalo_try_except()
     def onNewQuestion(self):
         self.delayedNewQuestionTimer = None
         self.uiState = self.STATE_LOADING
@@ -505,7 +496,6 @@ class QuizGui(xbmcgui.WindowXML):
         else:
             self.onNewQuestion()
 
-    @buggalo.buggalo_try_except()
     def onQuestionAnswerFeedbackTimer(self):
         """
         onQuestionAnswerFeedbackTimer is invoked by a timer when the red or green background behind the answers box
