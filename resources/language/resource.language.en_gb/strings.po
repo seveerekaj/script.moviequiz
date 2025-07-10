@@ -212,10 +212,7 @@ msgctxt "#32412"
 msgid "What actor is in these movies?"
 msgstr ""
 
-#.1st %s is movie title, 2nd %s is actor name
-msgctxt "#32413"
-msgid "What actor is in [B]%s[/B] besides [B]%s[/B]?"
-msgstr ""
+#empty string with id 32413
 
 msgctxt "#32414"
 msgid "What movie has the longest runtime?"
@@ -374,9 +371,7 @@ msgctxt "#32563"
 msgid "What actor is in these movies?"
 msgstr ""
 
-msgctxt "#32564"
-msgid "What actor is in these movie besides other actor?"
-msgstr ""
+#empty string with id 32564
 
 msgctxt "#32565"
 msgid "What movie has longest runtime?"

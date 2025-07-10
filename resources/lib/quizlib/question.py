@@ -720,54 +720,6 @@ class WhatActorIsInTheseMoviesQuestion(MovieQuestion):
         return ADDON.getSetting('question.whatactorisinthesemovies.enabled') == 'true'
 
 
-class WhatActorIsInMovieBesidesOtherActorQuestion(MovieQuestion):
-    def __init__(self, defaultFilters):
-        """
-        WhatActorIsInMovieBesidesOtherActorQuestion
-        """
-        super().__init__()
-
-        # Find a bunch of movies
-        items = library.getMovies(['title', 'cast', 'art']).withFilters(defaultFilters).limitTo(10).asList()
-        movie = None
-        for item in items:
-            if len(item['cast']) >= 2:
-                movie = item
-                break
-
-        if not movie:
-            raise QuestionException('No movies with two actors found')
-
-        actors = movie['cast']
-        random.shuffle(actors)
-        actorOne = actors[0]
-        actorTwo = actors[1]
-        self.addCorrectAnswer(actorOne['name'], actorOne['name'], image=actorOne['thumbnail'])
-
-        # Find another bunch of actors
-        otherActors = list()
-        items = library.getMovies(['title', 'cast']).withFilters(defaultFilters).withoutActor(
-            actorOne['name']).withoutActor(actorTwo['name']).limitTo(10).asList()
-        for item in items:
-            otherActors.extend(iter(item['cast']))
-        random.shuffle(otherActors)
-
-        for otherActor in otherActors:
-            if not 'thumbnail' in otherActor:
-                continue
-            self.addAnswer(otherActor['name'].encode('utf-8', 'ignore'), otherActor['name'], image=otherActor['thumbnail'])
-            if len(self.answers) == 4:
-                break
-
-        random.shuffle(self.answers)
-        self.text = strings(Q_WHAT_ACTOR_IS_IN_MOVIE_BESIDES_OTHER_ACTOR) % (movie['title'], actorTwo['name'])
-        self.setFanartFile(movie['art']['fanart'])
-
-    @staticmethod
-    def isEnabled():
-        return ADDON.getSetting('question.whatactorisinmoviebesidesotheractor.enabled') == 'true'
-
-
 class WhatMovieHasTheLongestRuntimeQuestion(MovieQuestion):
     def __init__(self, defaultFilters):
         """

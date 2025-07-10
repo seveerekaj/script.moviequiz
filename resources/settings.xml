@@ -135,11 +135,6 @@
                     <default>true</default>
                     <control type="toggle"/>
                 </setting>
-                <setting id="question.whatactorisinmoviebesidesotheractor.enabled" label="32564" type="boolean">
-                    <level>0</level>
-                    <default>true</default>
-                    <control type="toggle"/>
-                </setting>
                 <setting id="question.whatmoviehaslongestruntime.enabled" label="32565" type="boolean">
                     <level>0</level>
                     <default>true</default>
