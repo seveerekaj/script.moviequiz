@@ -260,11 +260,7 @@ msgctxt "#32457"
 msgid "What TV show is this quote from?"
 msgstr ""
 
-msgctxt "#32458"
-msgid "What TV show is this theme from?"
-msgstr ""
-
-#empty strings from id 32459 to 32474
+#empty strings from id 32458 to 32474
 
 #Music Questions
 
@@ -426,11 +422,7 @@ msgctxt "#32584"
 msgid "Who played role in TV show?"
 msgstr ""
 
-msgctxt "#32585"
-msgid "What TV show is this theme from?"
-msgstr ""
-
-#empty strings from id 32586 to 32599
+#empty strings from id 32585 to 32599
 
 msgctxt "#32600"
 msgid "Video Player"

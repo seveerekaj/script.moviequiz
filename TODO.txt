@@ -18,11 +18,6 @@ Jake's TODOs:
     invert the visibility markers that are done opposite of what would be intuitive?
         maybe they were done that way because they are visible by default?
 
-    probably broken questions:
-        what movie is actor not in?
-        what actor is in these movies?
-            this is the only question that uses the 3 photos display type
-        what tv show is this theme from?
     probably pointless question:
         what actor is in these movies besides other actor?
 

@@ -275,7 +275,7 @@ class ActorNotInMovieQuestion(MovieQuestion):
         actors = list()
         for movie in library.getMovies(['cast']).withFilters(defaultFilters).limitTo(10).asList():
             for actor in movie['cast']:
-                if 'thubmnail' in actor:
+                if 'thumbnail' in actor:
                     actors.append(actor)
 
         if not actors:
@@ -695,7 +695,7 @@ class WhatActorIsInTheseMoviesQuestion(MovieQuestion):
             actor['name']).limitTo(1).asItem()
         if not otherMovie:
             raise QuestionException('No movie found')
-        self.addCorrectAnswer(actor['name'], actor['title'], image=actor['thumbnail'])
+        self.addCorrectAnswer(actor['name'], actor['name'], image=actor['thumbnail'])
 
         # Find another bunch of actors
         actors = list()
@@ -1041,39 +1041,6 @@ class WhatTVShowIsThisQuoteFrom(TVQuestion):
     @staticmethod
     def isEnabled():
         return ADDON.getSetting('question.whattvshowisthisquotefrom.enabled') == 'true' and IMDB.isDataPresent()
-
-
-class WhatTVShowIsThisThemeFromQuestion(TVQuestion):
-    def __init__(self, defaultFilters):
-        audioDisplayType = AudioDisplayType()
-        super().__init__(audioDisplayType)
-
-        items = library.getTVShows(['title', 'file', 'art']).withFilters(defaultFilters).limitTo(4).asList()
-        show = None
-        otherShows = list()
-        for item in items:
-            themeSong = os.path.join(item['file'], 'theme.mp3')
-            if show is None and xbmcvfs.exists(themeSong):
-                show = item
-            else:
-                otherShows.append(item)
-
-        if show is None:
-            raise QuestionException('Unable to find any tv shows with a theme.mp3 file')
-
-        self.addCorrectAnswer(id=show['tvshowid'], text=show['title'], image=show['art']['poster'])
-
-        # Fill with random episodes from other shows
-        for otherShow in otherShows:
-            self.addAnswer(id=otherShow['tvshowid'], text=otherShow['title'], image=otherShow['art']['poster'])
-
-        random.shuffle(self.answers)
-        audioDisplayType.setAudioFile(os.path.join(show['file'], 'theme.mp3'))
-        self.text = strings(Q_WHAT_TVSHOW_IS_THIS_THEME_FROM)
-
-    @staticmethod
-    def isEnabled():
-        return ADDON.getSetting('question.whattvshowisthisthemefrom.enabled') == 'true'
 
 
 class MusicQuestion(Question):
