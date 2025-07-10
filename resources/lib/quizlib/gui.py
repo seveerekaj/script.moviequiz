@@ -41,6 +41,11 @@ BACKGROUND_MOVIE = os.path.join(MEDIA_PATH, 'quiz-background-movie.jpg')
 BACKGROUND_TV = os.path.join(MEDIA_PATH, 'quiz-background-tvshows.jpg')
 BACKGROUND_THEME = os.path.join(MEDIA_PATH, 'quiz-background-theme.jpg')
 NO_PHOTO_IMAGE = os.path.join(MEDIA_PATH, 'quiz-no-photo.png')
+SETTING_ONLY_WATCHED_MOVIES = 'only.watched.movies'
+SETTING_MOVIE_RATING_FILTER_ENABLED = 'movie.rating.filter.enabled'
+SETTING_MOVIE_RATING_FILTER = 'movie.rating.filter'
+SETTING_TVSHOW_RATING_FILTER_ENABLED = 'tvshow.rating.filter.enabled'
+SETTING_TVSHOW_RATING_FILTER = 'tvshow.rating.filter'
 
 class MenuGui(xbmcgui.WindowXMLDialog):
     C_MENU_LIST = 4001
@@ -87,20 +92,20 @@ class MenuGui(xbmcgui.WindowXMLDialog):
             xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_HAS_NO_CONTENT))
             return
 
-        if not library.isAnyVideosWatched() and ADDON.getSetting(SETT_ONLY_WATCHED_MOVIES) == 'true':
+        if not library.isAnyVideosWatched() and ADDON.getSetting(SETTING_ONLY_WATCHED_MOVIES) == 'true':
             # Only watched movies requires at least one watched video files
             xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_ONLY_WATCHED))
-            ADDON.setSetting(SETT_ONLY_WATCHED_MOVIES, 'false')
+            ADDON.setSetting(SETTING_ONLY_WATCHED_MOVIES, 'false')
 
-        if not library.isAnyMPAARatingsAvailable() and ADDON.getSetting(SETT_MOVIE_RATING_LIMIT_ENABLED) == 'true':
+        if not library.isAnyMPAARatingsAvailable() and ADDON.getSetting(SETTING_MOVIE_RATING_FILTER_ENABLED) == 'true':
             # MPAA rating requires ratings to be available in database
             xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_MOVIE_RATING_LIMIT))
-            ADDON.setSetting(SETT_MOVIE_RATING_LIMIT_ENABLED, 'false')
+            ADDON.setSetting(SETTING_MOVIE_RATING_FILTER_ENABLED, 'false')
 
-        if not library.isAnyContentRatingsAvailable() and ADDON.getSetting(SETT_TVSHOW_RATING_LIMIT_ENABLED) == 'true':
+        if not library.isAnyContentRatingsAvailable() and ADDON.getSetting(SETTING_TVSHOW_RATING_FILTER_ENABLED) == 'true':
             # Content rating requires ratings to be available in database
             xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_TVSHOW_RATING_LIMIT))
-            ADDON.setSetting(SETT_TVSHOW_RATING_LIMIT_ENABLED, 'false')
+            ADDON.setSetting(SETTING_TVSHOW_RATING_FILTER_ENABLED, 'false')
 
         self.moviesEnabled = bool(hasMovies and question.isAnyMovieQuestionsEnabled())
         self.tvShowsEnabled = bool(hasTVShows and question.isAnyTVShowQuestionsEnabled())
@@ -282,13 +287,13 @@ class QuizGui(xbmcgui.WindowXML):
         self.getControl(self.C_MAIN_MOVIE_BACKGROUND).setImage(self.defaultBackground)
 
         self.defaultLibraryFilters = list()
-        if gameInstance.getType() == game.GAMETYPE_MOVIE and ADDON.getSetting('movie.rating.limit.enabled') == 'true':
-            self.defaultLibraryFilters.extend(library.buildRatingsFilters(ADDON.getSetting('movie.rating.limit')))
+        if gameInstance.getType() == game.GAMETYPE_MOVIE and ADDON.getSetting(SETTING_MOVIE_RATING_FILTER_ENABLED) == 'true':
+            self.defaultLibraryFilters.extend(library.buildRatingsFilters(ADDON.getSetting(SETTING_MOVIE_RATING_FILTER)))
 
-        elif gameInstance.getType() == game.GAMETYPE_TVSHOW and ADDON.getSetting('tvshow.rating.limit.enabled') == 'true':
-            self.defaultLibraryFilters.extend(library.buildRatingsFilters(ADDON.getSetting('tvshow.rating.limit')))
+        elif gameInstance.getType() == game.GAMETYPE_TVSHOW and ADDON.getSetting(SETTING_TVSHOW_RATING_FILTER_ENABLED) == 'true':
+            self.defaultLibraryFilters.extend(library.buildRatingsFilters(ADDON.getSetting(SETTING_TVSHOW_RATING_FILTER)))
 
-        if ADDON.getSetting(SETT_ONLY_WATCHED_MOVIES) == 'true':
+        if ADDON.getSetting(SETTING_ONLY_WATCHED_MOVIES) == 'true':
             self.defaultLibraryFilters.extend(library.buildOnlyWatchedFilter())
 
         self.questionCandidates = question.getEnabledQuestionCandidates(self.gameInstance)

@@ -80,10 +80,6 @@ E_ONLY_WATCHED = 32019
 E_MOVIE_RATING_LIMIT = 32020
 E_TVSHOW_RATING_LIMIT = 32021
 
-SETT_ONLY_WATCHED_MOVIES = 'only.watched.movies'
-SETT_MOVIE_RATING_LIMIT_ENABLED = 'movie.rating.limit.enabled'
-SETT_TVSHOW_RATING_LIMIT_ENABLED = 'tvshow.rating.limit.enabled'
-
 
 def strings(*args):
     return ' '.join([ADDON.getLocalizedString(arg) for arg in args])

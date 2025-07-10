@@ -16,12 +16,12 @@
             </group>
 
             <group id="content.rating.limits" label="32501">
-                <setting id="movie.rating.limit.enabled" label="32504" type="boolean">
+                <setting id="movie.rating.filter.enabled" label="32504" type="boolean">
                     <level>0</level>
                     <default>false</default>
                     <control type="toggle"/>
                 </setting>
-                <setting id="movie.rating.limit" label="32505" type="list[string]" parent="movie.rating.limit.enabled">
+                <setting id="movie.rating.filter" label="32505" type="list[string]" parent="movie.rating.filter.enabled">
                     <level>0</level>
                     <default>G|PG|PG-13</default>
                     <constraints>
@@ -35,19 +35,19 @@
                         </options>
                     </constraints>
                     <dependencies>
-                        <dependency type="enable" setting="movie.rating.limit.enabled">true</dependency>
+                        <dependency type="enable" setting="movie.rating.filter.enabled">true</dependency>
                     </dependencies>
                     <control type="list" format="string">
                         <multiselect>true</multiselect>
                         <hidevalue>false</hidevalue>
                     </control>
                 </setting>
-                <setting id="tvshow.rating.limit.enabled" label="32508" type="boolean">
+                <setting id="tvshow.rating.filter.enabled" label="32508" type="boolean">
                     <level>0</level>
                     <default>false</default>
                     <control type="toggle"/>
                 </setting>
-                <setting id="tvshow.rating.limit" label="32509" type="list[string]" parent="tvshow.rating.limit.enabled">
+                <setting id="tvshow.rating.filter" label="32509" type="list[string]" parent="tvshow.rating.filter.enabled">
                     <level>0</level>
                     <default>TV-Y|TV-Y7|TV-G|TV-PG|TV-14</default>
                     <constraints>
@@ -63,7 +63,7 @@
                         </options>
                     </constraints>
                     <dependencies>
-                        <dependency type="enable" setting="tvshow.rating.limit.enabled">true</dependency>
+                        <dependency type="enable" setting="tvshow.rating.filter.enabled">true</dependency>
                     </dependencies>
                     <control type="list" format="string">
                         <multiselect>true</multiselect>

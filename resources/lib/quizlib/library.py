@@ -30,7 +30,7 @@ MPAA_RATINGS = {
     'R': ['R', 'Rated R'],
     'NR': ['NR', 'Rated NR', 'Not Rated'],
     'TV-Y': ['TV-Y', 'Rated TV-Y'],
-    'TV-Y7': ['TV-Y7', 'Rated TV-Y7'],
+    'TV-Y7': ['TV-Y7', 'Rated TV-Y7', 'TV-Y7-FV', 'Rated TV-Y7-FV'],
     'TV-G': ['TV-G', 'Rated TV-G'],
     'TV-PG': ['TV-PG', 'Rated TV-PG'],
     'TV-14': ['TV-14', 'Rated TV-14'],
