@@ -442,19 +442,12 @@ class QuizGui(xbmcgui.WindowXML):
                 try:
                     q = candidate(self.defaultLibraryFilters)
                     break
-                except question.QuestionException as ex:
-                    pass
                 except Exception as ex:
-                    logger.error(f"{ex.__class__.__name__} in {candidate.__name__}")
-                    import traceback
-                    import sys
-
-                    traceback.print_exc(file=sys.stdout)
+                    logger.error(f"{candidate.__name__}: {repr(ex)}")
 
             if q is None or len(q.getAnswers()) < 3:
                 continue
 
-            # print(type(q))
             if not q.getUniqueIdentifier() in self.previousQuestions:
                 self.previousQuestions.append(q.getUniqueIdentifier())
                 break
@@ -522,7 +515,7 @@ class QuizGui(xbmcgui.WindowXML):
     def _obfuscateQuote(self, quote):
         names = list()
 
-        for m in re.finditer('(\[.*?\])', quote, re.DOTALL):
+        for m in re.finditer(r'(\[.*?\])', quote, re.DOTALL):
             quote = quote.replace(m.group(1), '')
 
         for m in re.finditer('(.*?:)', quote):

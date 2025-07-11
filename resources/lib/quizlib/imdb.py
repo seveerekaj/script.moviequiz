@@ -70,7 +70,7 @@ class Imdb:
                 break
 
         # filter and cleanup
-        return re.sub('\n  ', ' ', quote)
+        return re.sub(r'\n  ', ' ', quote)
 
     def _createQuotesIndex(self, line):
         """
@@ -163,12 +163,12 @@ class Imdb:
         """
         # find position using index
         if season is not None and episode is not None:
-            pattern = f'\n"{name}" \([0-9]+\)( \{{.*?\(\#{season}.{episode}\)\}})?\t([0-9]+)\n[^\t]+\t([0-9]+)'
+            pattern = rf'\n"{name}" \([0-9]+\)( \{{.*?\(\#{season}.{episode}\)\}})?\t([0-9]+)\n[^\t]+\t([0-9]+)'
             start = 2
             end = 3
         else:
             year = '' if year is None else year
-            pattern = f'\n{name} *\({year}[^\t]+\t([0-9]+)\n[^\t]+\t([0-9]+)'
+            pattern = rf'\n{name} *\({year}[^\t]+\t([0-9]+)\n[^\t]+\t([0-9]+)'
             start = 1
             end = 2
         m = re.search(pattern, self.quotesIndex, re.DOTALL)
