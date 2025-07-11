@@ -23,6 +23,37 @@ import json
 import xbmc
 from resources.lib.util import logger
 
+
+# library item attribute keys
+KEY_ART =            'art'
+KEY_ARTIST =         'artist'
+KEY_ARTIST_ID =      'artistid'
+KEY_CAST =           'cast'
+KEY_DIRECTOR =       'director'
+KEY_EPISODE =        'episode'
+KEY_FANART =         'fanart'
+KEY_FIRST_AIRED =    'firstaired'
+KEY_FILE =           'file'
+KEY_GENRE =          'genre'
+KEY_LABEL =          'label'
+KEY_MOVIE_ID =       'movieid'
+KEY_NAME =           'name'
+KEY_POSTER =         'poster'
+KEY_ROLE =           'role'
+KEY_RUNTIME =        'runtime'
+KEY_STUDIO =         'studio'
+KEY_SEASON =         'season'
+KEY_SET =            'set'
+KEY_SHOW_TITLE =     'showtitle'
+KEY_TAGLINE =        'tagline'
+KEY_THUMBNAIL =      'thumbnail'
+KEY_TITLE =          'title'
+KEY_TVSHOW_ID =      'tvshowid'
+KEY_TVSHOW_POSTER =  'tvshow.poster'
+KEY_YEAR =           'year'
+
+GENRE_ANIMATION = 'Animation'
+
 MPAA_RATINGS = {
     'G': ['G', 'Rated G'],
     'PG': ['PG', 'Rated PG'],
