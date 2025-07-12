@@ -17,6 +17,7 @@
 #  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 #
+
 import datetime
 import os
 import random
@@ -37,8 +38,7 @@ from .strings import *
 MEDIA_PATH = os.path.join(ADDON.getAddonInfo('path'), 'resources', 'skins', 'Default', 'media')
 AUDIO_CORRECT = os.path.join(MEDIA_PATH, 'audio', 'correct.wav')
 AUDIO_WRONG = os.path.join(MEDIA_PATH, 'audio', 'wrong.wav')
-BACKGROUND_MOVIE = os.path.join(MEDIA_PATH, 'quiz-background-movie.jpg')
-BACKGROUND_TV = os.path.join(MEDIA_PATH, 'quiz-background-tvshows.jpg')
+BACKGROUND_DEFAULT = os.path.join(MEDIA_PATH, 'quiz-filmstrip-background.jpg')
 BACKGROUND_THEME = os.path.join(MEDIA_PATH, 'quiz-background-theme.jpg')
 NO_PHOTO_IMAGE = os.path.join(MEDIA_PATH, 'quiz-no-photo.png')
 SETTING_ONLY_WATCHED_MOVIES = 'only.watched.movies'
@@ -206,7 +206,7 @@ class QuizGui(xbmcgui.WindowXML):
     C_MAIN_QUESTION_LABEL = 4300
     C_MAIN_PHOTO = 4400
     C_MAIN_MOVIE_BACKGROUND = 4500
-    C_MAIN_TVSHOW_BACKGROUND = 4501
+    C_MAIN_LOGO = 4501
     C_MAIN_QUOTE_LABEL = 4600
     C_MAIN_PHOTO_1 = 4701
     C_MAIN_PHOTO_2 = 4702
@@ -280,10 +280,7 @@ class QuizGui(xbmcgui.WindowXML):
         self.gameInstance = gameInstance
         logger.debug(f"Starting game: {str(self.gameInstance)}")
 
-        if self.gameInstance.getType() == game.GAMETYPE_TVSHOW:
-            self.defaultBackground = BACKGROUND_TV
-        else:
-            self.defaultBackground = BACKGROUND_MOVIE
+        self.defaultBackground = BACKGROUND_DEFAULT
         self.getControl(self.C_MAIN_MOVIE_BACKGROUND).setImage(self.defaultBackground)
 
         self.defaultLibraryFilters = list()
@@ -392,10 +389,13 @@ class QuizGui(xbmcgui.WindowXML):
         displayType = self.question.getDisplayType()
         if self.question.getFanartFile():
             self.getControl(self.C_MAIN_MOVIE_BACKGROUND).setImage(self.question.getFanartFile())
+            self.getControl(self.C_MAIN_LOGO).setVisible(False)
         elif isinstance(displayType, question.AudioDisplayType):
             self.getControl(self.C_MAIN_MOVIE_BACKGROUND).setImage(BACKGROUND_THEME)
+            self.getControl(self.C_MAIN_LOGO).setVisible(False)
         else:
             self.getControl(self.C_MAIN_MOVIE_BACKGROUND).setImage(self.defaultBackground)
+            self.getControl(self.C_MAIN_LOGO).setVisible(True)
 
         if isinstance(displayType, question.VideoDisplayType):
             self.getControl(self.C_MAIN_VIDEO_FILE_NOT_FOUND).setVisible(False)
