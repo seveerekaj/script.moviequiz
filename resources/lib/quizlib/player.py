@@ -18,14 +18,9 @@
 #  http://www.gnu.org/copyleft/gpl.html
 #
 
-import os
-import random
-import re
-import threading
+import os, random, re, threading
 
-import xbmc
-import xbmcgui
-import xbmcvfs
+import xbmc, xbmcgui, xbmcvfs
 
 from resources.lib.util import logger
 
@@ -84,14 +79,12 @@ class TimeLimitedPlayer(xbmc.Player):
             self.lastStartPercentage = None
 
         if self.eventTimer is not None:
-            #self.stop()
             self.eventTimer.cancel()
 
         if item[-4:].lower() == '.ifo':
             item = self._getRandomDvdVob(item)
         elif item[-4:].lower() == '.iso':
             pass
-            #todo file = self._getRandomDvdVob(file)
 
         if self.lastStartPercentage is None:
             self.lastStartPercentage = random.randint(self.minPercent, self.maxPercent)

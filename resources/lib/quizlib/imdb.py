@@ -18,15 +18,11 @@
 #  http://www.gnu.org/copyleft/gpl.html
 #
 
-import os
-import random
-import re
-import time
-import zlib
+import os, random, re, time, zlib
 from urllib.request import urlopen
+from typing import Callable
 
-import xbmcgui
-import xbmcvfs
+import xbmcgui, xbmcvfs
 
 from resources.lib.util import logger
 from .strings import *
@@ -72,14 +68,13 @@ class Imdb:
         # filter and cleanup
         return re.sub(r'\n  ', ' ', quote)
 
-    def _createQuotesIndex(self, line):
+    def _createQuotesIndex(self, line: str):
         """
         Creates an index file of the QUOTES_LIST file. The index contains
         byte offsets of each movie title to make it possible to load just
         part of the QUOTES_LIST file.
 
-        @param line: a line from QUOTES_LIST
-        @type line: str
+        :param line: a line from QUOTES_LIST
         """
         if not hasattr(self, 'indexFile'):
             self.bytesProcessed = 0
@@ -92,19 +87,15 @@ class Imdb:
         self.bytesProcessed += len(line.encode('utf8'))
         return line
 
-
-    def _downloadGzipFile(self, url, destination, progressCallback = None, postprocessLineCallback = None):
+    def _downloadGzipFile(self, url: str, destination: str, progressCallback: Callable = None, postprocessLineCallback = None):
         """
         Downloads a gzip compressed file and extracts it on the fly.
         Optionally providing progress via the progressCallback and postprocessing on a line level
         via the postprocessLineCallback.
 
-        @param url: the full url of the gzip file
-        @type url: str
-        @param destination: the full path of the destination file
-        @type destination: str
-        @param progressCallback: a callback function which is invoked periodically with progress information
-        @type progressCallback: method
+        :param url: the full url of the gzip file
+        :param destination: the full path of the destination file
+        :param progressCallback: a callback function which is invoked periodically with progress information
         """
         response = urlopen(url, timeout=30)
         file = open(destination, 'w', encoding='utf8')
@@ -148,18 +139,15 @@ class Imdb:
         file.close()
         response.close() # todo: .close() may not be needed/supported anymore. should I be using "with" syntax?
 
-    def _loadQuotes(self, name, season, episode, year):
+    def _loadQuotes(self, name: str, season: str, episode: str, year):
         """
         Loads quotes from QUOTES_LIST using the byte offsets in QUOTES_INDEX,
         so we only need to load a few kilobytes instead of a few 100 megabytes.
 
-        @param name: the name of the movie or tv show
-        @type name: str
-        @param season: the season of the tv show
-        @type season: str
-        @param episode: the episode of the tv show
-        @type episode: str
-        @return a list containing the individual quotes from the movie or tv show
+        :param name: the name of the movie or tv show
+        :param season: the season of the tv show
+        :param episode: the episode of the tv show
+        :return a list containing the individual quotes from the movie or tv show
         """
         # find position using index
         if season is not None and episode is not None:
@@ -183,6 +171,7 @@ class Imdb:
 
         # remove first line, remove last two newline chars, and split on double new lines
         return quotes[quotes.find('\n')+1:-2].split('\n\n')
+
 
 def downloadData():
     class DownloadState:

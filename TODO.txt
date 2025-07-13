@@ -27,5 +27,4 @@ twinther's TODOs:
 Movie Question suggestions:
 - What role does <actor> play in <movie>?
 - In what movie does <actor> play <role>?
-- What actor stars in these three movies?
 - What movie is these three actors starring?
