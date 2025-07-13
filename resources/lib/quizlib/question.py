@@ -18,17 +18,13 @@
 #  http://www.gnu.org/copyleft/gpl.html
 #
 
-import datetime
-import os
-import random
-import re
+import datetime, random, re
 
 import xbmcvfs
 
-from . import game
-from . import imdb
-from . import library
+from . import game, imdb, library
 from .strings import *
+
 
 IMDB = imdb.Imdb()
 
@@ -147,9 +143,6 @@ class Question:
     @staticmethod
     def isEnabled():
         raise NotImplementedError("subclasses must implement 'isenabled()'")
-
-    def _getMovieIds(self):
-        return [str(movie.id) for movie in self.answers]
 
     def getAnswerTexts(self):
         return [answer.text for answer in self.answers]
@@ -817,7 +810,7 @@ class WhenWasTVShowFirstAiredQuestion(TVQuestion):
 
         episode = (library.getEpisodes([library.KEY_FIRST_AIRED]).withFilters(defaultFilters).episode(1)
                           .fromShow(show[library.KEY_TITLE]).fromSeason(season[library.KEY_SEASON]).limitTo(1).asItem())
-        if not episode:
+        if not episode or len(episode[library.KEY_FIRST_AIRED]) < 4:
             raise QuestionException('No episodes found')
 
         episodeYear = int(episode[library.KEY_FIRST_AIRED][0:4])
