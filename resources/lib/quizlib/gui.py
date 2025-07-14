@@ -18,34 +18,28 @@
 #  http://www.gnu.org/copyleft/gpl.html
 #
 
-import datetime
-import os
-import random
-import re
-import threading
-import time
+import datetime, os, random, re, threading, time
 
-import xbmc
-import xbmcgui
+import xbmc, xbmcgui
 
-from . import game
-from . import imdb, question
-from . import library
-from resources.lib.util import logger
-from . import player
+from . import game, imdb, question, library, player
 from .strings import *
+from resources.lib.util import logger
 
-MEDIA_PATH = os.path.join(ADDON.getAddonInfo('path'), 'resources', 'skins', 'Default', 'media')
-AUDIO_CORRECT = os.path.join(MEDIA_PATH, 'audio', 'correct.wav')
-AUDIO_WRONG = os.path.join(MEDIA_PATH, 'audio', 'wrong.wav')
+
+MEDIA_PATH =         os.path.join(ADDON.getAddonInfo('path'), 'resources', 'skins', 'Default', 'media')
+AUDIO_CORRECT =      os.path.join(MEDIA_PATH, 'audio', 'correct.wav')
+AUDIO_WRONG =        os.path.join(MEDIA_PATH, 'audio', 'wrong.wav')
 BACKGROUND_DEFAULT = os.path.join(MEDIA_PATH, 'quiz-filmstrip-background.jpg')
-BACKGROUND_THEME = os.path.join(MEDIA_PATH, 'quiz-background-theme.jpg')
-NO_PHOTO_IMAGE = os.path.join(MEDIA_PATH, 'quiz-no-photo.png')
-SETTING_ONLY_WATCHED_MOVIES = 'only.watched.movies'
-SETTING_MOVIE_RATING_FILTER_ENABLED = 'movie.rating.filter.enabled'
-SETTING_MOVIE_RATING_FILTER = 'movie.rating.filter'
+BACKGROUND_THEME =   os.path.join(MEDIA_PATH, 'quiz-background-theme.jpg')
+NO_PHOTO_IMAGE =     os.path.join(MEDIA_PATH, 'quiz-no-photo.png')
+
+SETTING_ONLY_WATCHED_MOVIES =          'only.watched.movies'
+SETTING_MOVIE_RATING_FILTER_ENABLED =  'movie.rating.filter.enabled'
+SETTING_MOVIE_RATING_FILTER =          'movie.rating.filter'
 SETTING_TVSHOW_RATING_FILTER_ENABLED = 'tvshow.rating.filter.enabled'
-SETTING_TVSHOW_RATING_FILTER = 'tvshow.rating.filter'
+SETTING_TVSHOW_RATING_FILTER =         'tvshow.rating.filter'
+
 
 class MenuGui(xbmcgui.WindowXMLDialog):
     C_MENU_LIST = 4001
@@ -71,8 +65,8 @@ class MenuGui(xbmcgui.WindowXMLDialog):
         self.musicEnabled = True
 
     def onInit(self):
-        movies = library.getMovies(['art']).limitTo(44).asList()
-        posters = [movie['art']['poster'] for movie in movies if 'art' in movie and 'poster' in movie['art']]
+        movies = library.getMovies([library.KEY_ART]).limitTo(44).asList()
+        posters = [movie[library.KEY_ART][library.KEY_POSTER] for movie in movies if library.KEY_ART in movie and library.KEY_POSTER in movie[library.KEY_ART]]
         if posters:
             for idx in range(0, 44):
                 self.getControl(1000 + idx).setImage(posters[idx % len(posters)])
@@ -120,11 +114,17 @@ class MenuGui(xbmcgui.WindowXMLDialog):
         self.updateMenu()
 
     def onAction(self, action):
+        changeListItemActions = [
+            xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN, xbmcgui.ACTION_MOUSE_WHEEL_DOWN, xbmcgui.ACTION_MOUSE_WHEEL_UP,
+            xbmcgui.ACTION_SCROLL_DOWN, xbmcgui.ACTION_SCROLL_UP, xbmcgui.ACTION_ANALOG_MOVE, xbmcgui.ACTION_ANALOG_MOVE_X_LEFT,
+            xbmcgui.ACTION_ANALOG_MOVE_X_RIGHT, xbmcgui.ACTION_ANALOG_MOVE_Y_DOWN, xbmcgui.ACTION_ANALOG_MOVE_Y_UP
+        ]
+
         if action.getId() in [xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_PARENT_DIR, xbmcgui.ACTION_NAV_BACK]:
             self.quizGui.close()
             self.close()
             return
-        elif action.getId() in [xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN]: #todo: what about analog move down/up? and is there a better way to do this, perhaps onFocus for ListItem?
+        elif action.getId() in changeListItemActions:
             item = self.getControl(MenuGui.C_MENU_LIST).getSelectedItem()
             action = int(item.getProperty(MenuGui.ACTION_KEY))
             if action == MenuGui.ACTION_ABOUT:
@@ -162,10 +162,9 @@ class MenuGui(xbmcgui.WindowXMLDialog):
         listControl.addItems(self._buildMenuItemsList(items))
         self.setFocus(listControl)
 
-    def onClick(self, controlId):
+    def onClick(self, controlId: int):
         """
-        @param controlId: id of the control that was clicked
-        @type controlId: int
+        :param controlId: id of the control that was clicked
         """
         if controlId == MenuGui.C_MENU_LIST:
             item = self.getControl(MenuGui.C_MENU_LIST).getSelectedItem()
@@ -195,6 +194,7 @@ class MenuGui(xbmcgui.WindowXMLDialog):
                 self.quizGui.close()
                 self.close()
                 return
+
 
 class QuizGui(xbmcgui.WindowXML):
     C_MAIN_FIRST_ANSWER = 4000
@@ -278,7 +278,7 @@ class QuizGui(xbmcgui.WindowXML):
         self.getControl(2).setVisible(True)
 
         self.gameInstance = gameInstance
-        logger.debug(f"Starting game: {str(self.gameInstance)}")
+        logger.debug(f"Starting game: {self.gameInstance}")
 
         self.defaultBackground = BACKGROUND_DEFAULT
         self.getControl(self.C_MAIN_MOVIE_BACKGROUND).setImage(self.defaultBackground)
@@ -286,7 +286,6 @@ class QuizGui(xbmcgui.WindowXML):
         self.defaultLibraryFilters = list()
         if gameInstance.getType() == game.GAMETYPE_MOVIE and ADDON.getSetting(SETTING_MOVIE_RATING_FILTER_ENABLED) == 'true':
             self.defaultLibraryFilters.extend(library.buildRatingsFilters(ADDON.getSetting(SETTING_MOVIE_RATING_FILTER)))
-
         elif gameInstance.getType() == game.GAMETYPE_TVSHOW and ADDON.getSetting(SETTING_TVSHOW_RATING_FILTER_ENABLED) == 'true':
             self.defaultLibraryFilters.extend(library.buildRatingsFilters(ADDON.getSetting(SETTING_TVSHOW_RATING_FILTER)))
 
@@ -336,7 +335,7 @@ class QuizGui(xbmcgui.WindowXML):
             logger.debug("Ignoring key-repeat onClick")
             return
 
-        elif controlId == self.C_MAIN_EXIT:
+        if controlId == self.C_MAIN_EXIT:
             self.onGameOver()
         elif self.uiState == self.STATE_LOADING:
             return  # ignore the rest while we are loading
@@ -345,9 +344,6 @@ class QuizGui(xbmcgui.WindowXML):
             self.onQuestionAnswered(answer)
         elif controlId == self.C_MAIN_REPLAY:
             self.player.replay()
-
-    def onFocus(self, controlId):
-        pass
 
     def onGameOver(self):
         if self.uiState == self.STATE_GAME_OVER:
@@ -420,7 +416,6 @@ class QuizGui(xbmcgui.WindowXML):
             self.getControl(self.C_MAIN_QUOTE_LABEL).setText(quoteText)
 
         elif isinstance(displayType, question.AudioDisplayType):
-            #self.player.playAudio(displayType.getAudioFile())
             self.player.playWindowed(displayType.getAudioFile())
 
         self.onVisibilityChanged(displayType)
@@ -454,10 +449,9 @@ class QuizGui(xbmcgui.WindowXML):
 
         return q
 
-    def onQuestionAnswered(self, answer):
+    def onQuestionAnswered(self, answer: question.Answer):
         """
-        @param answer: the chosen answer by the user
-        @type answer: Answer
+        :param answer: the chosen answer by the user
         """
         if self.player.isPlaying():
             self.player.stopPlayback()
@@ -502,10 +496,9 @@ class QuizGui(xbmcgui.WindowXML):
         self.getControl(self.C_MAIN_CORRECT_VISIBILITY).setVisible(True)
         self.getControl(self.C_MAIN_INCORRECT_VISIBILITY).setVisible(True)
 
-    def onVisibilityChanged(self, displayType=None):
+    def onVisibilityChanged(self, displayType: question.DisplayType = None):
         """
-        @type displayType: quizlib.question.DisplayType
-        @param displayType: the type of display required by the current question
+        :param displayType: the type of display required by the current question
         """
         self.getControl(self.C_MAIN_VIDEO_VISIBILITY).setVisible(not isinstance(displayType, question.VideoDisplayType))
         self.getControl(self.C_MAIN_PHOTO_VISIBILITY).setVisible(not isinstance(displayType, question.PhotoDisplayType))
@@ -518,7 +511,7 @@ class QuizGui(xbmcgui.WindowXML):
         for m in re.finditer(r'(\[.*?\])', quote, re.DOTALL):
             quote = quote.replace(m.group(1), '')
 
-        for m in re.finditer('(.*?:)', quote):
+        for m in re.finditer(r'(.*?:)', quote):
             name = m.group(1)
             if not name in names:
                 names.append(name)

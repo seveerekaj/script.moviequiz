@@ -10,7 +10,6 @@ Jake's TODOs:
     add 5th or maybe even 6th answer option
     apparently fanart is required?
         also add screenshots to be seen in addon info
-    ask about onfocus for listitem
     get movie quotes from subtitle tracks of locally-stored movies?
     can i get rid of game.py ?
     multiplayer support
