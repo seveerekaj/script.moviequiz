@@ -53,7 +53,7 @@ msgid "Missing requirements!"
 msgstr ""
 
 msgctxt "#32018"
-msgid "To play the Movie Quiz you must have some movies or TV shows in your Video library. See the XBMC wiki for information."
+msgid "To play the Movie Quiz you must have some movies or TV shows in your video library. See the Kodi wiki for information."
 msgstr ""
 
 msgctxt "#32019"
@@ -65,7 +65,7 @@ msgid "None of your movies has a MPAA rating, so the [I]Limit movie selection ba
 msgstr ""
 
 msgctxt "#32021"
-msgid "None of your TV shows has a Content rating, so the [I]Limit TV show selection based on Content rating[/I] setting will be disabled."
+msgid "None of your TV shows has a content rating, so the [I]Limit TV show selection based on content rating[/I] setting will be disabled."
 msgstr ""
 
 #empty strings from id 32022 to 32099
@@ -200,12 +200,12 @@ msgid "What movie is this quote from?"
 msgstr ""
 
 msgctxt "#32410"
-msgid "What movie is the newest?"
+msgid "What movie is newest?"
 msgstr ""
 
 #.%s is director name
 msgctxt "#32411"
-msgid "What movie is not directed by [B]%s[/B]?"
+msgid "What movie was not directed by [B]%s[/B]?"
 msgstr ""
 
 msgctxt "#32412"
@@ -300,7 +300,7 @@ msgid "MPAA ratings to include"
 msgstr ""
 
 msgctxt "#32506"
-msgid "Display the correct answer, when you answer incorrectly"
+msgid "Display the correct answer when you answer incorrectly"
 msgstr ""
 
 msgctxt "#32507"
@@ -308,7 +308,7 @@ msgid "Only use watched movies in the questions"
 msgstr ""
 
 msgctxt "#32508"
-msgid "Limit TV show selection based on Content rating"
+msgid "Limit TV show selection based on content rating"
 msgstr ""
 
 msgctxt "#32509"
@@ -325,20 +325,18 @@ msgctxt "#32551"
 msgid "Use these question types for TV shows"
 msgstr ""
 
-msgctxt "#32552"
-msgid "What movie is this?"
-msgstr ""
+#empty string with id 32552
 
 msgctxt "#32553"
-msgid "What movie is actor not in?"
+msgid "What movie is this actor not in?"
 msgstr ""
 
 msgctxt "#32554"
-msgid "What year was movie released?"
+msgid "What year was this movie released?"
 msgstr ""
 
 msgctxt "#32555"
-msgid "What tagline belongs to movie?"
+msgid "What tagline belongs to this movie?"
 msgstr ""
 
 msgctxt "#32556"
@@ -349,35 +347,19 @@ msgctxt "#32557"
 msgid "What studio relased this movie?"
 msgstr ""
 
-msgctxt "#32558"
-msgid "What actor is this?"
-msgstr ""
+#empty string with id 32558
 
 msgctxt "#32559"
-msgid "Who played this role in movie?"
+msgid "Who played this role in this movie?"
 msgstr ""
 
-#empty string with id 32560
-
-msgctxt "#32561"
-msgid "What movie is newest?"
-msgstr ""
+#empty strings from id 32560 to 32561
 
 msgctxt "#32562"
-msgid "What movie was not directed by?"
+msgid "What movie was not directed by this director?"
 msgstr ""
 
-msgctxt "#32563"
-msgid "What actor is in these movies?"
-msgstr ""
-
-#empty string with id 32564
-
-msgctxt "#32565"
-msgid "What movie has longest runtime?"
-msgstr ""
-
-#empty strings from id 32566 to 32569
+#empty strings from id 32563 to 32569
 
 msgctxt "#32570"
 msgid "Use these question types for music"
@@ -395,11 +377,7 @@ msgctxt "#32573"
 msgid "Who made this album?"
 msgstr ""
 
-#empty strings from id 32574 to 32579
-
-msgctxt "#32580"
-msgid "What TV show is this?"
-msgstr ""
+#empty strings from id 32574 to 32580
 
 msgctxt "#32581"
 msgid "What season is this?"
@@ -410,11 +388,11 @@ msgid "What episode is this?"
 msgstr ""
 
 msgctxt "#32583"
-msgid "When was TV show first aired?"
+msgid "When was this TV show first aired?"
 msgstr ""
 
 msgctxt "#32584"
-msgid "Who played role in TV show?"
+msgid "Who played this role in this TV show?"
 msgstr ""
 
 #empty strings from id 32585 to 32599

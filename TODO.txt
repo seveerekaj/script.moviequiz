@@ -5,13 +5,10 @@ Jake's TODOs:
         or maybe grab several frames, each from a different random position of the film, and show each to the user? have the number of frames grabbed configurable
     where is cinema vision getting their quotes, trivia from?
     pause instead of stop at end of "what movie is this?" then have banner show "time's up! (change the length of time to play in settings)"
-    change hard-coded numbers to string constants
-    for settings strings accessed in code, use const variables rather than hard-coding the strings
     add 5th or maybe even 6th answer option
     apparently fanart is required?
         also add screenshots to be seen in addon info
     get movie quotes from subtitle tracks of locally-stored movies?
-    can i get rid of game.py ?
     multiplayer support
         possible to host web server that each player can connect to (on same wifi network) and select the answer to each question?
     invert the visibility markers that are done opposite of what would be intuitive?
