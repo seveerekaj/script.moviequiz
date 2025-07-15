@@ -57,9 +57,9 @@
             </control>
         </control>
 
-
         <control type="group" id="2">
             <!-- visibility markers -->
+            <!-- animations are not triggered when directly changing the visibility of a control, so we use visibility markers as a workaround -->
             <control type="label" id="5000">
                 <description>visibility marker for video group</description>
             </control>
@@ -107,7 +107,7 @@
                 <posy>0</posy>
                 <width>336</width>
                 <height>452</height>
-                <visible>!Control.IsVisible(5001)</visible>
+                <visible>Control.IsVisible(5001)</visible>
                 <animation effect="fade" start="0" end="100" delay="1000" time="500">Visible</animation>
 
                 <control type="image">
@@ -128,7 +128,7 @@
             <control type="group">
                 <width>1280</width>
                 <height>720</height>
-                <visible>!Control.IsVisible(5000)</visible>
+                <visible>Control.IsVisible(5000)</visible>
 
                 <!-- fullscreen video player -->
                 <control type="group">
@@ -179,7 +179,7 @@
             <control type="group">
                 <width>1280</width>
                 <height>720</height>
-                <visible>!Control.IsVisible(5004)</visible>
+                <visible>Control.IsVisible(5004)</visible>
                 <animation effect="fade" start="0" end="100" time="1000">Visible</animation>
 
                 <control type="image">
@@ -200,10 +200,11 @@
             </control>
 
             <!-- three photos group -->
-            <control type="group" id="4700">
+            <control type="group">
                 <width>1280</width>
                 <height>720</height>
-                <visible>!Control.IsVisible(5006)</visible>
+                <visible>Control.IsVisible(5006)</visible>
+                <animation effect="fade" start="0" end="100" time="500">Visible</animation>
 
                 <!-- photo #1 -->
                 <control type="group">
@@ -223,8 +224,6 @@
                         <height>412</height>
                         <aspectratio>keep</aspectratio>
                         <fadetime>1000</fadetime>
-                        <visible>Control.IsVisible(4700)</visible>
-                        <animation effect="fade" start="0" end="100" time="500">Visible</animation>
                     </control>
                     <control type="label" id="4711">
                         <posx>0</posx>
@@ -257,8 +256,6 @@
                         <height>412</height>
                         <aspectratio>keep</aspectratio>
                         <fadetime>1000</fadetime>
-                        <visible>Control.IsVisible(4700)</visible>
-                        <animation effect="fade" start="0" end="100" time="500">Visible</animation>
                     </control>
                     <control type="label" id="4712">
                         <posx>0</posx>
@@ -291,8 +288,6 @@
                         <height>412</height>
                         <aspectratio>keep</aspectratio>
                         <fadetime>1000</fadetime>
-                        <visible>Control.IsVisible(4700)</visible>
-                        <animation effect="fade" start="0" end="100" time="500">Visible</animation>
                     </control>
                     <control type="label" id="4713">
                         <posx>0</posx>
@@ -355,7 +350,7 @@
                     <height>268</height>
                     <texture>quiz-white-square.png</texture>
                     <colordiffuse>aa00ff00</colordiffuse>
-                    <visible>!Control.IsVisible(5002)</visible>
+                    <visible>Control.IsVisible(5002)</visible>
                     <animation effect="fade" start="100" end="0" time="1000">Hidden</animation>
                 </control>
                 <control type="image">
@@ -364,7 +359,7 @@
                     <height>268</height>
                     <texture>quiz-white-square.png</texture>
                     <colordiffuse>aaff0000</colordiffuse>
-                    <visible>!Control.IsVisible(5003)</visible>
+                    <visible>Control.IsVisible(5003)</visible>
                     <animation effect="fade" start="100" end="0" time="1000">Hidden</animation>
                 </control>
                 <control type="image">
@@ -402,7 +397,7 @@
                     <onright>4302</onright>
                     <ondown>4000</ondown>
                     <onup>4000</onup>
-                    <enable>!Control.IsVisible(5000) + !Control.IsVisible(4800)</enable>
+                    <enable>Control.IsVisible(5000) + !Control.IsVisible(4800)</enable>
                 </control>
                 <control type="button" id="4302">
                     <description>Exit quiz</description>

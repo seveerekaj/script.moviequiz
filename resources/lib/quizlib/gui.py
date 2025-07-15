@@ -276,6 +276,7 @@ class QuizGui(xbmcgui.WindowXML):
     def newGame(self, gameInstance):
         self.getControl(1).setVisible(False)
         self.getControl(2).setVisible(True)
+        self.onVisibilityChanged()
 
         self.gameInstance = gameInstance
         logger.debug(f"Starting game: {self.gameInstance}")
@@ -418,10 +419,8 @@ class QuizGui(xbmcgui.WindowXML):
         elif isinstance(displayType, question.AudioDisplayType):
             self.player.playWindowed(displayType.getAudioFile())
 
-        self.onVisibilityChanged(displayType)
-
         self.uiState = self.STATE_PLAYING
-        self.getControl(self.C_MAIN_LOADING_VISIBILITY).setVisible(False)
+        self.onVisibilityChanged(displayType)
 
     def _getNewQuestion(self):
         retries = 0
@@ -458,10 +457,10 @@ class QuizGui(xbmcgui.WindowXML):
 
         if answer is not None and answer.correct:
             xbmc.playSFX(AUDIO_CORRECT)
-            self.getControl(self.C_MAIN_CORRECT_VISIBILITY).setVisible(False)
+            self.getControl(self.C_MAIN_CORRECT_VISIBILITY).setVisible(True)
         else:
             xbmc.playSFX(AUDIO_WRONG)
-            self.getControl(self.C_MAIN_INCORRECT_VISIBILITY).setVisible(False)
+            self.getControl(self.C_MAIN_INCORRECT_VISIBILITY).setVisible(True)
         threading.Timer(0.5, self.onQuestionAnswerFeedbackTimer).start()
 
         # show correct answers if setting enabled and if user answered incorrectly or the question type is quote
@@ -490,22 +489,23 @@ class QuizGui(xbmcgui.WindowXML):
         """
         onQuestionAnswerFeedbackTimer is invoked by a timer when the red or green background behind the answers box
         must be faded out and hidden.
-
-        Note: Visibility is inverted in skin
         """
-        self.getControl(self.C_MAIN_CORRECT_VISIBILITY).setVisible(True)
-        self.getControl(self.C_MAIN_INCORRECT_VISIBILITY).setVisible(True)
+        self.getControl(self.C_MAIN_CORRECT_VISIBILITY).setVisible(False)
+        self.getControl(self.C_MAIN_INCORRECT_VISIBILITY).setVisible(False)
 
-    def onVisibilityChanged(self, displayType: question.DisplayType = None):
+    def onVisibilityChanged(self, displayType: question.DisplayType = None) -> None:
         """
         :param displayType: the type of display required by the current question
         """
-        self.getControl(self.C_MAIN_VIDEO_VISIBILITY).setVisible(not isinstance(displayType, question.VideoDisplayType))
-        self.getControl(self.C_MAIN_PHOTO_VISIBILITY).setVisible(not isinstance(displayType, question.PhotoDisplayType))
-        self.getControl(self.C_MAIN_QUOTE_VISIBILITY).setVisible(not isinstance(displayType, question.QuoteDisplayType))
-        self.getControl(self.C_MAIN_THREE_PHOTOS_VISIBILITY).setVisible(not isinstance(displayType, question.ThreePhotoDisplayType))
+        self.getControl(self.C_MAIN_LOADING_VISIBILITY).setVisible(False)
+        self.getControl(self.C_MAIN_CORRECT_VISIBILITY).setVisible(False)
+        self.getControl(self.C_MAIN_INCORRECT_VISIBILITY).setVisible(False)
+        self.getControl(self.C_MAIN_VIDEO_VISIBILITY).setVisible(isinstance(displayType, question.VideoDisplayType))
+        self.getControl(self.C_MAIN_PHOTO_VISIBILITY).setVisible(isinstance(displayType, question.PhotoDisplayType))
+        self.getControl(self.C_MAIN_QUOTE_VISIBILITY).setVisible(isinstance(displayType, question.QuoteDisplayType))
+        self.getControl(self.C_MAIN_THREE_PHOTOS_VISIBILITY).setVisible(isinstance(displayType, question.ThreePhotoDisplayType))
 
-    def _obfuscateQuote(self, quote):
+    def _obfuscateQuote(self, quote: str) -> str:
         names = list()
 
         for m in re.finditer(r'(\[.*?\])', quote, re.DOTALL):
