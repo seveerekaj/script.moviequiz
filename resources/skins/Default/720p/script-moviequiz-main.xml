@@ -121,6 +121,7 @@
                     <width>316</width>
                     <height>432</height>
                     <aspectratio>keep</aspectratio>
+                    <fadetime>1000</fadetime>
                 </control>
             </control>
 
