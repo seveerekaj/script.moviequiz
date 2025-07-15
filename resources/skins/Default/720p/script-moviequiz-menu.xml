@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <window type="dialog">
     <allowoverlay>no</allowoverlay>
-    <defaultcontrol always="false">4001</defaultcontrol>
+    <defaultcontrol always="false">4000</defaultcontrol>
     <coordinates>
         <system>1</system>
         <posx>0</posx>
@@ -9,6 +9,7 @@
     </coordinates>
     <controls>
         <control type="group">
+            <!-- row 1 -->
             <control type="image" id="1000">
                 <posx>-20</posx>
                 <posy>0</posy>
@@ -402,7 +403,7 @@
             </animation>
         </control>
 
-        <control type="group">
+        <control type="group" id="4000">
             <description>main menu</description>
             <posx>830</posx>
             <posy>280</posy>
@@ -459,7 +460,7 @@
         </control>
 
         <control type="textbox" id="6001">
-            <description>about</description>
+            <description>info</description>
             <posx>60</posx>
             <posy>80</posy>
             <width>660</width>

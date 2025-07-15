@@ -2,7 +2,6 @@
 <addon id="script.moviequiz" name="Movie Quiz" version="2.1.0" provider-name="twinther, seveerekaj">
     <requires>
         <import addon="xbmc.python" version="3.0.0"/>
-        <import addon="script.module.buggalo" version="1.2.0"/>
     </requires>
     <extension point="xbmc.python.script" library="addon.py"/>
     <extension point="xbmc.addon.metadata">
@@ -51,7 +50,7 @@ v2.0.0 (2021-08-26)
         - Complete overhaul of the addon to get it working in Kodi 19 Matrix, add new features, and remove old non-essential features.
         </news>
         <assets>
-            <icon>resources/media/images/icon.png</icon>
+            <icon>resources/media/icon.png</icon>
         </assets>
     </extension>
 </addon>

@@ -22,6 +22,7 @@ GAMETYPE_MOVIE = "movie"
 GAMETYPE_TVSHOW = "tvshow"
 GAMETYPE_MUSIC = "music"
 
+
 class UnlimitedGame():
     def __init__(self, type):
         self.type = type

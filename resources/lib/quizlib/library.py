@@ -18,10 +18,47 @@
 #  http://www.gnu.org/copyleft/gpl.html
 #
 
+from typing import Dict
 import json
 
 import xbmc
-from resources.lib.quizlib import logger
+
+from resources.lib.util import logger
+
+
+# library item attribute keys
+KEY_ACTOR =          'actor'
+KEY_ART =            'art'
+KEY_ARTIST =         'artist'
+KEY_ARTIST_ID =      'artistid'
+KEY_CAST =           'cast'
+KEY_DIRECTOR =       'director'
+KEY_EPISODE =        'episode'
+KEY_FANART =         'fanart'
+KEY_FIRST_AIRED =    'firstaired'
+KEY_FILE =           'file'
+KEY_GENRE =          'genre'
+KEY_LABEL =          'label'
+KEY_MOVIE_ID =       'movieid'
+KEY_MPAA_RATING =    'mpaarating'
+KEY_NAME =           'name'
+KEY_PLAY_COUNT =     'playcount'
+KEY_POSTER =         'poster'
+KEY_ROLE =           'role'
+KEY_RUNTIME =        'runtime'
+KEY_STUDIO =         'studio'
+KEY_SEASON =         'season'
+KEY_SET =            'set'
+KEY_SHOW_TITLE =     'showtitle'
+KEY_TAGLINE =        'tagline'
+KEY_THUMBNAIL =      'thumbnail'
+KEY_TITLE =          'title'
+KEY_TVSHOW =         'tvshow'
+KEY_TVSHOW_ID =      'tvshowid'
+KEY_TVSHOW_POSTER =  'tvshow.poster'
+KEY_YEAR =           'year'
+
+GENRE_ANIMATION = 'Animation'
 
 MPAA_RATINGS = {
     'G': ['G', 'Rated G'],
@@ -30,7 +67,7 @@ MPAA_RATINGS = {
     'R': ['R', 'Rated R'],
     'NR': ['NR', 'Rated NR', 'Not Rated'],
     'TV-Y': ['TV-Y', 'Rated TV-Y'],
-    'TV-Y7': ['TV-Y7', 'Rated TV-Y7'],
+    'TV-Y7': ['TV-Y7', 'Rated TV-Y7', 'TV-Y7-FV', 'Rated TV-Y7-FV'],
     'TV-G': ['TV-G', 'Rated TV-G'],
     'TV-PG': ['TV-PG', 'Rated TV-PG'],
     'TV-14': ['TV-14', 'Rated TV-14'],
@@ -38,67 +75,65 @@ MPAA_RATINGS = {
     'none': ['']
 }
 
+# filter operation strings
+FILTER_OP_IS =               'is'
+FILTER_OP_ISNOT =            'isnot'
+FILTER_OP_CONTAINS =         'contains'
+FILTER_OP_DOES_NOT_CONTAIN = 'doesnotcontain'
+FILTER_OP_GREATER_THAN =     'greaterthan'
+FILTER_OP_LESS_THAN =        'lessthan'
+
+
+def _getFilter(operator: str, field: str, value: str) -> Dict:
+    return {
+        'operator': operator,
+        'field': field,
+        'value': value
+    }
+
+
+def _getParamsRandSort() -> Dict:
+    return {'sort': {'method': 'random'}}
+
+
 def getMovies(properties=None):
-    params = {'sort': {'method': 'random'}}
+    params = _getParamsRandSort()
     return VideoQuery('VideoLibrary.GetMovies', params, properties, 'movies')
 
 
 def getTVShows(properties=None):
-    params = {'sort': {'method': 'random'}}
+    params = _getParamsRandSort()
     return VideoQuery('VideoLibrary.GetTVShows', params, properties, 'tvshows')
 
 
 def getSeasons(tvShowId, properties=None):
-    params = {
-        'sort': {'method': 'random'},
-        'tvshowid': tvShowId
-    }
+    params = _getParamsRandSort()
+    params['tvshowid'] = tvShowId
     return VideoQuery('VideoLibrary.GetSeasons', params, properties, 'seasons')
 
 
 def getEpisodes(properties=None):
-    params = {'sort': {'method': 'random'}}
+    params = _getParamsRandSort()
     return VideoQuery('VideoLibrary.GetEpisodes', params, properties, 'episodes')
 
 
-def getMovieCount():
-    return getMovies().limitTo(1).getResponse()['result']['limits']['total']
-
-
-def getTVShowsCount():
-    return getTVShows().limitTo(1).getResponse()['result']['limits']['total']
-
-
-def getSeasonsCount(tvShowId):
-    return getSeasons(tvShowId).limitTo(1).getResponse()['result']['limits']['total']
-
-
-def getEpisodesCount():
-    return getEpisodes().limitTo(1).getResponse()['result']['limits']['total']
-
-
 def getSongs(properties=None):
-    params = {'sort': {'method': 'random'}}
+    params = _getParamsRandSort()
     return AudioQuery('AudioLibrary.GetSongs', params, properties, 'songs')
 
 
 def getAlbums(properties=None):
-    params = {'sort': {'method': 'random'}}
+    params = _getParamsRandSort()
     return AudioQuery('AudioLibrary.GetAlbums', params, properties, 'albums')
 
 
-def getAlbumDetailss(albumId, properties=None):
-    params = {'albumid': albumId}
-    return AudioQuery('AudioLibrary.GetAlbumDetails', params, properties, 'albumdetails')
-
-
 def getArtists(properties=None):
-    params = {'sort': {'method': 'random'}}
+    params = _getParamsRandSort()
     return AudioQuery('AudioLibrary.GetArtists', params, properties, 'artists')
 
 
 def getArtistDetails(artistId, properties=None):
-    params = {'artistid': artistId}
+    params = {KEY_ARTIST_ID: artistId}
     return AudioQuery('AudioLibrary.GetArtistDetails', params, properties, 'artistdetails')
 
 
@@ -123,21 +158,13 @@ def isAnyVideosWatched():
 
 def isAnyMPAARatingsAvailable():
     query = getMovies([]).limitTo(1)
-    query.filters.append({
-        'operator': 'isnot',
-        'field': 'mpaarating',
-        'value': ''
-    })
+    query.filters.append(_getFilter(FILTER_OP_ISNOT, KEY_MPAA_RATING, ''))
     return len(query.asList()) > 0
 
 
 def isAnyContentRatingsAvailable():
     query = getTVShows([]).limitTo(1)
-    query.filters.append({
-        'operator': 'isnot',
-        'field': 'mpaarating',
-        'value': ''
-    })
+    query.filters.append(_getFilter(FILTER_OP_ISNOT, KEY_MPAA_RATING, ''))
     return len(query.asList()) > 0
 
 
@@ -148,35 +175,27 @@ def buildRatingsFilters(ratings):
 
     for rating in ratings:
         for ratingAlias in MPAA_RATINGS[rating]:
-            filters.append({
-                'operator': 'is',
-                'field': 'mpaarating',
-                'value': ratingAlias
-            })
+            filters.append(_getFilter(FILTER_OP_IS, KEY_MPAA_RATING, ratingAlias))
 
     logger.debug(f"ratings filters: {filters}")
     return [{
         'or': filters
     }]
 
-def buildOnlyWatchedFilter():
-    return [{
-            'operator': 'greaterthan',
-            'field': 'playcount',
-            'value': '0'
 
-            }]
+def buildOnlyWatchedFilter():
+    return [_getFilter(FILTER_OP_GREATER_THAN, KEY_PLAY_COUNT, '0')]
 
 
 class Query:
-    def __init__(self, method, params, properties=None, resultKey=None, id=1):
+    def __init__(self, method, params, properties=None, resultKey=None, queryId=1):
         self.properties = properties
         self.params = params
         self.filters = list()
         self.resultKey = resultKey
         self.query = {
             'jsonrpc': '2.0',
-            'id': id,
+            'id': queryId,
             'method': method
         }
 
@@ -219,131 +238,67 @@ class Query:
     def excludeTitles(self, titles):
         if type(titles) == list:
             for title in titles:
-                self.filters.append({
-                    'operator': 'doesnotcontain',
-                    'field': 'title',
-                    'value': title
-                })
+                self.filters.append(_getFilter(FILTER_OP_DOES_NOT_CONTAIN, KEY_TITLE, title))
         else:
-            self.filters.append({
-                'operator': 'isnot',
-                'field': 'title',
-                'value': titles
-            })
+            self.filters.append(_getFilter(FILTER_OP_ISNOT, KEY_TITLE, titles))
         return self
 
 
 class VideoQuery(Query):
-    def inSet(self, set):
-        self.filters.append({
-            'operator': 'is',
-            'field': 'set',
-            'value': set
-        })
+    def inSet(self, setName):
+        self.filters.append(_getFilter(FILTER_OP_IS, KEY_SET, setName))
         return self
 
     def inGenre(self, genre):
-        self.filters.append({
-            'operator': 'contains',
-            'field': 'genre',
-            'value': genre
-        })
+        self.filters.append(_getFilter(FILTER_OP_CONTAINS, KEY_GENRE, genre))
         return self
 
     def withActor(self, actor):
-        self.filters.append({
-            'operator': 'is',
-            'field': 'actor',
-            'value': actor
-        })
+        self.filters.append(_getFilter(FILTER_OP_IS, KEY_ACTOR, actor))
         return self
 
     def withoutActor(self, actor):
-        self.filters.append({
-            'operator': 'isnot',
-            'field': 'actor',
-            'value': actor
-        })
+        self.filters.append(_getFilter(FILTER_OP_ISNOT, KEY_ACTOR, actor))
         return self
 
     def fromYear(self, fromYear):
-        self.filters.append({
-            'operator': 'greaterthan',
-            'field': 'year',
-            'value': str(fromYear)
-        })
+        self.filters.append(_getFilter(FILTER_OP_GREATER_THAN, KEY_YEAR, str(fromYear)))
         return self
 
     def toYear(self, toYear):
-        self.filters.append({
-            'operator': 'lessthan',
-            'field': 'year',
-            'value': str(toYear)
-        })
+        self.filters.append(_getFilter(FILTER_OP_LESS_THAN, KEY_YEAR, str(toYear)))
         return self
 
     def directedBy(self, directedBy):
-        self.filters.append({
-            'operator': 'is',
-            'field': 'director',
-            'value': directedBy
-        })
+        self.filters.append(_getFilter(FILTER_OP_IS, KEY_DIRECTOR, directedBy))
         return self
 
     def notDirectedBy(self, notDirectedBy):
-        self.filters.append({
-            'operator': 'isnot',
-            'field': 'director',
-            'value': str(notDirectedBy)
-        })
+        self.filters.append(_getFilter(FILTER_OP_ISNOT, KEY_DIRECTOR, notDirectedBy))
         return self
 
     def minPlayCount(self, playCount):
-        self.filters.append({
-            'operator': 'greaterthan',
-            'field': 'playcount',
-            'value': str(playCount - 1)
-        })
+        self.filters.append(_getFilter(FILTER_OP_GREATER_THAN, KEY_PLAY_COUNT, str(playCount - 1)))
         return self
 
     def fromShow(self, tvShow):
-        self.filters.append({
-            'operator': 'is',
-            'field': 'tvshow',
-            'value': str(tvShow)
-        })
+        self.filters.append(_getFilter(FILTER_OP_IS, KEY_TVSHOW, tvShow))
         return self
 
     def fromSeason(self, season):
-        self.filters.append({
-            'operator': 'is',
-            'field': 'season',
-            'value': str(season)
-        })
+        self.filters.append(_getFilter(FILTER_OP_IS, KEY_SEASON, str(season)))
         return self
 
     def episode(self, episode):
-        self.filters.append({
-            'operator': 'is',
-            'field': 'episode',
-            'value': str(episode)
-        })
+        self.filters.append(_getFilter(FILTER_OP_IS, KEY_EPISODE, str(episode)))
         return self
 
 
 class AudioQuery(Query):
     def withArtist(self, artist):
-        self.filters.append({
-            'operator': 'is',
-            'field': 'artist',
-            'value': artist
-        })
+        self.filters.append(_getFilter(FILTER_OP_IS, KEY_ARTIST, artist))
         return self
 
     def withoutArtist(self, artist):
-        self.filters.append({
-            'operator': 'isnot',
-            'field': 'artist',
-            'value': artist
-        })
+        self.filters.append(_getFilter(FILTER_OP_ISNOT, KEY_ARTIST, artist))
         return self

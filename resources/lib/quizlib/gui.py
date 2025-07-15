@@ -17,31 +17,29 @@
 #  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 #  http://www.gnu.org/copyleft/gpl.html
 #
-import datetime
-import os
-import random
-import re
-import threading
-import time
 
-import buggalo
-import xbmc
-import xbmcgui
+import datetime, os, random, re, threading, time
 
-from . import game
-from . import imdb, question
-from . import library
-from . import logger
-from . import player
+import xbmc, xbmcgui
+
+from . import game, imdb, question, library, player
 from .strings import *
+from resources.lib.util import logger
 
-RESOURCES_PATH = os.path.join(ADDON.getAddonInfo('path'), 'resources')
-AUDIO_CORRECT = os.path.join(RESOURCES_PATH, 'media', 'audio', 'correct.wav')
-AUDIO_WRONG = os.path.join(RESOURCES_PATH, 'media', 'audio', 'wrong.wav')
-BACKGROUND_MOVIE = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'quiz-background-movie.jpg')
-BACKGROUND_TV = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'quiz-background-tvshows.jpg')
-BACKGROUND_THEME = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'quiz-background-theme.jpg')
-NO_PHOTO_IMAGE = os.path.join(RESOURCES_PATH, 'skins', 'Default', 'media', 'quiz-no-photo.png')
+
+MEDIA_PATH =         os.path.join(ADDON.getAddonInfo('path'), 'resources', 'skins', 'Default', 'media')
+AUDIO_CORRECT =      os.path.join(MEDIA_PATH, 'audio', 'correct.wav')
+AUDIO_WRONG =        os.path.join(MEDIA_PATH, 'audio', 'wrong.wav')
+BACKGROUND_DEFAULT = os.path.join(MEDIA_PATH, 'quiz-filmstrip-background.jpg')
+BACKGROUND_THEME =   os.path.join(MEDIA_PATH, 'quiz-background-theme.jpg')
+NO_PHOTO_IMAGE =     os.path.join(MEDIA_PATH, 'quiz-no-photo.png')
+
+SETTING_ONLY_WATCHED_MOVIES =          'only.watched.movies'
+SETTING_MOVIE_RATING_FILTER_ENABLED =  'movie.rating.filter.enabled'
+SETTING_MOVIE_RATING_FILTER =          'movie.rating.filter'
+SETTING_TVSHOW_RATING_FILTER_ENABLED = 'tvshow.rating.filter.enabled'
+SETTING_TVSHOW_RATING_FILTER =         'tvshow.rating.filter'
+
 
 class MenuGui(xbmcgui.WindowXMLDialog):
     C_MENU_LIST = 4001
@@ -66,10 +64,9 @@ class MenuGui(xbmcgui.WindowXMLDialog):
         self.tvShowsEnabled = True
         self.musicEnabled = True
 
-    @buggalo.buggalo_try_except()
     def onInit(self):
-        movies = library.getMovies(['art']).limitTo(44).asList()
-        posters = [movie['art']['poster'] for movie in movies if 'art' in movie and 'poster' in movie['art']]
+        movies = library.getMovies([library.KEY_ART]).limitTo(44).asList()
+        posters = [movie[library.KEY_ART][library.KEY_POSTER] for movie in movies if library.KEY_ART in movie and library.KEY_POSTER in movie[library.KEY_ART]]
         if posters:
             for idx in range(0, 44):
                 self.getControl(1000 + idx).setImage(posters[idx % len(posters)])
@@ -89,20 +86,20 @@ class MenuGui(xbmcgui.WindowXMLDialog):
             xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_HAS_NO_CONTENT))
             return
 
-        if not library.isAnyVideosWatched() and ADDON.getSetting(SETT_ONLY_WATCHED_MOVIES) == 'true':
+        if not library.isAnyVideosWatched() and ADDON.getSetting(SETTING_ONLY_WATCHED_MOVIES) == 'true':
             # Only watched movies requires at least one watched video files
             xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_ONLY_WATCHED))
-            ADDON.setSetting(SETT_ONLY_WATCHED_MOVIES, 'false')
+            ADDON.setSetting(SETTING_ONLY_WATCHED_MOVIES, 'false')
 
-        if not library.isAnyMPAARatingsAvailable() and ADDON.getSetting(SETT_MOVIE_RATING_LIMIT_ENABLED) == 'true':
+        if not library.isAnyMPAARatingsAvailable() and ADDON.getSetting(SETTING_MOVIE_RATING_FILTER_ENABLED) == 'true':
             # MPAA rating requires ratings to be available in database
             xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_MOVIE_RATING_LIMIT))
-            ADDON.setSetting(SETT_MOVIE_RATING_LIMIT_ENABLED, 'false')
+            ADDON.setSetting(SETTING_MOVIE_RATING_FILTER_ENABLED, 'false')
 
-        if not library.isAnyContentRatingsAvailable() and ADDON.getSetting(SETT_TVSHOW_RATING_LIMIT_ENABLED) == 'true':
+        if not library.isAnyContentRatingsAvailable() and ADDON.getSetting(SETTING_TVSHOW_RATING_FILTER_ENABLED) == 'true':
             # Content rating requires ratings to be available in database
             xbmcgui.Dialog().ok(strings(E_REQUIREMENTS_MISSING), strings(E_TVSHOW_RATING_LIMIT))
-            ADDON.setSetting(SETT_TVSHOW_RATING_LIMIT_ENABLED, 'false')
+            ADDON.setSetting(SETTING_TVSHOW_RATING_FILTER_ENABLED, 'false')
 
         self.moviesEnabled = bool(hasMovies and question.isAnyMovieQuestionsEnabled())
         self.tvShowsEnabled = bool(hasTVShows and question.isAnyTVShowQuestionsEnabled())
@@ -116,13 +113,18 @@ class MenuGui(xbmcgui.WindowXMLDialog):
 
         self.updateMenu()
 
-    @buggalo.buggalo_try_except()
     def onAction(self, action):
+        changeListItemActions = [
+            xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN, xbmcgui.ACTION_MOUSE_WHEEL_DOWN, xbmcgui.ACTION_MOUSE_WHEEL_UP,
+            xbmcgui.ACTION_SCROLL_DOWN, xbmcgui.ACTION_SCROLL_UP, xbmcgui.ACTION_ANALOG_MOVE, xbmcgui.ACTION_ANALOG_MOVE_X_LEFT,
+            xbmcgui.ACTION_ANALOG_MOVE_X_RIGHT, xbmcgui.ACTION_ANALOG_MOVE_Y_DOWN, xbmcgui.ACTION_ANALOG_MOVE_Y_UP
+        ]
+
         if action.getId() in [xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_PARENT_DIR, xbmcgui.ACTION_NAV_BACK]:
             self.quizGui.close()
             self.close()
             return
-        elif action.getId() in [xbmcgui.ACTION_MOVE_UP, xbmcgui.ACTION_MOVE_DOWN]: #todo: what about analog move down/up? and is there a better way to do this, perhaps onFocus for ListItem?
+        elif action.getId() in changeListItemActions:
             item = self.getControl(MenuGui.C_MENU_LIST).getSelectedItem()
             action = int(item.getProperty(MenuGui.ACTION_KEY))
             if action == MenuGui.ACTION_ABOUT:
@@ -160,11 +162,9 @@ class MenuGui(xbmcgui.WindowXMLDialog):
         listControl.addItems(self._buildMenuItemsList(items))
         self.setFocus(listControl)
 
-    @buggalo.buggalo_try_except()
-    def onClick(self, controlId):
+    def onClick(self, controlId: int):
         """
-        @param controlId: id of the control that was clicked
-        @type controlId: int
+        :param controlId: id of the control that was clicked
         """
         if controlId == MenuGui.C_MENU_LIST:
             item = self.getControl(MenuGui.C_MENU_LIST).getSelectedItem()
@@ -195,6 +195,7 @@ class MenuGui(xbmcgui.WindowXMLDialog):
                 self.close()
                 return
 
+
 class QuizGui(xbmcgui.WindowXML):
     C_MAIN_FIRST_ANSWER = 4000
     C_MAIN_LAST_ANSWER = 4003
@@ -205,7 +206,7 @@ class QuizGui(xbmcgui.WindowXML):
     C_MAIN_QUESTION_LABEL = 4300
     C_MAIN_PHOTO = 4400
     C_MAIN_MOVIE_BACKGROUND = 4500
-    C_MAIN_TVSHOW_BACKGROUND = 4501
+    C_MAIN_LOGO = 4501
     C_MAIN_QUOTE_LABEL = 4600
     C_MAIN_PHOTO_1 = 4701
     C_MAIN_PHOTO_2 = 4702
@@ -254,10 +255,9 @@ class QuizGui(xbmcgui.WindowXML):
             # note: I could create a new instance of self.player with the new parameters here, but when I tried that, weird stuff happened -
             # the player's threading timer was getting called twice: with both old and new duration. I also tried "del self.player" before creating a new player,
             # but the destructor was never actually invoked. So I just use the setBounds function on the existing player instead of creating a new one
-            logger.log(f"setting new player with min:{minPercent} max:{maxPercent}, duration:{duration}")
+            logger.debug(f"setting new player with min:{minPercent} max:{maxPercent}, duration:{duration}")
             self.player.setBounds(min(minPercent, maxPercent), max(minPercent, maxPercent), duration)
 
-    @buggalo.buggalo_try_except()
     def onInit(self):
         self.onSettingsChanged()
         self.getControl(2).setVisible(False)
@@ -276,24 +276,21 @@ class QuizGui(xbmcgui.WindowXML):
     def newGame(self, gameInstance):
         self.getControl(1).setVisible(False)
         self.getControl(2).setVisible(True)
+        self.onVisibilityChanged()
 
         self.gameInstance = gameInstance
-        logger.log("Starting game: %s" % str(self.gameInstance))
+        logger.debug(f"Starting game: {self.gameInstance}")
 
-        if self.gameInstance.getType() == game.GAMETYPE_TVSHOW:
-            self.defaultBackground = BACKGROUND_TV
-        else:
-            self.defaultBackground = BACKGROUND_MOVIE
+        self.defaultBackground = BACKGROUND_DEFAULT
         self.getControl(self.C_MAIN_MOVIE_BACKGROUND).setImage(self.defaultBackground)
 
         self.defaultLibraryFilters = list()
-        if gameInstance.getType() == game.GAMETYPE_MOVIE and ADDON.getSetting('movie.rating.limit.enabled') == 'true':
-            self.defaultLibraryFilters.extend(library.buildRatingsFilters(ADDON.getSetting('movie.rating.limit')))
+        if gameInstance.getType() == game.GAMETYPE_MOVIE and ADDON.getSetting(SETTING_MOVIE_RATING_FILTER_ENABLED) == 'true':
+            self.defaultLibraryFilters.extend(library.buildRatingsFilters(ADDON.getSetting(SETTING_MOVIE_RATING_FILTER)))
+        elif gameInstance.getType() == game.GAMETYPE_TVSHOW and ADDON.getSetting(SETTING_TVSHOW_RATING_FILTER_ENABLED) == 'true':
+            self.defaultLibraryFilters.extend(library.buildRatingsFilters(ADDON.getSetting(SETTING_TVSHOW_RATING_FILTER)))
 
-        elif gameInstance.getType() == game.GAMETYPE_TVSHOW and ADDON.getSetting('tvshow.rating.limit.enabled') == 'true':
-            self.defaultLibraryFilters.extend(library.buildRatingsFilters(ADDON.getSetting('tvshow.rating.limit')))
-
-        if ADDON.getSetting(SETT_ONLY_WATCHED_MOVIES) == 'true':
+        if ADDON.getSetting(SETTING_ONLY_WATCHED_MOVIES) == 'true':
             self.defaultLibraryFilters.extend(library.buildOnlyWatchedFilter())
 
         self.questionCandidates = question.getEnabledQuestionCandidates(self.gameInstance)
@@ -309,7 +306,6 @@ class QuizGui(xbmcgui.WindowXML):
             self.player.stopPlayback(True)
         super().close()
 
-    @buggalo.buggalo_try_except()
     def onAction(self, action):
         if self.uiState == self.STATE_SPLASH and action.getId() in [xbmcgui.ACTION_PARENT_DIR, xbmcgui.ACTION_PREVIOUS_MENU, xbmcgui.ACTION_NAV_BACK]:
             self.close()
@@ -333,15 +329,14 @@ class QuizGui(xbmcgui.WindowXML):
             self.setFocusId(self.C_MAIN_FIRST_ANSWER + 3)
             self.onQuestionAnswered(self.question.getAnswer(3))
 
-    @buggalo.buggalo_try_except()
     def onClick(self, controlId):
         difference = time.time() - self.lastClickTime
         self.lastClickTime = time.time()
         if difference < 0.7:
-            logger.log("Ignoring key-repeat onClick")
+            logger.debug("Ignoring key-repeat onClick")
             return
 
-        elif controlId == self.C_MAIN_EXIT:
+        if controlId == self.C_MAIN_EXIT:
             self.onGameOver()
         elif self.uiState == self.STATE_LOADING:
             return  # ignore the rest while we are loading
@@ -350,10 +345,6 @@ class QuizGui(xbmcgui.WindowXML):
             self.onQuestionAnswered(answer)
         elif controlId == self.C_MAIN_REPLAY:
             self.player.replay()
-
-    @buggalo.buggalo_try_except()
-    def onFocus(self, controlId):
-        pass
 
     def onGameOver(self):
         if self.uiState == self.STATE_GAME_OVER:
@@ -367,7 +358,6 @@ class QuizGui(xbmcgui.WindowXML):
             self.player.stopPlayback(True)
         self.showMenuDialog()
 
-    @buggalo.buggalo_try_except()
     def onNewQuestion(self):
         self.delayedNewQuestionTimer = None
         self.uiState = self.STATE_LOADING
@@ -396,10 +386,13 @@ class QuizGui(xbmcgui.WindowXML):
         displayType = self.question.getDisplayType()
         if self.question.getFanartFile():
             self.getControl(self.C_MAIN_MOVIE_BACKGROUND).setImage(self.question.getFanartFile())
+            self.getControl(self.C_MAIN_LOGO).setVisible(False)
         elif isinstance(displayType, question.AudioDisplayType):
             self.getControl(self.C_MAIN_MOVIE_BACKGROUND).setImage(BACKGROUND_THEME)
+            self.getControl(self.C_MAIN_LOGO).setVisible(False)
         else:
             self.getControl(self.C_MAIN_MOVIE_BACKGROUND).setImage(self.defaultBackground)
+            self.getControl(self.C_MAIN_LOGO).setVisible(True)
 
         if isinstance(displayType, question.VideoDisplayType):
             self.getControl(self.C_MAIN_VIDEO_FILE_NOT_FOUND).setVisible(False)
@@ -424,13 +417,10 @@ class QuizGui(xbmcgui.WindowXML):
             self.getControl(self.C_MAIN_QUOTE_LABEL).setText(quoteText)
 
         elif isinstance(displayType, question.AudioDisplayType):
-            #self.player.playAudio(displayType.getAudioFile())
             self.player.playWindowed(displayType.getAudioFile())
 
-        self.onVisibilityChanged(displayType)
-
         self.uiState = self.STATE_PLAYING
-        self.getControl(self.C_MAIN_LOADING_VISIBILITY).setVisible(False)
+        self.onVisibilityChanged(displayType)
 
     def _getNewQuestion(self):
         retries = 0
@@ -441,48 +431,36 @@ class QuizGui(xbmcgui.WindowXML):
 
             self.getControl(self.C_MAIN_LOADING).setPercent(retries)
 
-            random.seed()
             random.shuffle(self.questionCandidates)
             for candidate in self.questionCandidates:
                 try:
                     q = candidate(self.defaultLibraryFilters)
                     break
-                except question.QuestionException as ex:
-                    pass
-                    # print("QuestionException: %s" % str(ex))
                 except Exception as ex:
-                    logger.log("%s in %s" % (ex.__class__.__name__, candidate.__name__))
-                    import traceback
-                    import sys
-
-                    traceback.print_exc(file=sys.stdout)
+                    logger.error(f"{candidate.__name__}: {repr(ex)}")
 
             if q is None or len(q.getAnswers()) < 3:
                 continue
 
-            # print(type(q))
             if not q.getUniqueIdentifier() in self.previousQuestions:
                 self.previousQuestions.append(q.getUniqueIdentifier())
                 break
 
         return q
 
-    def onQuestionAnswered(self, answer):
+    def onQuestionAnswered(self, answer: question.Answer):
         """
-        @param answer: the chosen answer by the user
-        @type answer: Answer
+        :param answer: the chosen answer by the user
         """
-        logger.log("onQuestionAnswered(..)")
-
         if self.player.isPlaying():
             self.player.stopPlayback()
 
         if answer is not None and answer.correct:
             xbmc.playSFX(AUDIO_CORRECT)
-            self.getControl(self.C_MAIN_CORRECT_VISIBILITY).setVisible(False)
+            self.getControl(self.C_MAIN_CORRECT_VISIBILITY).setVisible(True)
         else:
             xbmc.playSFX(AUDIO_WRONG)
-            self.getControl(self.C_MAIN_INCORRECT_VISIBILITY).setVisible(False)
+            self.getControl(self.C_MAIN_INCORRECT_VISIBILITY).setVisible(True)
         threading.Timer(0.5, self.onQuestionAnswerFeedbackTimer).start()
 
         # show correct answers if setting enabled and if user answered incorrectly or the question type is quote
@@ -491,7 +469,7 @@ class QuizGui(xbmcgui.WindowXML):
             if not answer.correct:
                 for idx, answerIter in enumerate(self.question.getAnswers()):
                     if answerIter.correct:
-                        self.getControl(self.C_MAIN_FIRST_ANSWER + idx).setLabel('[B]%s[/B]' % answerIter.text)
+                        self.getControl(self.C_MAIN_FIRST_ANSWER + idx).setLabel(f'[B]{answerIter.text}[/B]')
                         self.setFocusId(self.C_MAIN_FIRST_ANSWER + idx)
                     else:
                         self.getControl(self.C_MAIN_FIRST_ANSWER + idx).setLabel(textColor='0x88888888')
@@ -507,40 +485,39 @@ class QuizGui(xbmcgui.WindowXML):
         else:
             self.onNewQuestion()
 
-    @buggalo.buggalo_try_except()
     def onQuestionAnswerFeedbackTimer(self):
         """
         onQuestionAnswerFeedbackTimer is invoked by a timer when the red or green background behind the answers box
         must be faded out and hidden.
-
-        Note: Visibility is inverted in skin
         """
-        self.getControl(self.C_MAIN_CORRECT_VISIBILITY).setVisible(True)
-        self.getControl(self.C_MAIN_INCORRECT_VISIBILITY).setVisible(True)
+        self.getControl(self.C_MAIN_CORRECT_VISIBILITY).setVisible(False)
+        self.getControl(self.C_MAIN_INCORRECT_VISIBILITY).setVisible(False)
 
-    def onVisibilityChanged(self, displayType=None):
+    def onVisibilityChanged(self, displayType: question.DisplayType = None) -> None:
         """
-        @type displayType: quizlib.question.DisplayType
-        @param displayType: the type of display required by the current question
+        :param displayType: the type of display required by the current question
         """
-        self.getControl(self.C_MAIN_VIDEO_VISIBILITY).setVisible(not isinstance(displayType, question.VideoDisplayType))
-        self.getControl(self.C_MAIN_PHOTO_VISIBILITY).setVisible(not isinstance(displayType, question.PhotoDisplayType))
-        self.getControl(self.C_MAIN_QUOTE_VISIBILITY).setVisible(not isinstance(displayType, question.QuoteDisplayType))
-        self.getControl(self.C_MAIN_THREE_PHOTOS_VISIBILITY).setVisible(not isinstance(displayType, question.ThreePhotoDisplayType))
+        self.getControl(self.C_MAIN_LOADING_VISIBILITY).setVisible(False)
+        self.getControl(self.C_MAIN_CORRECT_VISIBILITY).setVisible(False)
+        self.getControl(self.C_MAIN_INCORRECT_VISIBILITY).setVisible(False)
+        self.getControl(self.C_MAIN_VIDEO_VISIBILITY).setVisible(isinstance(displayType, question.VideoDisplayType))
+        self.getControl(self.C_MAIN_PHOTO_VISIBILITY).setVisible(isinstance(displayType, question.PhotoDisplayType))
+        self.getControl(self.C_MAIN_QUOTE_VISIBILITY).setVisible(isinstance(displayType, question.QuoteDisplayType))
+        self.getControl(self.C_MAIN_THREE_PHOTOS_VISIBILITY).setVisible(isinstance(displayType, question.ThreePhotoDisplayType))
 
-    def _obfuscateQuote(self, quote):
+    def _obfuscateQuote(self, quote: str) -> str:
         names = list()
 
-        for m in re.finditer('(\[.*?\])', quote, re.DOTALL):
+        for m in re.finditer(r'(\[.*?\])', quote, re.DOTALL):
             quote = quote.replace(m.group(1), '')
 
-        for m in re.finditer('(.*?:)', quote):
+        for m in re.finditer(r'(.*?:)', quote):
             name = m.group(1)
             if not name in names:
                 names.append(name)
 
         for idx, name in enumerate(names):
-            repl = '#%d:' % (idx + 1)
+            repl = f'#{idx + 1}:'
             quote = quote.replace(name, repl)
 
         return quote

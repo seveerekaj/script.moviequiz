@@ -1,0 +1,12 @@
+maybe be able to switch between randomly choosing next question type vs. iterating over each question type enabled, then repeat.
+    With the random system, it seems like "what movie is this" doesn't come up as often as I would like
+maybe have new question that finds a random movie and grabs a single frame from that movie, and displays to the user.
+    or maybe grab several frames, each from a different random position of the film, and show each to the user? have the number of frames grabbed configurable
+where is cinema vision getting their quotes, trivia from?
+pause instead of stop at end of "what movie is this?" then have banner show "time's up! (change the length of time to play in settings)"
+add 5th or maybe even 6th answer option
+apparently fanart is required?
+    also add screenshots to be seen in addon info
+get movie quotes from subtitle tracks of locally-stored movies?
+multiplayer support
+    possible to host web server that each player can connect to (on same wifi network) and select the answer to each question?

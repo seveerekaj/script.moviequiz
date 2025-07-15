@@ -18,20 +18,22 @@
 #  http://www.gnu.org/copyleft/gpl.html
 #
 
+import random
+
 import xbmcvfs
 import xbmcaddon
-import buggalo
+
 from resources.lib.quizlib.gui import QuizGui
 
-buggalo.SUBMIT_URL = ''
-try:
-    # Make sure data dir exists
-    PROFILE = xbmcaddon.Addon().getAddonInfo('profile')
-    if not xbmcvfs.exists(PROFILE):
-        xbmcvfs.mkdirs(PROFILE)
 
-    w = QuizGui()
-    w.doModal()
-    del w
-except Exception:
-    buggalo.onExceptionRaised()
+# Make sure data dir exists
+PROFILE = xbmcaddon.Addon().getAddonInfo('profile')
+if not xbmcvfs.exists(PROFILE):
+    xbmcvfs.mkdirs(PROFILE)
+
+# seed the random number generator used in various places
+random.seed()
+
+w = QuizGui()
+w.doModal()
+del w
