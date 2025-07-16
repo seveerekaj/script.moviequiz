@@ -414,7 +414,7 @@ class QuizGui(xbmcgui.WindowXML):
         elif isinstance(displayType, question.QuoteDisplayType):
             quoteText = displayType.getQuoteText()
             quoteText = self._obfuscateQuote(quoteText)
-            self.getControl(self.C_MAIN_QUOTE_LABEL).setText(quoteText)
+            self.getControl(self.C_MAIN_QUOTE_LABEL).setText(f'[B]{quoteText}[/B]')
 
         elif isinstance(displayType, question.AudioDisplayType):
             self.player.playWindowed(displayType.getAudioFile())
@@ -476,7 +476,7 @@ class QuizGui(xbmcgui.WindowXML):
 
             if isinstance(self.question.getDisplayType(), question.QuoteDisplayType):
                 # Display non-obfuscated quote text
-                self.getControl(self.C_MAIN_QUOTE_LABEL).setText(self.question.getDisplayType().getQuoteText())
+                self.getControl(self.C_MAIN_QUOTE_LABEL).setText(f'[B]{self.question.getDisplayType().getQuoteText()}[/B]')
 
             if self.uiState != self.STATE_GAME_OVER:
                 self.delayedNewQuestionTimer = threading.Timer(2, self.onNewQuestion)

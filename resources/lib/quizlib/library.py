@@ -223,7 +223,7 @@ class Query:
     def asItem(self):
         result = self.asList()
         if type(result) == list:
-            return result[0]
+            return result[0] if result else None
         else:
             return result
 
@@ -281,7 +281,7 @@ class VideoQuery(Query):
         self.filters.append(_getFilter(FILTER_OP_GREATER_THAN, KEY_PLAY_COUNT, str(playCount - 1)))
         return self
 
-    def fromShow(self, tvShow):
+    def fromShow(self, tvShow: str):
         self.filters.append(_getFilter(FILTER_OP_IS, KEY_TVSHOW, tvShow))
         return self
 
@@ -289,7 +289,7 @@ class VideoQuery(Query):
         self.filters.append(_getFilter(FILTER_OP_IS, KEY_SEASON, str(season)))
         return self
 
-    def episode(self, episode):
+    def episode(self, episode: int):
         self.filters.append(_getFilter(FILTER_OP_IS, KEY_EPISODE, str(episode)))
         return self
 
