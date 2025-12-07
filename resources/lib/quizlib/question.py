@@ -37,7 +37,7 @@ class VideoDisplayType(DisplayType):
     def setVideoFile(self, videoFile):
         self.videoFile = videoFile
         if not xbmcvfs.exists(self.videoFile):
-            raise QuestionException(f'Video file not found: {self.videoFile.encode('utf-8', 'ignore')}')
+            raise QuestionException(f"Video file not found: {self.videoFile.encode('utf-8', 'ignore')}")
 
     def getVideoFile(self):
         return self.videoFile
